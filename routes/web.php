@@ -29,4 +29,4 @@ Route::get("/administrator", [AdministratorController::class, 'index'])->middlew
 
 // API for client -> server communication
 
-Route::post("/register/{id_user}", [UserRegisterController::class, 'register']);
+Route::post("/register/{id_user}", [UserController::class, 'register']);

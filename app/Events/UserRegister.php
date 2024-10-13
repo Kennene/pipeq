@@ -31,7 +31,8 @@ class UserRegister implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        
+        //! Dlaczego event przesyłany jest do wszystkich użytkowników, a nie tylko do jednego?
+        // todo: dodać autoryzację do kanału w channels.php
         return [
             new PrivateChannel('register'),
         ];

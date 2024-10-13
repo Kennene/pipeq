@@ -10,21 +10,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserRegistered implements ShouldBroadcastNow
+class UserEnter implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $wiadomosc = "Użytkownik zarejestrowany";
+    public $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($message)
     {
-        //
+        $this->message = $message;
     }
-
-    public string $message = "New broadcasted message!";
 
     /**
      * Get the channels the event should broadcast on.
@@ -34,7 +32,13 @@ class UserRegistered implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('register'),
+            new Channel('coordinator'),
         ];
+    }
+
+    public function broadcastAs()
+    {
+        // to jest jakiś śmietnik, który wygenerował ChatGPT, ale może okazać się użyteczne
+        return 'coordinator';
     }
 }

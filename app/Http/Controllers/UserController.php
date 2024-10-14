@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Events\UserRegister;
 use App\Events\UserEnter;
+use App\Models\Ticket;
 
 use Illuminate\Http\Request;
 
@@ -13,19 +14,18 @@ class UserController extends Controller
         return view('user.user');
     }
 
-    public function register($id_user)
+    public function register($destination)
     {
-        // todo: zaimplementować logikę dodawania użytkownika do kolejki
-        $ticketnumber = rand(10, 99);
+        $ticket = Ticket::create([
+            'user_id' => auth()->user()->id,
+            'destination' => $destination,
+        ]);
 
-        //? czy zamiast poniższego kodu nie lepiej zwrócić kodu kanału na którym będzie obsługiwany jego ticket?
-        //? nie, ponieważ komunikacja server -> user realizowana jest przez broadcasty, a nie przez zapytania HTTP. Ta komunikacja odbywa się porpzez funkcję broadcast()
-        // todo: jeżeli proces rejestracji powiódł się poprawnie, przy okazji zwróć kod błędu 200
-        broadcast(new UserRegister($ticketnumber));
-        return "200";
+        broadcast(new UserRegister($ticket));
+        return 200;
 
-        // todo: jeżeli się nie powiódł, zwróć odpowiedni kod błędu
-        return "500";
+        // todo: jeżeli proces dodawania się nie powiódł, zwróć odpowiedni kod błędu
+        return 500;
         /* 
             500 - Internal Server Error
             501 - Not Implemented

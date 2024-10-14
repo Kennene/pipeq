@@ -24,15 +24,25 @@
 
 <script>
 
-    $('#room1').click(function() {
-        axios.post('/register/{{ auth()->user()->id }}')
+    function register(destination) {
+        axios.post(`/register/${destination}`)
             // todo: lepiej ogarnąć kody błędów
             .then(response => {
-                // console.log(response.data);
+                if('{{ env('APP_DEBUG') }}' === '1') {
+                    console.log(response.data);
+                }
             })
             .catch(error => {
                 console.error(error);
             })
+    }
+
+    $('#room1').click(function() {
+        register('room1')
+    });
+
+    $('#room2').click(function() {
+        register('room2')
     });
 
         
@@ -47,33 +57,6 @@
         channel.listen('UserEnter', function(e) {
             console.log(e);
         })
-
-        
-
-        // Śmietnik z testowania channelów, może się przydać w przyszłości, na razie nie usuwać
-            // Echo.channel('chat')
-            //     .whisper('MessageSent', {
-            //         name: "this.user.name"
-            //     });
-            //const channel = Echo.private('register');
-            // channel.listen('listenForWhisper', function(e) {
-            //             console.log(e);
-            //         })
-            //         .whisper('register', {
-            //             name: "lol"
-            //         });
-            // channel.listenForWhisper('register', function(e) {
-            //     console.log(e);
-            // })
-            // onmousemove = (e) => {
-            //     channel.whisper('register', {
-            //         name: "lol"
-            //     });
-            // };
-            // Echo.channel('your-channel')
-            //     .listen('.your-event-name', (event) => {
-            //         console.log(event.message); // Output: 'Hello from Laravel!'
-            //     });
     });
 
 </script>

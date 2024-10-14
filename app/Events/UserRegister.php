@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Ticket;
 
 class UserRegister implements ShouldBroadcastNow
 {
@@ -19,9 +20,9 @@ class UserRegister implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(private int $ticketId)
+    public function __construct(private Ticket $ticket)
     {
-        $this->message = "Twój bilet w kolejce to: " . $this->ticketId;
+        $this->message = "Twój bilet w kolejce to: " . $ticket->id % 100;
     }
 
     /**

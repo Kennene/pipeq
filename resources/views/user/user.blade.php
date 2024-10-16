@@ -53,8 +53,8 @@
             console.log(e);
         })
 
-        // todo: handle event UserEnter
-        channel.listen('UserEnter', function(e) {
+        // todo: handle event UserMove
+        channel.listen('UserMove', function(e) {
             console.log(e);
         })
     });

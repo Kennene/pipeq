@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Events\UserRegister;
-use App\Events\UserEnter;
+use App\Events\UserMove;
 use App\Models\Ticket;
 
 use Illuminate\Http\Request;
@@ -38,11 +38,12 @@ class UserController extends Controller
 
     public function enter()
     {
-        // todo: zaimplementować logikę przesuwania usera do kolejnego etapu, tudzież wpuszczania do pokoju
+        // // todo: zaimplementować logikę przesuwania usera do kolejnego etapu, tudzież wpuszczania do pokoju
+        //? Funkcjonalność przeniesiona do kontrolera koordynatora
             // Wygenerowane przez Copilota, może okazać się użyteczne
-            // broadcast(new UserEnter('User entered the chat'));
+            // broadcast(new UserMove('User entered the chat'));
             // return view('user.user');
 
-            event(new UserEnter('Hello from Laravel!'));
+            event(new UserMove('Hello from Laravel!'));
     }
 }

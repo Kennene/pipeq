@@ -16,7 +16,7 @@ class Ticket extends Model
     protected $fillable = ['user_id', 'destination', 'status'];
 
     protected $attributes = [
-        //! Default values
+        // Default values
         'status' => null,
     ];
 }

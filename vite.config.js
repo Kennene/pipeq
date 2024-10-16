@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/user.css',
                 'resources/css/coordinator.css',
                 'resources/css/administrator.css',
+                'resources/css/display.css',
             ],
             refresh: true,
         }),

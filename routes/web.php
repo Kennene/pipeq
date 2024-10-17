@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\AdministratorController;
+use Illuminate\Support\Facades\Auth;
+
 
 use App\Http\Controllers\UserRegisterController;
 
@@ -18,7 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 Route::get("/", [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('user.user');
@@ -30,3 +32,7 @@ Route::get("/administrator", [AdministratorController::class, 'index'])->middlew
 // API for client -> server communication
 
 Route::post("/register/{destination}", [UserController::class, 'register'])->middleware(['auth', 'verified']);
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/login');
+})->name('logout');

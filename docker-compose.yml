@@ -1,0 +1,16 @@
+services:
+    postgres:
+        image: postgres:latest
+        container_name: pipeq_postgres
+        environment:
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_DATABASE}
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+            - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - "5432:5432"
+
+volumes:
+    pg_data:

@@ -12,9 +12,14 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator');
     }
 
-    public function move(int $ticket_id, string $destination)
+    public function move(int $ticket_id, string $status)
     {
         $ticket = Ticket::find($ticket_id);
-        $ticket->destination = $destination;
+        $ticket->setStatus($status);
+        $ticket->setModifiedBy(auth()->user()->id);
+        $ticket->save();
+
+        //todo: jeżeli proces przenoszenia się nie powiódł, zwróć odpowiedni kod błędu
+        return 200;
     }
 }

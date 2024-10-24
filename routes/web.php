@@ -7,6 +7,7 @@ use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\AdministratorController;
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\DisplayController;
 
 use App\Http\Controllers\UserRegisterController;
 
@@ -23,10 +24,11 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 
-Route::get("/", [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('user.user');
-Route::get("/coordinator", [CoordinatorController::class, 'index'])->middleware(['auth', 'verified'])->name('coordinator.coordinator');
-Route::get("/administrator", [AdministratorController::class, 'index'])->middleware(['auth', 'verified'])->name('administrator.administrator');
-
+Route::get("/", [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('user');
+Route::get("/coordinator", [CoordinatorController::class, 'index'])->middleware(['auth', 'verified'])->name('coordinator');
+Route::get("/administrator", [AdministratorController::class, 'index'])->middleware(['auth', 'verified'])->name('administrator');
+//Route::get("/display", [AdministratorController::class, 'index'])->middleware(['auth', 'verified'])->name('administrator.administrator');
+Route::get("/display", [DisplayController::class, 'index'])->middleware(['auth', 'verified'])->name('display');
 
 
 // API for client -> server communication
@@ -36,3 +38,7 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/login');
 })->name('logout');
+
+// todo: przenieśc do routes/api.php
+Route::post("/register/{destination}", [UserController::class, 'register'])->middleware(['auth', 'verified'])->name('register');
+Route::post("/move/{ticket_id}/{destination}", [CoordinatorController::class, 'move'])->middleware(['auth', 'verified'])->name('move');

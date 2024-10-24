@@ -11,10 +11,6 @@ Broadcast::channel('register', function () {
     return true;
 });
 
-Broadcast::channel('coordinator', function () {
-    
-});
-
 Broadcast::channel('display', function () {
-    
+    return true;
 });

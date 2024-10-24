@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/user.css'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,11 @@
         <button class="button" id="room2">Room 2</button>
     </div>
 
+    <div class="container-lg">
+        <div class="card mt-2">
+            <button type="button" class="btn btn-success">Working bootstrap</button>
+        </div>
+    </div>
 
 </body>
 

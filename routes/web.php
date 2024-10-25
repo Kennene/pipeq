@@ -42,3 +42,5 @@ Route::post('/logout', function () {
 // todo: przenieśc do routes/api.php
 Route::post("/register/{destination}", [UserController::class, 'register'])->middleware(['auth', 'verified'])->name('register');
 Route::post("/move/{ticket_id}/{destination}", [CoordinatorController::class, 'move'])->middleware(['auth', 'verified'])->name('move');
+Route::post("/register/{destination}", [UserController::class, 'register'])->middleware(['auth', 'verified']);
+Route::post("/move/{ticket_id}/{destination}", [CoordinatorController::class, 'move'])->middleware(['auth', 'verified']);

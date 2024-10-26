@@ -1,17 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Color;
 use App\Events\UserRegister;
 use App\Events\UserMove;
 use App\Models\Ticket;
-
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return view('user.user');
+        $variables["color"] = new Color();
+
+        return view('user.user')->with($variables);
     }
 
     public function register($destination)

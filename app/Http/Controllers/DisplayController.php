@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Color;
 
 class DisplayController extends Controller
 {
     public function index()
     {
-        return view('display.display');
+        $variables["color"] = new Color();
+
+        return view('display.display')->with($variables);
     }
 }

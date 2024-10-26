@@ -7,13 +7,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Display</title>
 </head>
+
+<style>
+
+body {
+    margin: 0;
+    background-color: {{ $color::main; }};
+}
+
+#secondary {
+    width: 30vw;
+    height: 30vh;
+    background-color: {{ $color::secondary }};
+}
+
+#addintional {
+    width: 30%;
+    height: 15vh;
+    float: right;
+    background-color: {{ $color::additional }};
+}
+
+#details {
+    width: 30%;
+    height: 15vh;
+    float: right;
+    background-color: {{ $color::details }};
+}
+
+</style>
+
 <body>
     
-    Display
+    <div id="secondary">
+        <div id="details"></div>
+        <div id="addintional"></div>
+    </div>
 
 </body>
 
-<script>,
+<script>
     document.addEventListener('DOMContentLoaded', function() {
 
         // todo: po połączeniu display poproś o wszystkie otwarte tickety

@@ -1,8 +1,6 @@
 <template>
     <div class="h-screen flex flex-col">
         
-        @include('topbar')
-
         <!-- Tickets list under the header -->
         <div
             class="bg-gray-200 p-4 flex items-center space-x-4 overflow-x-auto"

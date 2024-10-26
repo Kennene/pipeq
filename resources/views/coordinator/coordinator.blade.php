@@ -11,6 +11,9 @@
 </head>
 
 <body>
+
+    @include('topbar')
+
     <div id="app">
         <Coordinator></Coordinator>
     </div>

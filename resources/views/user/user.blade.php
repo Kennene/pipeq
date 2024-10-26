@@ -8,6 +8,8 @@
     <title>User</title>
 </head>
 <body>
+
+    @include('topbar')
     
     User
 

@@ -14,6 +14,7 @@ export default defineConfig({
                 "resources/css/coordinator.css",
                 "resources/css/administrator.css",
                 "resources/css/display.css",
+                "resources/css/topbar.css",
             ],
             refresh: true,
         }),

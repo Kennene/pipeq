@@ -1,22 +1,7 @@
 <template>
     <div class="h-screen flex flex-col">
-        <!-- Górny pasek z logo -->
-        <header
-            class="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg relative"
-        >
-            <div class="flex items-center">
-                <img src="/images/logo.png" alt="Logo" class="h-12" />
-                <h1 class="ml-4 text-xl font-bold">Coordinator</h1>
-            </div>
-            <!-- Przycisk Wylogowania -->
-            <button
-                @click="logout"
-                class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md"
-            >
-                <span class="material-icons">logout</span>
-                <span>Wyloguj</span>
-            </button>
-        </header>
+        
+        @include('topbar')
 
         <!-- Tickets list under the header -->
         <div

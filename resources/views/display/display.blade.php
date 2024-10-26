@@ -12,7 +12,7 @@
 
 body {
     margin: 0;
-    background-color: {{ $color::main; }};
+    background-color: var(--main);
 }
 
 #secondary {
@@ -38,6 +38,8 @@ body {
 </style>
 
 <body>
+
+    @include('topbar')
     
     <div id="secondary">
         <div id="details"></div>

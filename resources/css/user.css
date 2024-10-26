@@ -1,10 +1,10 @@
 body {
-    background-color: lightblue;
+    background-color: var(--white);
 }
 
 #buttons-container {
     display: flex;
-    background-color: lightgreen;
+    background-color: var(--additional);
 }
 
 .button {

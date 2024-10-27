@@ -14,12 +14,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
-    protected $fillable = ['user_id', 'destination', 'status'];
-
-    protected $attributes = [
-        // Default values
-        'status' => null,
-    ];
+    protected $fillable = ['user_id', 'destination_id', 'status_id'];
 
     protected function getId()
     {
@@ -28,23 +23,17 @@ class Ticket extends Model
 
     protected function getOwner()
     {
+        return $this->belongsTo(User::class);
+    }
+
+    protected function getOwnerId()
+    {
         return $this->user_id;
     }
 
     protected function getDestination()
     {
         return $this->destination;
-    }
-
-    protected function getStatus()
-    {
-        return $this->status;
-    }
-
-    public function setStatus($status)
-    {
-        $this->status = $status;
-        $this->save();
     }
 
     public function setModifiedBy($userId)
@@ -59,16 +48,6 @@ class Ticket extends Model
     }
 
 
-
-
-
-
-    public function getNumberOfAwaitingTickets()
-    {
-        return Ticket::where('status', null)->count();
-    }
-
-    
     /**
      * Example of a method that uses a raw SQL query
      */

@@ -17,17 +17,19 @@ class UserController extends Controller
         return view('user.user')->with($variables);
     }
 
-    public function register($destination)
+    public function register($destination_id)
     {
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
-            'destination' => $destination,
+            'destination_id' => $destination_id,
         ]);
 
         broadcast(new UserRegister($ticket));
+        //broadcast(new UserMove($ticket));
+
         return 200;
 
-        // todo: jeżeli proces dodawania się nie powiódł, zwróć odpowiedni kod błędu
+        // todo: jeżeli proces dodawania się nie powiódł, zwróć odpowiedni kod błędu, na przykłąd jeżeli uzytkownik juz oczekuje
         return 500;
         /* 
             500 - Internal Server Error

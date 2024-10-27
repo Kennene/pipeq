@@ -32,13 +32,13 @@ class UserMove implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('coordinator'),
+            new PrivateChannel('display'),
         ];
     }
 
     public function broadcastAs()
     {
         // to jest jakiś śmietnik, który wygenerował ChatGPT, ale może okazać się użyteczne
-        return 'coordinator';
+        return 'display';
     }
 }

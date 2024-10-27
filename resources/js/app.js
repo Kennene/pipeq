@@ -5,6 +5,7 @@
  */
 
 import "./bootstrap";
+import './echo';
 import { createApp } from "vue";
 
 /**

@@ -15,14 +15,24 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator')->with($variables);
     }
 
-    public function move(int $ticket_id, string $status)
+    public function move(int $ticket_id, string $status_id)
     {
         $ticket = Ticket::find($ticket_id);
-        $ticket->setStatus($status);
-        $ticket->setModifiedBy(auth()->user()->id);
-        $ticket->save();
+        if ($ticket === null) {
+            return response()->json(['error' => 'Ticket not found'], 404);
+        }
 
-        //todo: jeżeli proces przenoszenia się nie powiódł, zwróć odpowiedni kod błędu
-        return 200;
+        $error = $ticket->updateStatus($status_id);
+        if ($error !== null) {
+            return response()->json(['error' => $error->title], $error->http);
+        }
+
+        $error = $ticket->setModifiedBy(auth()->user()->id);
+        if ($error !== null) {
+            return response()->json(['error' => $error->title], $error->http);
+        }
+
+        $ticket->save();
+        return response()->json(['message' => 'Success'], 200);
     }
 }

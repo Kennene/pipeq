@@ -7,6 +7,7 @@ use App\Models\Color;
 use App\Events\UserRegister;
 use App\Events\UserMove;
 use App\Models\Ticket;
+use App\Models\Destination;
 
 class UserController extends Controller
 {
@@ -19,25 +20,20 @@ class UserController extends Controller
 
     public function register($destination_id)
     {
+        $destination = Destination::find($destination_id);
+        if ($destination === null) {
+            return response()->json(['error' => 'Destination not found'], 404);
+        }
+
+        if (Ticket::isUserAlreadyRegistered(auth()->user()->id && !env('APP_DEBUG'))) {
+            return response()->json(['error' => 'User already registered'], 400);
+        }
+
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
-
         broadcast(new UserRegister($ticket));
-        //broadcast(new UserMove($ticket));
-
-        return 200;
-
-        // todo: jeżeli proces dodawania się nie powiódł, zwróć odpowiedni kod błędu, na przykłąd jeżeli uzytkownik juz oczekuje
-        return 500;
-        /* 
-            500 - Internal Server Error
-            501 - Not Implemented
-            502 - Bad Gateway
-            503 - Service Unavailable
-            504 - Gateway Timeout
-        */
-
+        return response()->json(['message' => 'Success'], 200);
     }
 }

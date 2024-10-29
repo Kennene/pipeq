@@ -36,13 +36,15 @@ class UserController extends Controller
             }
         }
 
+
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
 
+
         broadcast(new UserRegister(auth()->user(), $ticket));
-        
-        return response()->json(['message' => 'Ticket registered'], 200);
+
+        return response()->json(['message' => 'Ticket registered'], 201);
     }
 }

@@ -36,6 +36,6 @@ class CoordinatorController extends Controller
         }
 
         $ticket->save();
-        return response()->json(['message' => 'Success'], 200);
+        return response()->json(['message' => 'Success'], 202);
     }
 }

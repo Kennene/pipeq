@@ -20,7 +20,26 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
-    protected $fillable = ['user_id', 'destination_id', 'status_id'];
+    protected $fillable = ['user_id', 'destination_id', 'status_id', 'ticket_nr'];
+
+    /**
+     * Boot function to add ticket_nr to the ticket
+     * 
+     * This function adds ticket_nr to a ticket. This ticket_nr is given
+     * to a user for his information only.
+     * It is not to be mistaken with the id of the ticket, which is unique
+     * and used for all other purposes, during handling a ticket.
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($ticket) {
+            $ticket_nr = env('MAX_TICKET_NUMBER', 99);
+            $nextId = (static::max('id') ?? 0) + 1;
+            $ticket->ticket_nr = ($nextId % $ticket_nr) ?: $ticket_nr;
+        });
+    }
 
     /**
      * Check if user is already registered

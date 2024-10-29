@@ -25,7 +25,7 @@ class UserRegister implements ShouldBroadcastNow
     public function __construct(User $user, Ticket $ticket)
     {
         $this->user = $user;
-        $this->message = "Twój bilet w kolejce to: " . $ticket->id % 100;
+        $this->message = "Twój bilet w kolejce to: " . ($ticket->id % env('MAX_TICKET_NUMBER')) + 1;
     }
 
     /**

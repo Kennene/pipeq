@@ -28,40 +28,42 @@
 </body>
 <script>
 
-    function register(destination) {
-        axios.post(`/register/${destination}`)
-            .then(response => {
-                @if(env('APP_DEBUG'))
-                    console.log(response);
-                @endif
+    class PipeQ {
+        constructor() {
+            const channel = Echo.private(`register.{{ Auth::user()->id }}`);
+            this.register = channel;
+            this._listen();
+        }
+
+        _listen() {
+            this.register.listen('UserRegister', function(e) {
+                console.log(e);
             })
-            .catch(error => {
-                console.error(error.response.data.error);
-            });
+        }
+
+        _register(destination_id) {
+            axios.post(`/register/${destination_id}`)
+                .then(response => {
+                    @if(env('APP_DEBUG'))
+                        console.log(response);
+                    @endif
+                })
+                .catch(error => {
+                    console.error(error.response.data.error);
+                });
+        }
     }
 
-    $('#room1').click(function() {
-        register(1)
-    });
-
-    $('#room2').click(function() {
-        register(2)
-    });
-
-    
-
-        
     document.addEventListener('DOMContentLoaded', function() {
-        const channel = Echo.private(`register.{{ Auth::user()->id }}`);
+        pipeq = new PipeQ();
+        
+        $('#room1').click(function() {
+            pipeq._register(1);
+        });
 
-        channel.listen('UserRegister', function(e) {
-            console.log(e);
-        })
-
-        // todo: handle event UserMove
-        channel.listen('UserMove', function(e) {
-            console.log(e);
-        })
+        $('#room2').click(function() {
+            pipeq._register(2)
+        });
     });
 
 </script>

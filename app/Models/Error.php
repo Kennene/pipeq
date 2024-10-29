@@ -20,4 +20,13 @@ class Error extends Model
         $this->http = $http;
     }
 
+    /**
+     * Returns this error as a HTTP response
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toHTTPresponse()
+    {
+        return response()->json(['error' => $this->title], $this->http);
+    }
+
 }

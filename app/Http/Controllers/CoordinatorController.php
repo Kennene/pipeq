@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Error;
 use App\Models\Color;
+
 use App\Models\Ticket;
 
 class CoordinatorController extends Controller
@@ -19,17 +21,18 @@ class CoordinatorController extends Controller
     {
         $ticket = Ticket::find($ticket_id);
         if ($ticket === null) {
-            return response()->json(['error' => 'Ticket not found'], 404);
+            $error = new Error(title: 'Ticket not found', http: 404);
+            return $error->toHTTPresponse();
         }
 
         $error = $ticket->updateStatus($status_id);
         if ($error !== null) {
-            return response()->json(['error' => $error->title], $error->http);
+            return $error->toHTTPresponse();
         }
 
         $error = $ticket->setModifiedBy(auth()->user()->id);
         if ($error !== null) {
-            return response()->json(['error' => $error->title], $error->http);
+            return $error->toHTTPresponse();
         }
 
         $ticket->save();

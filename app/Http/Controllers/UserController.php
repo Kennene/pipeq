@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Error;
 use App\Models\Color;
+
 use App\Events\UserRegister;
 use App\Events\UserMove;
 use App\Models\Ticket;
@@ -20,20 +22,28 @@ class UserController extends Controller
 
     public function register($destination_id)
     {
-        $destination = Destination::find($destination_id);
-        if ($destination === null) {
-            return response()->json(['error' => 'Destination not found'], 404);
+        // check if specified destination exists
+        if (Destination::find($destination_id) === null) {
+            $error = new Error(title: 'Destination not found', http: 404);
+            return $error->toHTTPresponse();
         }
 
-        if (Ticket::isUserAlreadyRegistered(auth()->user()->id && !env('APP_DEBUG'))) {
-            return response()->json(['error' => 'User already registered'], 400);
+        // check if user is already registered
+        if (Ticket::isUserAlreadyRegistered(auth()->user()->id && env('APP_DEBUG'))) {
+            $error = new Error('User already registered');
+            return $error->toHTTPresponse();
         }
 
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
-        broadcast(new UserRegister($ticket));
+
+
+        //broadcast(new UserRegister($ticket));
+        $message = "Twój bilet w kolejce to: " . $ticket->id % 100;
+        broadcast(new UserRegister(auth()->user(), $message));
+        
         return response()->json(['message' => 'Success'], 200);
     }
 }

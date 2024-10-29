@@ -12,18 +12,13 @@
 
     @include('topbar')
     
-    User
 
-    <div id="buttons-container">
-        <button class="button" id="room1">Room 1</button>
-        <button class="button" id="room2">Room 2</button>
+    <div id="buttons-container" class="mt-2 ml-3">
+        @foreach($destinations as $destination)
+            <button class="btn btn-info ml-2" title="{{ $destination->description }}" onclick="pipeq._register({{ $destination->id }});">{{ $destination->name }}</button>
+        @endforeach
     </div>
 
-    <div class="container-lg">
-        <div class="card mt-2">
-            <button type="button" class="btn btn-success">Working bootstrap</button>
-        </div>
-    </div>
 
 </body>
 <script>
@@ -56,14 +51,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         pipeq = new PipeQ();
-        
-        $('#room1').click(function() {
-            pipeq._register(1);
-        });
-
-        $('#room2').click(function() {
-            pipeq._register(2)
-        });
     });
 
 </script>

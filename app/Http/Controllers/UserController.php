@@ -16,6 +16,7 @@ class UserController extends Controller
     public function index()
     {
         $variables["color"] = new Color();
+        $variables["destinations"] = Destination::all();
 
         return view('user.user')->with($variables);
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
 // Domyślna konfiguracja kanału stworzona przez framework
@@ -7,8 +8,8 @@ use Illuminate\Support\Facades\Broadcast;
 //     return (int) $user->id === (int) $id;
 // });
 
-Broadcast::channel('register', function () {
-    return true;
+Broadcast::channel('register.{user_id}', function ($user, int $user_id) {
+    return (int) $user->id === (int) $user_id;
 });
 
 Broadcast::channel('display', function () {

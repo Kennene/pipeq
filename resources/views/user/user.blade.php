@@ -30,15 +30,14 @@
 
     function register(destination) {
         axios.post(`/register/${destination}`)
-            // todo: lepiej ogarnąć kody błędów
             .then(response => {
-                if('{{ env('APP_DEBUG') }}' === '1') {
-                    console.log(response.data);
-                }
+                @if(env('APP_DEBUG'))
+                    console.log(response);
+                @endif
             })
             .catch(error => {
-                console.error(error);
-            })
+                console.error(error.response.data.error);
+            });
     }
 
     $('#room1').click(function() {
@@ -49,9 +48,11 @@
         register(2)
     });
 
+    
+
         
     document.addEventListener('DOMContentLoaded', function() {
-        const channel = Echo.private('register');
+        const channel = Echo.private(`register.{{ Auth::user()->id }}`);
 
         channel.listen('UserRegister', function(e) {
             console.log(e);

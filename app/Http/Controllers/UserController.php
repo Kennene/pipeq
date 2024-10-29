@@ -28,10 +28,12 @@ class UserController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // check if user is already registered
-        if (Ticket::isUserAlreadyRegistered(auth()->user()->id && env('APP_DEBUG'))) {
-            $error = new Error('User already registered');
-            return $error->toHTTPresponse();
+        // check if user can have multiple tickets registered
+        if (!env('MULTIPLE_TICKETS')) {
+            if (Ticket::isUserAlreadyRegistered(auth()->user()->id)) {
+                $error = new Error('User already registered');
+                return $error->toHTTPresponse();
+            }
         }
 
         $ticket = Ticket::create([
@@ -39,11 +41,8 @@ class UserController extends Controller
             'destination_id' => $destination_id,
         ]);
 
-
-        //broadcast(new UserRegister($ticket));
-        $message = "Twój bilet w kolejce to: " . $ticket->id % 100;
-        broadcast(new UserRegister(auth()->user(), $message));
+        broadcast(new UserRegister(auth()->user(), $ticket));
         
-        return response()->json(['message' => 'Success'], 200);
+        return response()->json(['message' => 'Ticket registered'], 200);
     }
 }

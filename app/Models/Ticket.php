@@ -45,7 +45,7 @@ class Ticket extends Model
      * Check if user is already registered
      * @return bool
      */
-    static function isUserAlreadyRegistered($user_id): bool
+    static function isUserAlreadyRegistered(int $user_id): bool
     {
         return Ticket::where('user_id', $user_id)->exists();
     }
@@ -70,12 +70,35 @@ class Ticket extends Model
     }
 
     /**
+     * Sets new workstation for the ticket
+     * @param int $workstation_id
+     * @return Error|null
+     * @throws \Exception
+     */
+    public function updateWorkstation(int $workstation_id): ?Error
+    {
+        $workstation = Workstation::find($workstation_id);
+        if ($workstation === null) {
+            return new Error(title: 'Workstation not found', http: 404);
+        }
+
+        try {
+            $this->workstation_id = $workstation_id;
+            $this->save();
+        } catch (\Exception $errorMessage) {
+            return new Error('Failed to update workstation', $errorMessage, 500);
+        }
+
+        return null;
+    }
+
+    /**
      * Sets new status for the ticket
      * @param int $status_id
      * @return Error|null
      * @throws \Exception
      */
-    public function updateStatus($status_id): ?Error
+    public function updateStatus(int $status_id): ?Error
     {
         $status = Status::find($status_id);
         if ($status === null) {
@@ -92,6 +115,7 @@ class Ticket extends Model
         return null;
     }
 
+    // todo: poprawić parametr $userId na klasę User
     /**
      * Updates information on Ticket by which whom it was modified
      * @param int $userId

@@ -2,7 +2,7 @@
 <html lang="pl">
 
 <head>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/coordinator.css'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +15,8 @@
 
     @include('topbar')
 
+    <button class="btn btn-secondary" onclick="PipeQ._move(3, 2);">Move ticket 3 to workstation 2</button>
+
     <div id="app">
         <Coordinator></Coordinator>
     </div>
@@ -26,21 +28,22 @@
 
     class PipeQ {
         constructor() {
-            const channel = Echo.private('register');
-            this.register = channel;
+            
         }
 
-        _move($ticket_id, $destination) {
-            axios.post(`/move/$`)
-                .then(response => {
-                    @if(env('APP_DEBUG'))
-                        console.log(response);
-                    @endif
-                })
-                .catch(error => {
-                    console.error(error.response.data.error);
-                });
-    }
+        _move(ticket_id, workstation_id, status_id = 2) {
+            axios.post(`/move/${ticket_id}/${workstation_id}`, {
+                status_id: status_id
+            })
+            .then(response => {
+                @if(env('APP_DEBUG'))
+                    console.log(response);
+                @endif
+            })
+            .catch(error => {
+                console.error(error.response.data.error);
+            });
+        }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

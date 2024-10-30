@@ -15,7 +15,7 @@
 
     <div id="buttons-container" class="mt-2 ml-3">
         @foreach($destinations as $destination)
-            <button class="btn btn-info ml-2" title="{{ $destination->description }}" onclick="pipeq._register({{ $destination->id }});">{{ $destination->name }}</button>
+            <button class="btn btn-info ml-2" title="{{ __($destination->description) }}" onclick="pipeq._register({{ $destination->id }});">{{ __($destination->name) }}</button>
         @endforeach
     </div>
 

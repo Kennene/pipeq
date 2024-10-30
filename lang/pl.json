@@ -1,0 +1,18 @@
+{
+    "destinations.1.name": "Dziekanat",
+    "destinations.2.name": "Płatności",
+    "destinations.1.description": "Sprawy ogólne związane z twoimi studiami",
+    "destinations.2.description": "Problemy z płatnościami i stypendia",
+    "workstations.1.name": "Stanowisko 1",
+    "workstations.2.name": "Stanowisko 2",
+    "workstations.3.name": "Stanowisko 3",
+    "workstations.4.name": "Stanowisko 4",
+    "statuses.1.name": "Oczekuje",
+    "statuses.2.name": "Wpuszczony",
+    "statuses.3.name": "Obsługiwany",
+    "statuses.4.name": "Wypuszczony",
+    "statuses.1.description": "Oczekuje na wejście",
+    "statuses.2.description": "Wpuszczony na stanowisko",
+    "statuses.3.description": "Użytkownik jest obsługiwany",
+    "statuses.4.description": "Użytkownik wypuszczony"
+}

@@ -1,0 +1,18 @@
+{
+    "destinations.1.name": "Registrar's Office",
+    "destinations.2.name": "Payments",
+    "destinations.1.description": "General issues with academic matters",
+    "destinations.2.description": "Payment issues and scholarships",
+    "workstations.1.name": "Desk 1",
+    "workstations.2.name": "Desk 2",
+    "workstations.3.name": "Desk 3",
+    "workstations.4.name": "Desk 4",
+    "statuses.1.name": "Waiting",
+    "statuses.2.name": "Admitted",
+    "statuses.3.name": "Being Served",
+    "statuses.4.name": "Released",
+    "statuses.1.description": "Awaiting permission to enter",
+    "statuses.2.description": "Admitted to workstation",
+    "statuses.3.description": "User currently being served",
+    "statuses.4.description": "User currently being served"
+}

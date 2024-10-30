@@ -55,8 +55,8 @@ body {
 
         const channel = Echo.private('display');
 
-        // todo: handle event UserMove
-        channel.listen('UserMove', function(e) {
+        // todo: handle event TicketMove
+        channel.listen('TicketMove', function(e) {
             console.log(e);
         })
     });

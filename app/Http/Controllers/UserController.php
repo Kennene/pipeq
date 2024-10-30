@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\UserRegister;
-use App\Events\UserMove;
+use App\Events\TicketRegister;
+use App\Events\TicketMove;
 use App\Models\Ticket;
 use App\Models\Destination;
 
@@ -44,7 +44,7 @@ class UserController extends Controller
         ]);
 
 
-        broadcast(new UserRegister(auth()->user(), $ticket));
+        broadcast(new TicketRegister(auth()->user(), $ticket));
 
         return response()->json(['message' => 'Ticket registered'], 201);
     }

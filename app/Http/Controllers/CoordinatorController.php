@@ -19,17 +19,20 @@ class CoordinatorController extends Controller
 
     public function move(int $ticket_id, string $status_id)
     {
+        // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
         if ($ticket === null) {
             $error = new Error(title: 'Ticket not found', http: 404);
             return $error->toHTTPresponse();
         }
 
+        // check if status exists
         $error = $ticket->updateStatus($status_id);
         if ($error !== null) {
             return $error->toHTTPresponse();
         }
 
+        // check if user is allowed to move ticket
         $error = $ticket->setModifiedBy(auth()->user()->id);
         if ($error !== null) {
             return $error->toHTTPresponse();

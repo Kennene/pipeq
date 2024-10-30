@@ -9,19 +9,23 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
+use App\Models\Ticket;
 
-class UserMove implements ShouldBroadcastNow
+class TicketRegister implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    
     public $message;
+    private $user;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($message)
+    public function __construct(User $user, Ticket $ticket)
     {
-        $this->message = $message;
+        $this->user = $user;
+        $this->message = "Twój bilet w kolejce to: " . $ticket->ticket_nr;
     }
 
     /**
@@ -29,16 +33,13 @@ class UserMove implements ShouldBroadcastNow
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('display'),
-        ];
+        return new PrivateChannel('register.' . $this->user->id);
     }
 
-    public function broadcastAs()
+    public function broadcastWith()
     {
-        // to jest jakiś śmietnik, który wygenerował ChatGPT, ale może okazać się użyteczne
-        return 'display';
+        return ['message' => $this->message];
     }
 }

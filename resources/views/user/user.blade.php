@@ -31,7 +31,7 @@
         }
 
         _listen() {
-            this.register.listen('UserRegister', function(e) {
+            this.register.listen('TicketRegister', function(e) {
                 console.log(e);
             })
         }

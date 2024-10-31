@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
+use App\Events\TicketUpdate;
 use App\Models\Ticket;
 use App\Models\Status;
-use App\Models\Workstation;
 
 class CoordinatorController extends Controller
 {
@@ -61,6 +61,7 @@ class CoordinatorController extends Controller
             }
 
         $ticket->save();
+        broadcast(new TicketUpdate($ticket->id));
         return response()->json(['message' => $handled_error ?? "Success"], 202);
     }
 

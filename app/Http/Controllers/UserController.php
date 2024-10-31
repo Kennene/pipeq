@@ -7,7 +7,6 @@ use App\Models\Error;
 use App\Models\Color;
 
 use App\Events\TicketRegister;
-use App\Events\TicketMove;
 use App\Models\Ticket;
 use App\Models\Destination;
 

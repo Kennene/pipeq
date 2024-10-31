@@ -7,15 +7,22 @@ use App\Models\Error;
 use App\Models\Color;
 
 use App\Events\TicketUpdate;
+use App\Models\TicketView;
 use App\Models\Ticket;
 use App\Models\Status;
+use App\Models\Destination;
+use App\Models\Workstation;
 
 class CoordinatorController extends Controller
 {
     public function index()
     {
         $variables["color"] = new Color();
-
+        $variables["tickets"] = TicketView::all();
+        $variables["statuses"] = Status::all();
+        $variables["destinations"] = Destination::all();
+        $variables["workstations"] = Workstation::all();
+        
         return view('coordinator.coordinator')->with($variables);
     }
 

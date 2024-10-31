@@ -21,7 +21,7 @@ class UserController extends Controller
         return view('user.user')->with($variables);
     }
 
-    public function register($destination_id)
+    public function register(Request $request, $destination_id)
     {
         // check if specified destination exists
         if (Destination::find($destination_id) === null) {
@@ -37,15 +37,12 @@ class UserController extends Controller
             }
         }
 
-
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
 
-
         broadcast(new TicketRegister(auth()->user(), $ticket));
-
         return response()->json(['message' => 'Ticket registered'], 201);
     }
 }

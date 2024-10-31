@@ -26,24 +26,24 @@
 
 <script>
 
-    class PipeQ {
-        constructor() {
-            
-        }
+class PipeQ {
+    constructor() {
+        
+    }
 
-        _move(ticket_id, workstation_id, status_id = 2) {
-            axios.post(`/move/${ticket_id}/${workstation_id}`, {
-                status_id: status_id
-            })
-            .then(response => {
-                @if(env('APP_DEBUG'))
-                    console.log(response);
-                @endif
-            })
-            .catch(error => {
-                console.error(error.response.data.error);
-            });
-        }
+    _move(ticket_id, workstation_id, status_id = 2) {
+        axios.post(`/move/${ticket_id}/${workstation_id}`, {
+            status_id: status_id
+        })
+        .then(response => {
+            @if(env('APP_DEBUG'))
+                console.log(response);
+            @endif
+        })
+        .catch(error => {
+            console.error(error.response.data.error);
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

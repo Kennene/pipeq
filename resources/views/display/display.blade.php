@@ -23,7 +23,7 @@
         <div class="d-flex flex-wrap justify-content-start">
 
             @foreach($tickets as $ticket)
-                <div class="card m-3 shadow-lg bg-dark text-light" style="width: 20rem;">
+                <div id="ticket{!! $ticket->id !!}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
                     <div class="card-body p-3">
                         <h5 class="card-title text-center" style="font-size: 2.4rem; font-weight: bold; margin-bottom: 0.8rem;">{{ __($ticket->user) }}</h5>
                         <hr>
@@ -36,28 +36,25 @@
         </div>
     </div>
 
-    
-
-
-
-
-
-    
-
 </body>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
 
-        // todo: po połączeniu display poproś o wszystkie otwarte tickety
+class PipeQ {
+    constructor() {
+        const channel = Echo.private(`display`);
+        this.display = channel;
+    }
 
-        const channel = Echo.private('display');
+    _update() {
+        
+    }
+}
 
-        // todo: handle event TicketMove
-        channel.listen('TicketMove', function(e) {
-            console.log(e);
-        })
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    PipeQ = new PipeQ();
+});
+
 </script>
 
 </html>

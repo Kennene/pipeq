@@ -23,35 +23,35 @@
 </body>
 <script>
 
-    class PipeQ {
-        constructor() {
-            const channel = Echo.private(`register.{{ Auth::user()->id }}`);
-            this.register = channel;
-            this._listen();
-        }
-
-        _listen() {
-            this.register.listen('TicketRegister', function(e) {
-                console.log(e);
-            })
-        }
-
-        _register(destination_id) {
-            axios.post(`/register/${destination_id}`)
-                .then(response => {
-                    @if(env('APP_DEBUG'))
-                        console.log(response);
-                    @endif
-                })
-                .catch(error => {
-                    console.error(error.response.data.error);
-                });
-        }
+class PipeQ {
+    constructor() {
+        const channel = Echo.private(`register.{{ Auth::user()->id }}`);
+        this.register = channel;
+        this._listen();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        pipeq = new PipeQ();
-    });
+    _listen() {
+        this.register.listen('TicketRegister', function(e) {
+            console.log(e);
+        })
+    }
+
+    _register(destination_id) {
+        axios.post(`/register/${destination_id}`)
+            .then(response => {
+                @if(env('APP_DEBUG'))
+                    console.log(response);
+                @endif
+            })
+            .catch(error => {
+                console.error(error.response.data.error);
+            });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    pipeq = new PipeQ();
+});
 
 </script>
 

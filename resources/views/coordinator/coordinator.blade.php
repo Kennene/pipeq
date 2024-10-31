@@ -15,7 +15,7 @@
 
     @include('topbar')
 
-    <button class="btn btn-secondary" onclick="PipeQ._move(3, 2);">Move ticket 3 to workstation 2</button>
+    <button class="btn btn-secondary" onclick="PipeQ._move(3, 2, 4);">Move ticket 3 to workstation 2 with status 4</button>
 
     <div id="app">
         <Coordinator></Coordinator>

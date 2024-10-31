@@ -49,7 +49,7 @@ class PipeQ {
             }
 
             $('#tickets-holder').append(`
-                <div id="ticket${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
+                <div id="ticket${ticket.id}" value="${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
                     <div class="card-body p-3">
                         <h5 class="card-title text-center" style="font-size: 2.4rem; font-weight: bold; margin-bottom: 0.8rem;">${ticket.user}</h5>
                         <hr>

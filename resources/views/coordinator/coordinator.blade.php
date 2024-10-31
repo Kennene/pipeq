@@ -30,6 +30,11 @@
 
     <button class="btn btn-secondary" onclick="PipeQ._move(3, 2, 4);">Move ticket 3 to workstation 2 with status 4</button>
 
+    @foreach($destinations as $destination)
+        {{ $destination->name }} id to {{ $destination->id }}
+        <!-- Taka sama struktura jest dla statuses i workstations, możesz podejrzeć kontroler -->
+    @endforeach
+
 
     <div id="app">
         <Coordinator></Coordinator>
@@ -62,7 +67,7 @@ class PipeQ {
             }
 
             $('#tickets-holder').append(`
-                <div id="ticket${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
+                <div id="ticket${ticket.id}" value="${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
                     <div class="card-body p-3">
                         <h5 class="card-title text-center" style="font-size: 2.4rem; font-weight: bold; margin-bottom: 0.8rem;">${ticket.user}</h5>
                         <hr>

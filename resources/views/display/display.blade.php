@@ -5,6 +5,7 @@
     @vite(['resources/css/display.css'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <title>Display</title>
 </head>
 
@@ -20,7 +21,7 @@
 
     
     <div class="container-fluid">
-        <div class="d-flex flex-wrap justify-content-start">
+        <div id="tickets-holder" class="d-flex flex-wrap justify-content-start">
 
             @foreach($tickets as $ticket)
                 <div id="ticket{!! $ticket->id !!}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
@@ -45,6 +46,35 @@ class PipeQ {
         const channel = Echo.private(`display`);
         this.display = channel;
         this._update();
+        this._listen();
+    }
+
+    _listen() {
+        console.log('Listening for events');
+        this.display.listen('TicketNew', function(e) {
+            @if(env('APP_ENV'))
+                console.log(e);
+            @endif
+
+            let ticket = e.message;
+            let ticket_card = document.getElementById(`ticket${ticket.id}`);
+
+            if(ticket_card) {
+                console.error('Ticket already exists');
+                return;
+            }
+
+            $('#tickets-holder').append(`
+                <div id="ticket${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
+                    <div class="card-body p-3">
+                        <h5 class="card-title text-center" style="font-size: 2.4rem; font-weight: bold; margin-bottom: 0.8rem;">${ticket.user}</h5>
+                        <hr>
+                        <p class="card-text mt-2" style="font-size: 1.7rem; font-weight: bold;">${ticket.status}</p>
+                        <h6 class="card-subtitle mt-1" style="font-size: 1rem;">${ticket.destination}</h6>
+                    </div>
+                </div>
+            `);
+        })
     }
 
     _update() {
@@ -58,12 +88,9 @@ class PipeQ {
 
             switch(ticket.status_id) {
                 case 1:
-                    ticket_card.querySelector('.card-text').textContent = ticket.status;
-                    ticket_card.querySelector('.card-subtitle').textContent = ticket.workstation;
-                    break;
                 case 2:
-                    ticket_card.querySelector('.card-text').textContent = ticket.status;
-                    ticket_card.querySelector('.card-subtitle').textContent = ticket.workstation;
+                    $(ticket_card).find('.card-text').text(ticket.status);
+                    $(ticket_card).find('.card-subtitle').text(ticket.workstation);
                     break;
                 case 3:
                     console.log('Not implemented yet');

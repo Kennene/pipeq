@@ -7,6 +7,7 @@ use App\Models\Error;
 use App\Models\Color;
 
 use App\Events\TicketRegister;
+use App\Events\TicketNew;
 use App\Models\Ticket;
 use App\Models\Destination;
 
@@ -42,6 +43,7 @@ class UserController extends Controller
         ]);
 
         broadcast(new TicketRegister(auth()->user(), $ticket));
+        broadcast(new TicketNew($ticket->id));
         return response()->json(['message' => 'Ticket registered'], 201);
     }
 }

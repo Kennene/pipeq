@@ -20,6 +20,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
+    // todo: wywalić stąd user_id. Powinien się on domyślnie uzupełniać z sesji a nie być ręcznie wprowadzany
     protected $fillable = ['user_id', 'destination_id', 'status_id', 'ticket_nr'];
 
     /**
@@ -74,6 +75,7 @@ class Ticket extends Model
      * @param int $workstation_id
      * @return Error|null
      * @throws \Exception
+     * @throws \Throwable
      */
     public function updateWorkstation(int $workstation_id): ?Error
     {
@@ -97,6 +99,7 @@ class Ticket extends Model
      * @param int $status_id
      * @return Error|null
      * @throws \Exception
+     * @throws \Throwable
      */
     public function updateStatus(int $status_id): ?Error
     {
@@ -121,6 +124,7 @@ class Ticket extends Model
      * @param int $userId
      * @return void
      * @throws \Exception
+     * @throws \Throwable
      */
     public function setModifiedBy($userId): ?Error
     {
@@ -136,6 +140,52 @@ class Ticket extends Model
             return new Error('Failed to update status', $errorMessage, 500);
         }
 
+        return null;
+    }
+
+    /**
+     * Removes ticket from queue and moves in into tickets_ended table, for historical purposes
+     * @return Error|null
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function end(): ?Error
+    {
+        // try to update status
+        $error = $this->updateStatus(Status::END);
+        if ($error !== null) {
+            return $error;
+        }
+
+        // check if corralated view for sure exists, because why not, better to be safe
+        $tv = TicketView::find($this->id);
+        if ($tv === null) {
+            return new Error('Correlated view does not exist. Panic!', 404);
+        }
+
+        // try to insert ended ticket into tickets_ended table
+        try {
+            DB::table('tickets_ended')->insert([
+                'original_id' => $this->id,
+                'user_id' => $this->user_id,
+                'ticket_nr' => $this->ticket_nr,
+                'status_id' => $this->status_id,
+                'destination_id' => $this->destination_id,
+                'workstation_id' => $this->workstation_id,
+                'original_created_at' => $this->created_at,
+                'original_updated_at' => $this->updated_at,
+                'modified_by' => $this->modified_by,
+    
+                'user' => $tv->user,
+                'status' => $tv->status,
+                'destination' => $tv->destination,
+                'workstation' => $tv->workstation
+            ]);
+        } catch (\Exception $errorMessage) {
+            return new Error('Failed to safe data into tickets_ended', $errorMessage, 500);
+        }
+
+        $this->delete();
         return null;
     }
 

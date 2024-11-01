@@ -32,6 +32,7 @@ class UserController extends Controller
         // check if user can have multiple tickets registered
         if (!env('MULTIPLE_TICKETS')) {
             if (Ticket::isUserAlreadyRegistered(auth()->user()->id)) {
+                // todo: zamiast zwracać error, dołącz do nasłuchiwania eventu zmian jego biletu
                 $error = new Error('User already registered');
                 return $error->toHTTPresponse();
             }

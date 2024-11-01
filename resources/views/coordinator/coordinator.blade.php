@@ -28,7 +28,7 @@
         @include('tickets-dashboard')
     </div>
 
-    <button class="btn btn-secondary" onclick="PipeQ._move(3, 2, 4);">Move ticket 3 to workstation 2 with status 4</button>
+    <button class="btn btn-secondary" onclick="PipeQ._move(1, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
 
     @foreach($destinations as $destination)
         {{ $destination->name }} id to {{ $destination->id }}
@@ -79,7 +79,7 @@ class PipeQ {
         })
     }
 
-    _move(ticket_id, workstation_id, status_id = 2) {
+    _move(ticket_id, workstation_id, status_id = {!! App\Models\Status::IN !!}) {
         axios.post(`/move/${ticket_id}/${workstation_id}`, {
             status_id: status_id
         })

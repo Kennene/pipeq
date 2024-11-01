@@ -11,4 +11,15 @@ class TicketView extends Model
     
     protected $table = 'ticket_view';
     public $timestamps = false;
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::retrieved(function ($ticket) {
+            $ticket->status = __($ticket->status);
+            $ticket->destination = __($ticket->destination);
+            $ticket->workstation = __($ticket->workstation);
+        });
+    }
 }

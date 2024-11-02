@@ -28,7 +28,8 @@
         @include('tickets-dashboard')
     </div>
 
-    <button class="btn btn-secondary" onclick="PipeQ._move(1, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
+    <button class="btn btn-primary" onclick="PipeQ._move(1, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
+    <button class="btn btn-danger" onclick="PipeQ._end(10);">Usuń bilet z ticket_id 1</button>
 
     @foreach($destinations as $destination)
         {{ $destination->name }} id to {{ $destination->id }}
@@ -80,6 +81,7 @@ class PipeQ {
     }
 
     _move(ticket_id, workstation_id, status_id = {!! App\Models\Status::IN !!}) {
+        //! providing status id {!! App\Models\Status::END !!} has the same effect as _end method
         axios.post(`/move/${ticket_id}/${workstation_id}`, {
             status_id: status_id
         })
@@ -87,6 +89,25 @@ class PipeQ {
             @if(env('APP_DEBUG'))
                 console.log(response);
             @endif
+        })
+        .catch(error => {
+            console.error(error.response.data.error);
+        });
+    }
+
+    _end(ticket_id) {
+        axios.post(`/end/${ticket_id}`)
+        .then(response => {
+            @if(env('APP_DEBUG'))
+                console.log(response);
+            @endif
+
+            let ticket_card = document.getElementById(`ticket${ticket_id}`);
+            if(ticket_card) {
+                ticket_card.remove();
+            } else {
+                console.error('Ticket card not found');
+            }
         })
         .catch(error => {
             console.error(error.response.data.error);

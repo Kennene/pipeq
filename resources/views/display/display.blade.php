@@ -83,7 +83,7 @@ class PipeQ {
                     if(ticket_card) {
                         ticket_card.remove();
                     } else {
-                        console.error('Ticket not found');
+                        console.error('Ticket card not found');
                     }
                     break;
             }

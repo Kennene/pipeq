@@ -8,5 +8,17 @@ body {
 
 .button {
     width: 100px;
-    height: 50px;
+    height: 80px;
+    
 }
+.custom-font-size {
+    font-size: 50px; 
+}
+.btn-animated {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+.btn-animated:active {
+    transform: scale(0.90);
+  }
+

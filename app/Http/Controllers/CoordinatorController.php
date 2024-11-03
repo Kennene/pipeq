@@ -29,7 +29,7 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator')->with($variables);
     }
 
-    public function move(Request $request, int $ticket_id, string $workstation_id)
+    public function move(Request $request, int $ticket_id, string $workstation_id, int $status_id = null)
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -38,10 +38,8 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // todo: change from POST body to optional (third) route parameter
-        // check if status_id is provided in POST request
-        if ($request->has('status_id')) {
-            $status_id = $request->input('status_id');
+        // check if status_id is provided via web route
+        if($status_id !== null) {
 
             // check if status_id is valid
             if(Status::find($status_id) === null) {

@@ -11,15 +11,6 @@
     <title>Coordinator</title>
 </head>
 
-<style>
-#tickets-display {
-    max-height: 400px;
-    overflow: scroll;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-</style>
-
 <body>
     
     @include('topbar')
@@ -36,14 +27,21 @@
         ekran co osoby czekające, ale jeżeli nie da rady tego zintegrować
         to wymyślimy coś innego
     -->
+    <style>
+        #tickets-display {
+            max-height: 400px;
+            overflow: scroll;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
     <div id="tickets-display">
-        
         @include('tickets-dashboard')
     </div>
 
     
     <!-- Przyciski pokazowe przesuwające i usuwające bilet -->
-    <button class="btn btn-primary" onclick="PipeQ._move(11, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
+    <button class="btn btn-primary" onclick="PipeQ._move(1, 3);">Move ticket 1 to workstation 3 with status 2</button>
     <button class="btn btn-danger" onclick="PipeQ._end(10);">Usuń bilet z ticket_id 1</button>
 
 
@@ -111,38 +109,40 @@ class PipeQ {
         })
     }
 
+    //* providing status id {!! App\Models\Status::END !!} has the same effect as _end method
     _move(ticket_id, workstation_id, status_id = {!! App\Models\Status::IN !!}) {
-        //* providing status id {!! App\Models\Status::END !!} has the same effect as _end method
-        axios.post(`/move/${ticket_id}/${workstation_id}`, {
-            status_id: status_id
-        })
-        .then(response => {
-            @if(env('APP_DEBUG'))
-                console.log(response);
-            @endif
-        })
-        .catch(error => {
-            console.error(error.response.data.error);
-        });
+        @if(env('APP_DEBUG'))
+            console.log(`Moving ticket ${ticket_id} to workstation ${workstation_id} with status ${status_id} using /move/${ticket_id}/${workstation_id}/${status_id}`);
+        @endif
+
+        axios.post(`/move/${ticket_id}/${workstation_id}/${status_id}`)
+            .then(response => {
+                @if(env('APP_DEBUG'))
+                    console.log(response);
+                @endif
+            })
+            .catch(error => {
+                console.error(error.response.data.error);
+            });
     }
 
     _end(ticket_id) {
         axios.post(`/end/${ticket_id}`)
-        .then(response => {
-            @if(env('APP_DEBUG'))
-                console.log(response);
-            @endif
+            .then(response => {
+                @if(env('APP_DEBUG'))
+                    console.log(response);
+                @endif
 
-            let ticket_card = document.getElementById(`ticket${ticket_id}`);
-            if(ticket_card) {
-                ticket_card.remove();
-            } else {
-                console.error('Ticket card not found');
-            }
-        })
-        .catch(error => {
-            console.error(error.response.data.error);
-        });
+                let ticket_card = document.getElementById(`ticket${ticket_id}`);
+                if(ticket_card) {
+                    ticket_card.remove();
+                } else {
+                    console.error('Ticket card not found');
+                }
+            })
+            .catch(error => {
+                console.error(error.response.data.error);
+            });
     }
 }
 

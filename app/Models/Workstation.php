@@ -11,5 +11,14 @@ class Workstation extends Model
 
     protected $table = 'workstations';
     protected $fillable = ['name', 'description'];
-    
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class);
+    }
 }

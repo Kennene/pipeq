@@ -21,19 +21,50 @@
 </style>
 
 <body>
-
+    
     @include('topbar')
 
+    <!--
+        Mateusz, poniżej wrzucam Ci pokazowy kod, jak aplikacja działa :)
+        Możesz ten kod usunąć, on jest tylko w celu demonstracyjnym, żebyś wiedział
+        jak zaimplementować te funkcje po swojej stronie
+    -->
+
+    <!--
+        Jeżeli nie chcesz używać tego widoku to spoko, zrobimy osobny.
+        Preferuję, żeby osoby obsługujące bilety widziały dokładnie ten sam
+        ekran co osoby czekające, ale jeżeli nie da rady tego zintegrować
+        to wymyślimy coś innego
+    -->
     <div id="tickets-display">
+        
         @include('tickets-dashboard')
     </div>
 
-    <button class="btn btn-primary" onclick="PipeQ._move(1, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
+    
+    <!-- Przyciski pokazowe przesuwające i usuwające bilet -->
+    <button class="btn btn-primary" onclick="PipeQ._move(11, 3, 2);">Move ticket 1 to workstation 3 with status 2</button>
     <button class="btn btn-danger" onclick="PipeQ._end(10);">Usuń bilet z ticket_id 1</button>
 
+
+    <!--
+        Poniżej jest kod PHP, który wyświetla miejsca docelowe, oraz stanowiska 
+        w tych miejscach docelowych. Analogicznie masz dostęp do $tickets i $statuses.
+        Do wszystkich przekazywanych wartości możesz sobie podejrzeć kontroler.
+        Jeżeli chcesz to mogę te dane Ci podać w inny sposób, np. w JSONie, to jest tylko
+        jedna dodatkowa funkcja w PHP, więc nie ma problemu. Dzięki temu mógłbyś po swojej
+        stronie użyć jakiejś funkcji JS'a typu JSON.parse() i masz gotowy obiekt.
+        Tekst, który jest w __() jest automatycznie tłumaczony na wybrany język.
+    -->
+    <br/>
     @foreach($destinations as $destination)
-        {{ $destination->name }} id to {{ $destination->id }}
-        <!-- Taka sama struktura jest dla statuses i workstations, możesz podejrzeć kontroler -->
+
+        Miejsce docelowe o id {{ $destination->id }} i nazwie {{ __($destination->name) }}: <br/>
+        
+        @foreach($destination->workstations as $workstation)
+            Posiada stanowisko {{ __($workstation->name) }} a id tego stanowiska to {{ $workstation->id }} <br/>
+        @endforeach
+
     @endforeach
 
 
@@ -81,7 +112,7 @@ class PipeQ {
     }
 
     _move(ticket_id, workstation_id, status_id = {!! App\Models\Status::IN !!}) {
-        //! providing status id {!! App\Models\Status::END !!} has the same effect as _end method
+        //* providing status id {!! App\Models\Status::END !!} has the same effect as _end method
         axios.post(`/move/${ticket_id}/${workstation_id}`, {
             status_id: status_id
         })

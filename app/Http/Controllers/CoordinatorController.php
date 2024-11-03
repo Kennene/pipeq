@@ -21,9 +21,11 @@ class CoordinatorController extends Controller
         $variables["color"] = new Color();
         $variables["tickets"] = TicketView::all();
         $variables["statuses"] = Status::all();
-        $variables["destinations"] = Destination::all();
+        $variables["destinations"] = Destination::with('workstations')->get();
         $variables["workstations"] = Workstation::all();
         
+        // dd(json_encode($variables["destinations"]));
+
         return view('coordinator.coordinator')->with($variables);
     }
 
@@ -36,6 +38,7 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
+        // todo: change from POST body to optional (third) route parameter
         // check if status_id is provided in POST request
         if ($request->has('status_id')) {
             $status_id = $request->input('status_id');
@@ -66,13 +69,6 @@ class CoordinatorController extends Controller
         if ($error !== null) {
             return $error->toHTTPresponse();
         }
-
-        //? czy to na pewno konieczne?
-            // check if user is allowed to move ticket
-            $error = $ticket->setModifiedBy(auth()->user()->id);
-            if ($error !== null) {
-                return $error->toHTTPresponse();
-            }
 
         $ticket->save();
         broadcast(new TicketUpdate($ticket->id));

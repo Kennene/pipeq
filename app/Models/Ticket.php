@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Status;
 use App\Models\Destination;
 use App\Models\Workstation;
+use Illuminate\Support\Facades\Auth;
 
 class Ticket extends Model
 {
@@ -40,6 +41,30 @@ class Ticket extends Model
             $nextId = (static::max('id') ?? 0) + 1;
             $ticket->ticket_nr = ($nextId % $ticket_nr) ?: $ticket_nr;
         });
+
+        static::updating(function ($ticket) {
+            $ticket->modified_by = Auth::id();
+        });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class);
+    }
+
+    public function workstation()
+    {
+        return $this->belongsTo(Workstation::class);
     }
 
     /**
@@ -49,25 +74,6 @@ class Ticket extends Model
     static function isUserAlreadyRegistered(int $user_id): bool
     {
         return Ticket::where('user_id', $user_id)->exists();
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getOwner()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Returns desired Destination class of the Ticket
-     * @return Destination|null
-     */
-    public function getDestination(): ?Destination
-    {
-        return Destination::find($this->destination_id);
     }
 
     /**
@@ -110,31 +116,6 @@ class Ticket extends Model
 
         try {
             $this->status_id = $status_id;
-            $this->save();
-        } catch (\Exception $errorMessage) {
-            return new Error('Failed to update status', $errorMessage, 500);
-        }
-
-        return null;
-    }
-
-    // todo: poprawić parametr $userId na klasę User
-    /**
-     * Updates information on Ticket by which whom it was modified
-     * @param int $userId
-     * @return void
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    public function setModifiedBy($userId): ?Error
-    {
-        $user = User::find($userId);
-        if ($user === null) {
-            return new Error(title: 'User not found', http: 404);
-        }
-
-        try {
-            $this->modified_by = $userId;
             $this->save();
         } catch (\Exception $errorMessage) {
             return new Error('Failed to update status', $errorMessage, 500);
@@ -189,15 +170,8 @@ class Ticket extends Model
         return null;
     }
 
-    //? Do czego jest ta funkcja? Chyba nie jest nigdy używana
-    public function modifier()
-    {
-        return $this->belongsTo(User::class, 'modified_by');
-    }
-
-
     /**
-     * Example of a method that uses a raw SQL query
+     * Raw dogging database with SQL
      */
     // public function example() {
     //     $database = DB::connection();

@@ -1,7 +1,3 @@
-body {
-    background-color: var(--white);
-}
-
 #buttons-container {
     display: flex;
 }

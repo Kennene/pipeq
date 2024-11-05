@@ -5,34 +5,78 @@
     @vite(['resources/css/user.css'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 <body>
 
     @include('topbar')
 
-    <div class="container mt-5">
+    <div class="content">
+        <div class="container mt-5">       
+            @foreach($destinations as $destination)
+                <div class="d-flex flex-column justify-content-center full-height">
+                    <button type="button" class="btn btn-primary shadow btn-lg btn-block btn-animated py-9 mb-10 custom-font-size" onclick="showLoading(); toggleOverlay(); pipeq._register({{ $destination->id }});" style="height: 30vh;" title="{{ __($destination->description) }}" 
+                    onclick="pipeq._register({{ $destination->id }});">{{ __($destination->name) }}</button>
+                </div>
+            @endforeach
+        </div>
         
-            
-    @foreach($destinations as $destination)
-                            <div class="d-flex flex-column justify-content-center  full-height">
-                            
-                    <button type="button" class="btn btn-primary shadow btn-lg btn-block btn-animated py-9 mb-10 custom-font-size" style="height: 30vh;" title="{{ __($destination->description) }}" onclick="pipeq._register({{ $destination->id }});">{{ __($destination->name) }}</button>
-    @endforeach
-                </div></div>
-          
-
+        <button class="btn btn-danger" onclick="showLoading(); toggleOverlay2()">Entrance to hell</button>
     </div>
 
-   
-       
-</body>
-<script>
+ 
+
+
+    <div id="overlay" class="overlay">
+        <div class="loading-container">
+            <div class="topbar">
+                @include('topbar')
+            </div>
+            <div class="user-info d-flex flex-column align-items-center fade-in-out" id="user-info">
+                <div class="checkmark-container">
+                    <i class="bi bi-check-circle-fill" ></i>
+                </div>
+                
+            </div>
+            <div class="user-message-container">
+                    <div class="user-message">
+                        <p class="username">{{auth()->user()->name}} dziękujemy za zgłoszenie</p>
+                        <p class="waiting-message">Proszę czekać na swoją kolej</p>
+                    </div>
+                </div>
+           
+            <div class="loading-container2" id="loading-container2">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+           
+        </div>
+    </div>
+
+    <div id="overlay2" class="overlay">
+        <div class="loading-container2">
+            <div class="topbar">
+                @include('topbar')
+            </div>
+            <div class="user-info d-flex flex-column align-items-center">
+                <div class="checkmark-container2">
+                    <i class="bi bi-box-arrow-in-right bouncing"></i>
+                </div>
+                <div class="user-message-container2">
+                    <div class="user-message2">
+                        <p class="username2">Kowalski, zapraszamy!</p>
+                        <p class="waiting-message2">Stanowisko X</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
 
 class PipeQ {
     constructor() {
@@ -64,6 +108,33 @@ document.addEventListener('DOMContentLoaded', function() {
     pipeq = new PipeQ();
 });
 
-</script>
 
+        function showLoading() {
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function toggleOverlay() {
+            const overlay = document.getElementById('overlay');
+            overlay.classList.toggle('show');
+        }
+
+        function toggleOverlay2() {
+            const overlay2 = document.getElementById('overlay2');
+            overlay2.classList.toggle('show');
+        }
+
+        setTimeout(function() {
+    document.getElementById("user-info").style.color = "green"; 
+}, 5000);
+
+   
+    setTimeout(function() {
+        document.getElementById("loading-container2").style.opacity = "1";
+    }, 2000);
+
+
+
+</script>
+    </script>
+</body>
 </html>

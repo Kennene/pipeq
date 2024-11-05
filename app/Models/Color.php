@@ -9,12 +9,24 @@ class Color extends Model
 {
     use HasFactory;
 
-    const main = "#091057";
-    const secondary = "#EC8305";
-    const additional = "#024CAA";
-    const details = "#DBD3D3";
+    public static $PRIMARY;
+    public static $SECONDARY;
+    public static $ADDITIONAL;
+    public static $DETAILS;
 
-    const white = "#f2f2f2 ";
-    const black = "#202124";
+    public static $WHITE;
+    public static $BLACK;
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::$PRIMARY = config('colors.primary');
+        self::$SECONDARY = config('colors.secondary');
+        self::$ADDITIONAL = config('colors.additional');
+        self::$DETAILS = config('colors.details');
+
+        self::$WHITE = config('colors.white');
+        self::$BLACK = config('colors.black');
+    }
 }

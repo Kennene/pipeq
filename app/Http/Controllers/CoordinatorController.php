@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\TicketUpdate;
-use App\Models\TicketView;
-use App\Models\TicketEnded;
+use App\Events\UpdateDisplayAboutTicket;
+use App\Events\UpdateUserAboutHisTicket;
+
 use App\Models\Ticket;
+use App\Models\TicketView;
 use App\Models\Status;
 use App\Models\Destination;
 use App\Models\Workstation;
@@ -23,8 +24,6 @@ class CoordinatorController extends Controller
         $variables["statuses"] = Status::all();
         $variables["destinations"] = Destination::with('workstations')->get();
         $variables["workstations"] = Workstation::all();
-        
-        // dd(json_encode($variables["destinations"]));
 
         return view('coordinator.coordinator')->with($variables);
     }
@@ -69,7 +68,13 @@ class CoordinatorController extends Controller
         }
 
         $ticket->save();
-        broadcast(new TicketUpdate($ticket->id));
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
         return response()->json(['message' => $handled_error ?? "Success"], 200);
     }
 

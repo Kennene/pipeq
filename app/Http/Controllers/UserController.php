@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\TicketRegister;
-use App\Events\TicketNew;
+use App\Events\RegisterNewTicket;
+use App\Events\UpdateDisplayAboutTicket;
+
 use App\Models\Ticket;
 use App\Models\Destination;
+
+use function Symfony\Component\String\b;
 
 class UserController extends Controller
 {
@@ -38,13 +41,18 @@ class UserController extends Controller
             }
         }
 
+        // create new ticket
         $ticket = Ticket::create([
             'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
 
-        broadcast(new TicketRegister(auth()->user(), $ticket));
-        broadcast(new TicketNew($ticket->id));
+        // broadcast event to user his ticket has been registered
+        broadcast(new RegisterNewTicket($ticket));
+
+        // update display about new registered ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
         return response()->json(['message' => 'Ticket registered'], 201);
     }
 }

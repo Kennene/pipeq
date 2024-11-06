@@ -25,63 +25,41 @@ class PipeQ {
     constructor() {
         const channel = Echo.private(`display`);
         this.display = channel;
-        this._update();
-        this._listen();
+        this._updateDisplay();
     }
 
-    _listen() {
-        this.display.listen('TicketNew', function(e) {
+    _updateDisplay() {
+        this.display.listen('UpdateDisplayAboutTicket', function(e) {
             @if(env('APP_ENV'))
                 console.log(e);
             @endif
 
-            let ticket = e.message;
+            let ticket = e.ticket;
             let ticket_card = document.getElementById(`ticket${ticket.id}`);
 
-            if(ticket_card) {
-                console.error('Ticket already exists');
-                return;
-            }
-
-            $('#tickets-holder').append(`
-                <div id="ticket${ticket.id}" value="${ticket.id}" class="card m-3 shadow-lg bg-dark text-light" style="width: 21rem;">
-                    <div class="card-body p-3">
-                        <h5 class="card-title text-center" style="font-size: 2.4rem; font-weight: bold; margin-bottom: 0.8rem;">${ticket.user}</h5>
-                        <hr>
-                        <p class="card-text mt-2" style="font-size: 1.7rem; font-weight: bold;">${ticket.status}</p>
-                        <h6 class="card-subtitle mt-1" style="font-size: 1rem;">${ticket.destination}</h6>
+            // if ticket does nit exist, create it
+            if(!ticket_card) {
+                $('#tickets-holder').append(`
+                    <div id="ticket${ticket.id}" value="${ticket.id}" class="ticket-card card m-3 shadow-lg">
+                        <div class="card-body p-3">
+                            <h5 class="h2 card-title text-center"></h5>
+                            <hr>
+                            <p class="card-text mt-2"></p>
+                            <h6 class="card-subtitle mt-1"></h6>
+                        </div>
                     </div>
-                </div>
-            `);
-        })
-    }
-
-    _update() {
-        this.display.listen('TicketUpdate', function(e) {
-            @if(env('APP_ENV'))
-                console.log(e);
-            @endif
-
-            let ticket = e.message;
-            let ticket_card = document.getElementById(`ticket${ticket.id}`);
-
-            switch(ticket.status_id) {
-                case 1:
-                case 2:
-                    $(ticket_card).find('.card-text').text(ticket.status);
-                    $(ticket_card).find('.card-subtitle').text(ticket.workstation);
-                    break;
-                case 3:
-                    console.log('Not implemented yet');
-                    break;
-                case 4:
-                    if(ticket_card) {
-                        ticket_card.remove();
-                    } else {
-                        console.error('Ticket card not found');
-                    }
-                    break;
+                `);
+                ticket_card = document.getElementById(`ticket${ticket.id}`);
             }
+
+            // if workstation is not set, set it to destination
+            if(!ticket.workstation) {
+                ticket.workstation = ticket.destination;
+            }
+
+            ticket_card.querySelector('h5').textContent = ticket.user;
+            ticket_card.querySelector('p').textContent = ticket.status;
+            ticket_card.querySelector('h6').textContent = ticket.workstation;
         })
     }
 }

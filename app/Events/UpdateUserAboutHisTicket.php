@@ -19,7 +19,7 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(private Ticket $ticket)
+    public function __construct(private Ticket $ticket, private ?string $message = null)
     {
         //
     }
@@ -38,7 +38,7 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'message' => 'Your ticket has been updated',
+            'message' => $this->message ?? 'Your ticket has been updated',
             'ticket' => $this->ticket
         ];
     }

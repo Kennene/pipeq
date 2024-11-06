@@ -9,23 +9,19 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
-use App\Models\Ticket;
 
-class TicketRegister implements ShouldBroadcastNow
+use \App\Models\Ticket;
+
+class UpdateUserAboutHisTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
-    public $message;
-    private $user;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Ticket $ticket)
+    public function __construct(private Ticket $ticket)
     {
-        $this->user = $user;
-        $this->message = "Twój bilet w kolejce to: " . $ticket->ticket_nr;
+        //
     }
 
     /**
@@ -35,11 +31,15 @@ class TicketRegister implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('register.' . $this->user->id);
+        return new PrivateChannel('register.' . $this->ticket->user_id);
     }
 
+    // todo: user doesn't need his entire ticket. limit the data sent
     public function broadcastWith()
     {
-        return ['message' => $this->message];
+        return [
+            'message' => 'Your ticket has been updated',
+            'ticket' => $this->ticket
+        ];
     }
 }

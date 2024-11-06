@@ -43,7 +43,6 @@ class UserController extends Controller
 
         // create new ticket
         $ticket = Ticket::create([
-            'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
 

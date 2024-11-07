@@ -22,6 +22,13 @@ class AclSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => 10,
+                'name' => 'Display',
+                'description' => 'Display role with access to see all tickets.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'id' => 20,
                 'name' => 'Coordinator',
                 'description' => 'Coordinator with access to assign and manage ticket statuses.',

@@ -16,6 +16,7 @@ export default defineConfig({
                 "resources/css/display.css",
                 "resources/css/topbar.css",
                 "resources/js/coordinator.js",
+                "resources/css/tickets-dashboard.css",
             ],
             refresh: true,
         }),

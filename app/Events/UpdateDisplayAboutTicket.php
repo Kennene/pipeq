@@ -10,18 +10,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TicketMove implements ShouldBroadcastNow
+use \App\Models\Ticket;
+use \App\Models\TicketView;
+
+class UpdateDisplayAboutTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($message)
+    public function __construct(private Ticket $ticket)
     {
-        $this->message = $message;
+        //
     }
 
     /**
@@ -36,9 +37,10 @@ class TicketMove implements ShouldBroadcastNow
         ];
     }
 
-    public function broadcastAs()
+    public function broadcastWith()
     {
-        // to jest jakiś śmietnik, który wygenerował ChatGPT, ale może okazać się użyteczne
-        return 'display';
+        return [
+            'ticket' => TicketView::find($this->ticket->id)
+        ];
     }
 }

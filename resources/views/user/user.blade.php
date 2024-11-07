@@ -42,7 +42,11 @@ class PipeQ {
     }
 
     _listen() {
-        this.register.listen('TicketRegister', function(e) {
+        this.register.listen('RegisterNewTicket', function(e) {
+            console.log(e);
+        })
+
+        this.register.listen('UpdateUserAboutHisTicket', function(e) {
             console.log(e);
         })
     }

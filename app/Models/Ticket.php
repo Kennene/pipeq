@@ -21,8 +21,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
-    // todo: wywalić stąd user_id. Powinien się on domyślnie uzupełniać z sesji a nie być ręcznie wprowadzany
-    protected $fillable = ['user_id', 'destination_id', 'status_id', 'ticket_nr'];
+    protected $fillable = ['destination_id'];
 
     /**
      * Boot function to add ticket_nr to the ticket
@@ -37,9 +36,14 @@ class Ticket extends Model
     {
         parent::boot();
         static::creating(function ($ticket) {
+
+            // adds ticket_nr to the ticket
             $ticket_nr = env('MAX_TICKET_NUMBER', 99);
             $nextId = (static::max('id') ?? 0) + 1;
             $ticket->ticket_nr = ($nextId % $ticket_nr) ?: $ticket_nr;
+
+            // adds user_id to the ticket
+            $ticket->user_id = Auth::id();
         });
 
         static::updating(function ($ticket) {

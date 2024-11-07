@@ -23,8 +23,14 @@ class CoordinatorController extends Controller
         $variables["statuses"] = Status::all();
         $variables["destinations"] = Destination::with('workstations')->get();
         $variables["workstations"] = Workstation::all();
-        
-        // dd(json_encode($variables["destinations"]));
+        $variables["translations"] = [
+            'statuses' => [
+                '1' => __('statuses.1.name'),
+                '2' => __('statuses.2.name'),
+                '3' => __('statuses.3.name'),
+                '4' => __('statuses.4.name'),
+            ]
+        ];
 
         return view('coordinator.coordinator')->with($variables);
     }
@@ -39,16 +45,16 @@ class CoordinatorController extends Controller
         }
 
         // check if status_id is provided via web route
-        if($status_id !== null) {
+        if ($status_id !== null) {
 
             // check if status_id is valid
-            if(Status::find($status_id) === null) {
+            if (Status::find($status_id) === null) {
                 $error = new Error(title: 'Provided status does not exist', http: 404);
                 return $error->toHTTPresponse();
             }
 
             // if provided status means end of ticket, redirect to end method
-            if($status_id == Status::END) {
+            if ($status_id == Status::END) {
                 return redirect()->to("/end/{$ticket_id}");
             }
         } else {

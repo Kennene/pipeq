@@ -11,7 +11,7 @@
         "@vitejs/plugin-vue": "^4.5.0",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
-        "axios": "^1.7.4",
+        "axios": "^1.7.7",
         "bootstrap": "^5.3.3",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0",
@@ -25,9 +25,9 @@
     "dependencies": {
         "@vue/compiler-sfc": "^3.0.0",
         "jquery": "^3.7.1",
+        "sass": "1.77.6",
         "vue": "^3.5.12",
         "vue-loader": "^17.0.0",
-        "vuedraggable": "^4.1.0",
-        "sass": "1.77.6"
+        "vuedraggable": "^4.1.0"
     }
 }

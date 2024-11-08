@@ -9,7 +9,7 @@ class TicketView extends Model
 {
     use HasFactory;
     
-    protected $table = 'ticket_view';
+    protected $table = 'tickets_view';
     public $timestamps = false;
 
     protected static function boot()

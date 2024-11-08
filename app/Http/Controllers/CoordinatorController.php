@@ -36,7 +36,7 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator')->with($variables);
     }
 
-    public function move(Request $request, int $ticket_id, string $workstation_id, int $status_id = null)
+    public function move(Request $request, int $ticket_id, ?string $workstation_id, int $status_id = null)
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -69,10 +69,21 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // try to update status
-        $error = $ticket->updateStatus($status_id);
-        if ($error !== null) {
-            return $error->toHTTPresponse();
+        // if workstation_id is provided, try to update status
+        if ($workstation_id != null) {
+            // try to update status
+            $error = $ticket->updateStatus($status_id);
+            if ($error !== null) {
+                return $error->toHTTPresponse();
+            }
+        } else {
+            // workstation_id is not provided, set status to WAITING
+            //! if workstation_id is null, but status is anything other that WAITING, user would not know where to go
+            $error = $ticket->updateStatus(Status::WAITING);
+            if ($error !== null) {
+                return $error->toHTTPresponse();
+            }
+            $handled_error = 'Null value provided on workstation. Clearing workstation and moving user to status ' . Status::WAITING;
         }
 
         $ticket->save();
@@ -83,7 +94,12 @@ class CoordinatorController extends Controller
         // update display about changes made in ticket
         broadcast(new UpdateDisplayAboutTicket($ticket));
 
-        return response()->json(['message' => $handled_error ?? "Success"], 200);
+        // for debugging purposes, return whole summary of ticket
+        if(env('APP_DEBUG')) {
+            return response()->json(['message' => $ticket->summary() ], 200);
+        }
+        
+        return response()->json(['message' => $handled_error ?? 'Success' ], 200);
     }
 
     public function end(int $ticket_id)

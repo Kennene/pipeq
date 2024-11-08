@@ -82,18 +82,23 @@ class Ticket extends Model
 
     /**
      * Sets new workstation for the ticket
-     * @param int $workstation_id
+     * 
+     * @param int|null $workstation_id Workstation can actually be null, because coordinator might mistakenly assign ticket to a first workstation, realize mistake, and put ticket back into queue to first workstation with  waiting status.
      * @return Error|null
      * @throws \Exception
      * @throws \Throwable
      */
-    public function updateWorkstation(int $workstation_id): ?Error
+    public function updateWorkstation(?int $workstation_id): ?Error
     {
-        $workstation = Workstation::find($workstation_id);
-        if ($workstation === null) {
-            return new Error(title: 'Workstation not found', http: 404);
+        // check if workstation exists if it is not null
+        if ($workstation_id != null) {
+            $workstation = Workstation::find($workstation_id);
+            if ($workstation === null) {
+                return new Error(title: 'Workstation not found', http: 404);
+            }
         }
-
+        
+        // try to update workstation
         try {
             $this->workstation_id = $workstation_id;
             $this->save();
@@ -128,6 +133,23 @@ class Ticket extends Model
         return null;
     }
 
+    /**
+     * Returns a summary of the current status of the ticket
+     * 
+     * @return string
+     */
+    public function summary(): string
+    {
+        $message = [
+            "Ticket id: {$this->id}.",
+            "User {$this->user->name} going to destination id {$this->destination->id}.",
+            "Currently set to workstation {$this->workstation?->id} with status {$this->status->id}."
+        ];
+
+        return implode(' ', $message);
+    }
+
+    // todo: inaczej to jakoś zaprojektować, to chyba nie jest zbyt eleganckie
     /**
      * Removes ticket from queue and moves in into tickets_ended table, for historical purposes
      * @return Error|null

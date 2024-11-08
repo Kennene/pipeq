@@ -10,7 +10,6 @@ class Destination extends Model
     use HasFactory;
 
     protected $table = 'destinations';
-    protected $fillable = ['name', 'description'];
 
     public function tickets()
     {

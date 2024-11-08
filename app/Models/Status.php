@@ -15,7 +15,6 @@ class Status extends Model
     const END = 4;
 
     protected $table = 'statuses';
-    protected $fillable = ['name', 'description'];
 
     public function tickets()
     {

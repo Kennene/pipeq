@@ -10,7 +10,6 @@ class Workstation extends Model
     use HasFactory;
 
     protected $table = 'workstations';
-    protected $fillable = ['name', 'description'];
 
     public function tickets()
     {

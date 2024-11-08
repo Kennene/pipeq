@@ -12,4 +12,13 @@ class Destination extends Model
     protected $table = 'destinations';
     protected $fillable = ['name', 'description'];
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function workstations()
+    {
+        return $this->hasMany(Workstation::class);
+    }
 }

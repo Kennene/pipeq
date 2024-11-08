@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\TicketUpdate;
-use App\Models\TicketView;
-use App\Models\TicketEnded;
+use App\Events\UpdateDisplayAboutTicket;
+use App\Events\UpdateUserAboutHisTicket;
+
 use App\Models\Ticket;
+use App\Models\TicketView;
 use App\Models\Status;
 use App\Models\Destination;
 use App\Models\Workstation;
@@ -21,13 +22,13 @@ class CoordinatorController extends Controller
         $variables["color"] = new Color();
         $variables["tickets"] = TicketView::all();
         $variables["statuses"] = Status::all();
-        $variables["destinations"] = Destination::all();
+        $variables["destinations"] = Destination::with('workstations')->get();
         $variables["workstations"] = Workstation::all();
-        
+
         return view('coordinator.coordinator')->with($variables);
     }
 
-    public function move(Request $request, int $ticket_id, string $workstation_id)
+    public function move(Request $request, int $ticket_id, string $workstation_id, int $status_id = null)
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -36,9 +37,8 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // check if status_id is provided in POST request
-        if ($request->has('status_id')) {
-            $status_id = $request->input('status_id');
+        // check if status_id is provided via web route
+        if($status_id !== null) {
 
             // check if status_id is valid
             if(Status::find($status_id) === null) {
@@ -67,15 +67,14 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
-        //? czy to na pewno konieczne?
-            // check if user is allowed to move ticket
-            $error = $ticket->setModifiedBy(auth()->user()->id);
-            if ($error !== null) {
-                return $error->toHTTPresponse();
-            }
-
         $ticket->save();
-        broadcast(new TicketUpdate($ticket->id));
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
         return response()->json(['message' => $handled_error ?? "Success"], 200);
     }
 

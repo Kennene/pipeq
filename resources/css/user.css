@@ -1,9 +1,12 @@
+<<<<<<< HEAD
 body {
     background-color: var(--white);
     height: 100vh;
     overflow: hidden;
 }
 
+=======
+>>>>>>> 847d1674f58220e7f89efce942323c95548ccc55
 #buttons-container {
     display: flex;
 }

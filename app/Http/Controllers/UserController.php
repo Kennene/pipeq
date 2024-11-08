@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\TicketRegister;
-use App\Events\TicketNew;
+use App\Events\RegisterNewTicket;
+use App\Events\UpdateUserAboutHisTicket;
+use App\Events\UpdateDisplayAboutTicket;
+
 use App\Models\Ticket;
 use App\Models\Destination;
+
+use function Symfony\Component\String\b;
 
 class UserController extends Controller
 {
@@ -31,20 +35,30 @@ class UserController extends Controller
 
         // check if user can have multiple tickets registered
         if (!env('MULTIPLE_TICKETS')) {
-            if (Ticket::isUserAlreadyRegistered(auth()->user()->id)) {
-                // todo: zamiast zwracać error, dołącz do nasłuchiwania eventu zmian jego biletu
+            if (auth()->user()->hasTickets()) {
+                // find user ticket
+                $ticket = Ticket::where('user_id', auth()->user()->id)->first();
+
+                // notify user about his already registered ticket
+                broadcast(new UpdateUserAboutHisTicket($ticket, "You already have a ticket registered"));
+
+                // return error
                 $error = new Error('User already registered');
                 return $error->toHTTPresponse();
             }
         }
 
+        // create new ticket
         $ticket = Ticket::create([
-            'user_id' => auth()->user()->id,
             'destination_id' => $destination_id,
         ]);
 
-        broadcast(new TicketRegister(auth()->user(), $ticket));
-        broadcast(new TicketNew($ticket->id));
+        // broadcast event to user his ticket has been registered
+        broadcast(new RegisterNewTicket($ticket));
+
+        // update display about new registered ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
         return response()->json(['message' => 'Ticket registered'], 201);
     }
 }

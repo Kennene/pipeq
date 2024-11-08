@@ -15,6 +15,7 @@ export default defineConfig({
                 "resources/css/administrator.css",
                 "resources/css/display.css",
                 "resources/css/topbar.css",
+                "resources/css/tickets-dashboard.css",
             ],
             refresh: true,
         }),

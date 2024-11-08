@@ -11,6 +11,16 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function hasTickets(): bool
+    {
+        return $this->tickets()->exists();
+    }
+
     /**
      * The attributes that are mass assignable.
      *

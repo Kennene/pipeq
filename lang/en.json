@@ -14,5 +14,6 @@
     "statuses.1.description": "Awaiting permission to enter",
     "statuses.2.description": "Admitted to workstation",
     "statuses.3.description": "User currently being served",
-    "statuses.4.description": "User currently being served"
+    "statuses.4.description": "User currently being served",
+    "ticket.new.confirmation": "Successfully registered new ticket"
 }

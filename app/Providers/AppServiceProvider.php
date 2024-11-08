@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Blade::directive('pipeQColors', function () {
+            $colors = config('colors');
+            $pipeQColors = collect($colors)->map(function ($value, $key) {
+                return "--{$key}: {$value};";
+            })->implode(' ');
+    
+            return "<style>:root { {$pipeQColors} }</style>";
+        });
     }
 }

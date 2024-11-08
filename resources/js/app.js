@@ -5,7 +5,7 @@
  */
 
 import "./bootstrap";
-import './echo';
+import "./echo";
 import { createApp } from "vue";
 
 /**
@@ -15,9 +15,6 @@ import { createApp } from "vue";
  */
 
 const app = createApp({});
-
-import Coordinator from "./components/Coordinator.vue";
-app.component("Coordinator", Coordinator);
 
 /**
  * The following block of code may be used to automatically register your
@@ -36,5 +33,3 @@ app.component("Coordinator", Coordinator);
  * an "id" attribute of "app". This element is included with the "auth"
  * scaffolding. Otherwise, you will need to add an element yourself.
  */
-
-app.mount("#app");

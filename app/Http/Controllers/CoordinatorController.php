@@ -112,6 +112,19 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
+
+        // try to update status
+        $error = $ticket->updateStatus(Status::END);
+        if ($error !== null) {
+            return $error->toHTTPresponse();
+        }
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
         // try to end ticket, and if that fails, return error
         $error = $ticket->end();
         if ($error !== null) {

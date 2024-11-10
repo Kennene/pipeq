@@ -30,31 +30,33 @@ tickets.forEach(ticket => {
     let ticket_card = document.getElementById(`ticket${ticket.id}`);
 
     if(!ticket_card) {
-        $('#tickets-holder').append(`
-            <div id="ticket${ticket.id}" value="${ticket.id}" class="ticket-card card m-3 shadow-lg">
-                <div class="card-body p-3">
-                    <h5 class="h2 card-title text-center"></h5>
-                    <hr>
-                    <p class="card-text mt-2"></p>
-                    <h6 class="card-subtitle mt-1"></h6>
-                </div>
-            </div>
-        `);
-        ticket_card = document.getElementById(`ticket${ticket.id}`);
+        ticket_card = appendTicketTemplate(ticket.id);
     }
 
-    // if workstation is not set, set it to destination
     if(!ticket.workstation) {
         ticket.workstation = ticket.destination;
     }
-
+    
     ticket_card.querySelector('h5').textContent = ticket.user;
     ticket_card.querySelector('p').textContent = ticket.status;
     ticket_card.querySelector('h6').textContent = ticket.workstation;
 
 });
 
+function appendTicketTemplate(ticket_id) {
+    $('#tickets-holder').append(`
+        <div id="ticket${ticket_id}" value="${ticket_id}" class="ticket-card card m-3 shadow-lg">
+            <div class="card-body p-3">
+                <h5 class="h2 card-title text-center"></h5>
+                <hr>
+                <p class="card-text mt-2"></p>
+                <h6 class="card-subtitle mt-1"></h6>
+            </div>
+        </div>
+    `);
 
+    return document.getElementById(`ticket${ticket_id}`);
+}
 
 class PipeQ {
     constructor() {
@@ -74,17 +76,7 @@ class PipeQ {
 
             // if ticket does nit exist, create it
             if(!ticket_card) {
-                $('#tickets-holder').append(`
-                    <div id="ticket${ticket.id}" value="${ticket.id}" class="ticket-card card m-3 shadow-lg">
-                        <div class="card-body p-3">
-                            <h5 class="h2 card-title text-center"></h5>
-                            <hr>
-                            <p class="card-text mt-2"></p>
-                            <h6 class="card-subtitle mt-1"></h6>
-                        </div>
-                    </div>
-                `);
-                ticket_card = document.getElementById(`ticket${ticket.id}`);
+                ticket_card = appendTicketTemplate(ticket.id);
             }
 
             // if workstation is not set, set it to destination

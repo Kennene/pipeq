@@ -1,3 +1,5 @@
+<!-- Resource no longer needed by display blade, but used foor coordinator// todo: delete this -->
+
 @vite(['resources/css/tickets-dashboard.css'])
 
 <div class="container-fluid">

@@ -36,6 +36,7 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator')->with($variables);
     }
 
+    // todo: przerzucić funkcje związane z ticketem do osobnego kontrolera TicketsController
     public function move(Request $request, int $ticket_id, ?string $workstation_id, int $status_id = null)
     {
         // check if specified ticket exists
@@ -78,7 +79,7 @@ class CoordinatorController extends Controller
             }
         } else {
             // workstation_id is not provided, set status to WAITING
-            //! if workstation_id is null, but status is anything other that WAITING, user would not know where to go
+            // if workstation_id is null, but status is anything other that WAITING, user would not know where to go
             $error = $ticket->updateStatus(Status::WAITING);
             if ($error !== null) {
                 return $error->toHTTPresponse();

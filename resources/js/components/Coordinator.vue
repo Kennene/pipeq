@@ -1,11 +1,11 @@
 <template>
     <div class="h-screen flex flex-col">
-        <!-- Lista ticketów pod nagłówkiem -->
+        <!-- Lista biletów pod nagłówkiem -->
         <div
             class="bg-gray-200 p-4 flex items-center space-x-4 overflow-x-auto"
             data-section-id="0"
         >
-            <span class="text-lg font-semibold">Tickets</span>
+            <span class="text-lg font-semibold">Bilety</span>
             <draggable
                 v-model="tickets"
                 itemKey="id"
@@ -37,7 +37,7 @@
                 <div
                     class="flex flex-1 space-x-6 overflow-x-auto pb-6 h-full relative"
                 >
-                    <!-- Iteracja po sekcjach -->
+                    <!-- Iteracja przez sekcje -->
                     <div
                         v-for="(section, index) in sections"
                         :key="section.id"
@@ -80,14 +80,14 @@
                     </div>
                 </div>
 
-                <!-- Modal potwierdzenia usunięcia -->
+                <!-- Modal potwierdzający usunięcie -->
                 <div
                     v-if="showDeleteConfirmation"
                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
                 >
                     <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h3 class="text-xl font-semibold mb-4">
-                            Czy na pewno chcesz usunąć Ticket #{{
+                            Czy na pewno chcesz usunąć bilet #{{
                                 tempDraggedTicket?.id
                             }}?
                         </h3>
@@ -119,7 +119,7 @@
                 @dragover.prevent
                 @drop.prevent="handleDeleteDrop"
             >
-                🗑️ Przeciągnij tutaj, aby usunąć ticket
+                🗑️ Przeciągnij tutaj, aby usunąć bilet
             </div>
         </footer>
     </div>
@@ -143,39 +143,39 @@ export default {
     },
     data() {
         return {
+            // Inicjalizacja biletów
             tickets: this.initialTickets
-                .filter((ticket) => ![1, 2].includes(ticket.workstation_id))
-                .map((ticket, index) => ({
+                .filter((ticket) => !ticket.workstation_id)
+                .map((ticket) => ({
                     ...ticket,
-                    id: ticket.id || `temp-id-${index}-${Date.now()}`,
-                    workstation_id: null, // Wszystkie tickety na głównej liście mają null
-                    status_id: 1, // Ustawienie domyślnego statusu na "Waiting"
-                    status: this.translations.statuses[1] || "Waiting",
+                    status:
+                        this.translations.statuses[ticket.status_id] ||
+                        "Oczekiwanie",
                 })),
             sections: [
                 {
                     id: 1,
-                    name: "Registrar's Office",
+                    name: "Biuro Rejestracji",
                     tickets: this.initialTickets
                         .filter((ticket) => ticket.workstation_id === 1)
                         .map((ticket) => ({
                             ...ticket,
-                            status_id: 3, // "Being Served"
                             status:
-                                this.translations.statuses[3] || "Being Served",
+                                this.translations.statuses[ticket.status_id] ||
+                                "Obsługiwany",
                         })),
                     workstationId: 1,
                 },
                 {
                     id: 2,
-                    name: "Payments",
+                    name: "Płatności",
                     tickets: this.initialTickets
                         .filter((ticket) => ticket.workstation_id === 2)
                         .map((ticket) => ({
                             ...ticket,
-                            status_id: 3, // "Being Served"
                             status:
-                                this.translations.statuses[3] || "Being Served",
+                                this.translations.statuses[ticket.status_id] ||
+                                "Obsługiwany",
                         })),
                     workstationId: 2,
                 },
@@ -184,18 +184,27 @@ export default {
             tempDraggedTicket: null,
             draggedFromSection: null,
             showDeleteConfirmation: false,
-            isDeleteDrop: false, // Nowa flaga
+            isDeleteDrop: false,
             pipeQ: new PipeQ(),
             statusMap: this.translations.statuses,
         };
     },
     mounted() {
-        window.addEventListener("ticket-new", this.handleNewTicket);
+        console.log("Komponent Koordynatora zamontowany");
+
+        window.Echo.private("display")
+            .listen(".UpdateDisplayAboutTicket", (e) => {
+                console.log("Odebrano zdarzenie UpdateDisplayAboutTicket:", e);
+                this.handleNewTicket(e.ticket);
+            })
+            .listen(".TicketEnded", (e) => {
+                console.log("Odebrano zdarzenie TicketEnded:", e);
+                this.handleTicketEnd({ id: e.ticket.id });
+            });
     },
-    beforeUnmount() {
-        window.removeEventListener("ticket-new", this.handleNewTicket);
-    },
+
     methods: {
+        // Rozpoczęcie przeciągania
         onDragStart(evt) {
             const fromComponent = evt.from.__draggable_component__;
             const fromList = fromComponent.realList;
@@ -204,7 +213,7 @@ export default {
 
             if (item && item.id) {
                 this.draggedTicket = item;
-                this.tempDraggedTicket = { ...item }; // Kopia dla modal
+                this.tempDraggedTicket = { ...item };
 
                 this.draggedFromSection = fromComponent.section || null;
 
@@ -214,7 +223,7 @@ export default {
                     "z sekcji:",
                     this.draggedFromSection
                         ? this.draggedFromSection.name
-                        : "Tickets"
+                        : "Bilety"
                 );
             } else {
                 console.error("Błąd: `draggedTicket` nie posiada `id`");
@@ -223,69 +232,71 @@ export default {
                 this.draggedFromSection = null;
             }
         },
+        // Zakończenie przeciągania
         async onEnd(event) {
             if (this.isDeleteDrop) {
                 this.isDeleteDrop = false;
-                // Modal już jest wyświetlany przez handleDeleteDrop
                 return;
             }
 
             if (!this.draggedTicket || !this.draggedTicket.id) {
                 console.error(
-                    "Brak `ticketId` podczas zakończenia przeciągania.",
+                    "Brak `ticketId` na koniec przeciągania.",
                     this.draggedTicket
                 );
                 return;
             }
 
-            // Odczytanie sectionId z atrybutu data-section-id
             const sectionElement = event.to.closest("[data-section-id]");
             const sectionId = sectionElement
                 ? Number(sectionElement.getAttribute("data-section-id"))
                 : null;
 
-            console.log("sectionId (from data attribute):", sectionId);
+            console.log("sectionId (z atrybutu danych):", sectionId);
 
             let workstationId;
             let newStatusId;
             let newStatus;
 
             if (sectionId === 0) {
-                // Przypisanie workstationId=null dla głównej listy "Tickets"
                 workstationId = null;
-                newStatusId = 1; // ID dla "Waiting"
-                newStatus = this.statusMap[1] || "Waiting";
+                newStatusId = 1; // ID dla "Oczekiwanie"
+                newStatus = this.statusMap[1] || "Oczekiwanie";
             } else {
                 const toSection = this.sections.find(
                     (section) => section.id === sectionId
                 );
 
                 if (!toSection) {
-                    console.error("Nie znaleziono sekcji o id:", sectionId);
+                    console.error("Sekcja nie znaleziona z id:", sectionId);
                     return;
                 }
 
                 workstationId = toSection.workstationId;
-
-                // Ustalanie statusu na podstawie workstationId
-                newStatusId = 3; // "Being Served"
-                newStatus = this.statusMap[3] || "Being Served";
+                newStatusId = 3; // "Obsługiwany"
+                newStatus = this.statusMap[3] || "Obsługiwany";
             }
 
-            // Aktualizacja ticketu
             this.draggedTicket.workstation_id = workstationId;
             this.draggedTicket.status_id = newStatusId;
             this.draggedTicket.status = newStatus;
 
             try {
-                const response = await this.pipeQ._move(
-                    this.draggedTicket.id,
-                    workstationId
-                );
-                // Aktualizacja lokalnego stanu na podstawie odpowiedzi z backendu
+                let response;
+                if (sectionId === 0) {
+                    response = await this.pipeQ._moveToMain(
+                        this.draggedTicket.id
+                    );
+                } else {
+                    response = await this.pipeQ._moveToSection(
+                        this.draggedTicket.id,
+                        workstationId,
+                        newStatusId
+                    );
+                }
+
                 const updatedTicket = response.data.ticket;
                 if (updatedTicket) {
-                    // Znajdź i zaktualizuj ticket w głównej liście
                     const mainIndex = this.tickets.findIndex(
                         (t) => t.id === updatedTicket.id
                     );
@@ -293,7 +304,6 @@ export default {
                         this.$set(this.tickets, mainIndex, updatedTicket);
                     }
 
-                    // Usuń ticket z poprzedniej sekcji i dodaj do nowej
                     if (this.draggedFromSection) {
                         const oldSection = this.sections.find(
                             (s) => s.id === this.draggedFromSection.id
@@ -304,13 +314,11 @@ export default {
                             );
                         }
                     } else {
-                        // Jeśli przeciągany z listy głównej
                         this.tickets = this.tickets.filter(
                             (t) => t.id !== updatedTicket.id
                         );
                     }
 
-                    // Dodanie do nowej sekcji lub listy głównej
                     if (workstationId === null) {
                         this.tickets.push(updatedTicket);
                     } else {
@@ -328,12 +336,15 @@ export default {
                 }
             } catch (error) {
                 console.error("Błąd w _move:", error);
+                alert(
+                    "Wystąpił błąd podczas przenoszenia biletu. Spróbuj ponownie."
+                );
             }
 
-            // Resetowanie zmiennych związanych z przeciąganiem
             this.draggedTicket = null;
             this.tempDraggedTicket = null;
         },
+        // Obsługa upuszczenia na kosz
         handleDeleteDrop(event) {
             this.isDeleteDrop = true;
             this.showDeleteModal();
@@ -342,7 +353,7 @@ export default {
             if (this.tempDraggedTicket) {
                 this.showDeleteConfirmation = true;
                 console.log(
-                    "Wyświetlanie modala usuwania dla `tempDraggedTicket`:",
+                    "Wyświetlanie modalu usuwania dla `tempDraggedTicket`:",
                     this.tempDraggedTicket
                 );
             } else {
@@ -356,7 +367,7 @@ export default {
         },
         async confirmDelete() {
             console.log("this.pipeQ:", this.pipeQ);
-            console.log("Próba usunięcia ticketu:", this.tempDraggedTicket);
+            console.log("Próba usunięcia biletu:", this.tempDraggedTicket);
 
             if (this.tempDraggedTicket && this.tempDraggedTicket.id) {
                 const ticketId = this.tempDraggedTicket.id;
@@ -364,20 +375,17 @@ export default {
 
                 try {
                     const response = await this.pipeQ._end(ticketId);
-                    console.log("Response from _end:", response);
-                    console.log("Ticket usunięty pomyślnie.");
+                    console.log("Odpowiedź z _end:", response);
+                    console.log("Bilet usunięty pomyślnie.");
 
-                    // Ustawienie status_id na 4 (Released)
                     this.tempDraggedTicket.status_id = 4;
                     this.tempDraggedTicket.status =
-                        this.statusMap[4] || "Released";
+                        this.statusMap[4] || "Zwolniony";
 
-                    // Usunięcie ticketu z listy głównej
                     this.tickets = this.tickets.filter(
                         (ticket) => ticket.id !== ticketId
                     );
 
-                    // Usunięcie ticketu z wszystkich sekcji
                     this.sections.forEach((section) => {
                         section.tickets = section.tickets.filter(
                             (ticket) => ticket.id !== ticketId
@@ -392,25 +400,63 @@ export default {
                         "Błąd podczas usuwania biletu:",
                         error.response?.data || error.message
                     );
+                    alert(
+                        "Wystąpił błąd podczas usuwania biletu. Spróbuj ponownie."
+                    );
                 }
             } else {
                 console.error(
-                    "Brak `ticketId` w confirmDelete lub brak obiektu `tempDraggedTicket` podczas próby usunięcia:",
+                    "Brak `ticketId` w confirmDelete lub brak `tempDraggedTicket` podczas próby usunięcia:",
                     this.tempDraggedTicket
                 );
                 this.showDeleteConfirmation = false;
             }
         },
-        handleNewTicket(event) {
-            const ticket = event.detail;
-            if (!this.tickets.find((t) => t.id === ticket.id)) {
-                // Ustawienie workstation_id na null dla nowych ticketów
-                ticket.workstation_id = null;
-                ticket.status_id = 1; // ID dla "Waiting"
-                ticket.status = this.statusMap[1] || "Waiting";
+        handleNewTicket(ticket) {
+            console.log("handleNewTicket: Odebrano bilet:", ticket);
 
-                this.tickets.push(ticket);
+            if (
+                !this.tickets.find((t) => t.id === ticket.id) &&
+                !this.isTicketInSections(ticket.id)
+            ) {
+                if (ticket.workstation_id === null) {
+                    ticket.status_id = 1;
+                    ticket.status = this.statusMap[1] || "Oczekiwanie";
+                    this.tickets.push(ticket);
+                    console.log(`Dodano bilet do głównej listy:`, ticket);
+                } else {
+                    const section = this.sections.find(
+                        (s) => s.workstationId === ticket.workstation_id
+                    );
+                    if (section) {
+                        ticket.status =
+                            this.statusMap[ticket.status_id] || ticket.status;
+                        section.tickets.push(ticket);
+                        console.log(
+                            `Dodano bilet do sekcji ${section.name}:`,
+                            ticket
+                        );
+                    } else {
+                        console.error(
+                            `Nie znaleziono sekcji dla workstation_id: ${ticket.workstation_id}`
+                        );
+                    }
+                }
             }
+        },
+        handleTicketEnd({ id }) {
+            console.log("handleTicketEnd: Usuwanie biletu z id:", id);
+            this.tickets = this.tickets.filter((ticket) => ticket.id !== id);
+            this.sections.forEach((section) => {
+                section.tickets = section.tickets.filter(
+                    (ticket) => ticket.id !== id
+                );
+            });
+        },
+        isTicketInSections(ticketId) {
+            return this.sections.some((section) =>
+                section.tickets.some((ticket) => ticket.id === ticketId)
+            );
         },
     },
 };

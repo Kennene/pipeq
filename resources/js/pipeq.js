@@ -2,68 +2,92 @@ import "./echo";
 import axios from "axios";
 
 class PipeQ {
-    constructor() {
-        const channel = window.Echo.private("display");
-        this.display = channel;
-        this._listen();
-    }
+    constructor() {}
 
-    _listen() {
-        this.display.listen("TicketNew", (e) => {
-            console.log(e);
-
-            let ticket = e.message;
-            window.dispatchEvent(
-                new CustomEvent("ticket-new", { detail: ticket })
+    /**
+     * Moves a ticket to a section with a specified workstation and status.
+     * @param {string|number} ticketId - ID of the ticket to move.
+     * @param {string|number} workstationId - ID of the target workstation.
+     * @param {number} statusId - ID of the ticket status.
+     * @returns {Promise} - Promise with the server response.
+     */
+    async _moveToSection(ticketId, workstationId, statusId = 3) {
+        if (!ticketId || !workstationId) {
+            console.error(
+                "Missing ticketId or workstationId for _moveToSection"
             );
-        });
-    }
-
-    async _move(ticketId, workstationId, statusId = 3) {
-        if (!ticketId) {
-            console.error("Brak ticketId dla _move");
-            throw new Error("Missing ticketId");
+            throw new Error("Missing ticketId or workstationId");
         }
 
         console.log(
-            `Przenoszenie biletu ${ticketId} na stanowisko ${workstationId} ze statusem ${statusId}`
+            `Moving ticket ${ticketId} to workstation ${workstationId} with status ${statusId}`
         );
 
         try {
             const response = await axios.post(
                 `/move/${ticketId}/${workstationId}/${statusId}`
             );
-            console.log("Odpowiedź na _move:", response);
+            console.log("Response from _moveToSection:", response);
             return response;
         } catch (error) {
             console.error(
-                "Błąd podczas _move:",
+                "Error during _moveToSection:",
                 error.response?.data || error.message
             );
             throw error;
         }
     }
 
-    _end(ticketId) {
+    /**
+     * Moves a ticket to the main list (without assigning to a workstation or changing status).
+     * @param {string|number} ticketId - ID of the ticket to move.
+     * @returns {Promise} - Promise with the server response.
+     */
+    async _moveToMain(ticketId) {
         if (!ticketId) {
-            console.error("Brak ticketId dla _end");
-            return;
+            console.error("Missing ticketId for _moveToMain");
+            throw new Error("Missing ticketId");
         }
 
-        axios
-            .post(`/end/${ticketId}`)
-            .then((response) => {
-                console.log("Odpowiedź na _end:", response);
-                window.dispatchEvent(
-                    new CustomEvent("ticket-end", { detail: { id: ticketId } })
-                );
-            })
-            .catch((error) => {
-                console.error(
-                    "Błąd podczas _end:",
-                    error.response?.data || error.message
-                );
-            });
+        console.log(`Moving ticket ${ticketId} to the main list`);
+
+        try {
+            const response = await axios.post(`/move/${ticketId}`);
+            console.log("Response from _moveToMain:", response);
+            return response;
+        } catch (error) {
+            console.error(
+                "Error during _moveToMain:",
+                error.response?.data || error.message
+            );
+            throw error;
+        }
+    }
+
+    /**
+     * Ends (deletes) a ticket.
+     * @param {string|number} ticketId - ID of the ticket to delete.
+     * @returns {Promise} - Promise with the server response.
+     */
+    async _end(ticketId) {
+        if (!ticketId) {
+            console.error("Missing ticketId for _end");
+            throw new Error("Missing ticketId");
+        }
+
+        console.log(`Deleting ticket ${ticketId} using _end`);
+
+        try {
+            const response = await axios.post(`/end/${ticketId}`);
+            console.log("Response from _end:", response);
+            return response;
+        } catch (error) {
+            console.error(
+                "Error during _end:",
+                error.response?.data || error.message
+            );
+            throw error;
+        }
     }
 }
 

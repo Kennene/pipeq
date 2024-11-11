@@ -36,6 +36,7 @@ class CoordinatorController extends Controller
         return view('coordinator.coordinator')->with($variables);
     }
 
+    // todo: przerzucić funkcje związane z ticketem do osobnego kontrolera TicketsController
     public function move(Request $request, int $ticket_id, ?string $workstation_id, int $status_id = null)
     {
         // check if specified ticket exists
@@ -78,7 +79,7 @@ class CoordinatorController extends Controller
             }
         } else {
             // workstation_id is not provided, set status to WAITING
-            //! if workstation_id is null, but status is anything other that WAITING, user would not know where to go
+            // if workstation_id is null, but status is anything other that WAITING, user would not know where to go
             $error = $ticket->updateStatus(Status::WAITING);
             if ($error !== null) {
                 return $error->toHTTPresponse();
@@ -110,6 +111,19 @@ class CoordinatorController extends Controller
             $error = new Error(title: 'Ticket not found', http: 404);
             return $error->toHTTPresponse();
         }
+
+
+        // try to update status
+        $error = $ticket->updateStatus(Status::END);
+        if ($error !== null) {
+            return $error->toHTTPresponse();
+        }
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
 
         // try to end ticket, and if that fails, return error
         $error = $ticket->end();

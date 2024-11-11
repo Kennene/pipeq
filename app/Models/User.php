@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -19,6 +20,21 @@ class User extends Authenticatable
     public function hasTickets(): bool
     {
         return $this->tickets()->exists();
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role): bool
+    {
+        // if user has the Administrator role, they have all roles
+        if ($this->roles()->where('name', 'Administrator')->exists()) {
+            return true;
+        }
+
+        return $this->roles()->where('name', $role)->exists();
     }
 
     /**

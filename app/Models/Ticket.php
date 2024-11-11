@@ -158,7 +158,7 @@ class Ticket extends Model
      */
     public function end(): ?Error
     {
-        // try to update status
+        // be sure to update status to END
         $error = $this->updateStatus(Status::END);
         if ($error !== null) {
             return $error;

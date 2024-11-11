@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            AclSeeder::class,
+            RolesTableSeeder::class,
             UsersTableSeeder::class,
 
             StatusesTableSeeder::class,

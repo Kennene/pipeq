@@ -11,9 +11,9 @@ class DisplayController extends Controller
 {
     public function index()
     {
-        $variables["color"] = new Color();
-        $variables["tickets"] = TicketView::all();
+        $color = new Color();
+        $tickets = TicketView::all();
 
-        return view('display.display')->with($variables);
+        return view('display.display')->with(compact('color', 'tickets'));
     }
 }

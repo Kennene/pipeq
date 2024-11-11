@@ -5,45 +5,47 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Role;
 
-class AclSeeder extends Seeder
+class RolesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('acl')->insert([
+        // id are seperated by 10 to allow for future roles to be added in between
+        DB::table('roles')->insert([
             [
-                'id' => 1,
+                'id' => ROLE::USER,
                 'name' => 'User',
                 'description' => 'Standard user with access to create and see their own tickets.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => 10,
+                'id' => ROLE::DISPLAY,
                 'name' => 'Display',
                 'description' => 'Display role with access to see all tickets.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => 20,
+                'id' => ROLE::COORDINATOR,
                 'name' => 'Coordinator',
                 'description' => 'Coordinator with access to assign and manage ticket statuses.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => 30,
+                'id' => ROLE::API,
                 'name' => 'API',
                 'description' => 'API role for automated tasks and system integrations.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'id' => 40,
+                'id' => ROLE::ADMINISTRATOR,
                 'name' => 'Administrator',
                 'description' => 'Administrator with full access to manage tickets, users, and system configurations.',
                 'created_at' => now(),

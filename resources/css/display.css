@@ -1,3 +1,24 @@
 body {
     background-color: var(--white);
 }
+
+.ticket-card {
+    width: 20rem;
+    background-color: var(--secondary);
+    color: var(--black);
+}
+
+.ticket-card .card-title {
+    color: var(--black);
+    font-weight: bold;
+    font-size: 2.8rem;
+}
+
+.ticket-card .card-text {
+    font-weight: bold;
+    font-size: 1.7rem;
+}
+
+.ticket-card .card-subtitle {
+    font-size: 1.2rem;
+}

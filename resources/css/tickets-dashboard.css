@@ -1,3 +1,5 @@
+/* Resource no longer needed by display blade, but used foor coordinator // todo: delete this */
+
 .ticket-card {
     width: 20rem;
     background-color: var(--secondary);

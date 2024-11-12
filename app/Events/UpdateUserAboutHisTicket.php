@@ -11,17 +11,20 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 use \App\Models\Ticket;
+use \App\Models\TicketView;
 
 class UpdateUserAboutHisTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public TicketView $ticket_view;
 
     /**
      * Create a new event instance.
      */
     public function __construct(private Ticket $ticket, private ?string $message = null)
     {
-        //
+        $this->ticket_view = TicketView::find($ticket->id);
     }
 
     /**
@@ -39,7 +42,7 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
     {
         return [
             'message' => $this->message ?? 'Your ticket has been updated',
-            'ticket' => $this->ticket
+            'ticket' => $this->ticket_view
         ];
     }
 }

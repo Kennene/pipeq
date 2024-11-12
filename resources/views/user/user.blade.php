@@ -21,17 +21,13 @@
             @endforeach
         </div>
         
-        <button class="btn btn-danger" onclick="showLoading(); toggleOverlay2()">Entrance to hell</button>
-    </div>
+      
 
  
 
 
     <div id="overlay" class="overlay">
         <div class="loading-container">
-            <div class="topbar">
-                @include('topbar')
-            </div>
             <div class="user-info d-flex flex-column align-items-center fade-in-out" id="user-info">
                 <div class="checkmark-container">
                     <i class="bi bi-check-circle-fill" ></i>
@@ -58,17 +54,15 @@
 
     <div id="overlay2" class="overlay">
         <div class="loading-container2">
-            <div class="topbar">
-                @include('topbar')
-            </div>
             <div class="user-info d-flex flex-column align-items-center">
                 <div class="checkmark-container2">
                     <i class="bi bi-box-arrow-in-right bouncing"></i>
                 </div>
                 <div class="user-message-container2">
                     <div class="user-message2">
-                        <p class="username2">Kowalski, zapraszamy!</p>
-                        <p class="waiting-message2">Stanowisko X</p>
+                         <p class="username2">
+                            <span id='ticketUser'> User </span><span> zapraszamy!</span> </p>
+                        <p id="ticketWorkstation" class="waiting-message2">Stanowisko </p>
                     </div>
                 </div>
             </div>
@@ -91,8 +85,10 @@ class PipeQ {
         })
 
         this.register.listen('UpdateUserAboutHisTicket', function(e) {
-            console.log(e);
+            console.log(e); toggleOverlay2(e.ticket); showLoading();
+            
         })
+
     }
 
     _register(destination_id) {
@@ -111,7 +107,7 @@ class PipeQ {
 document.addEventListener('DOMContentLoaded', function() {
     pipeq = new PipeQ();
 });
-
+ 
 
         function showLoading() {
             document.getElementById('overlay').style.display = 'flex';
@@ -122,9 +118,11 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay.classList.toggle('show');
         }
 
-        function toggleOverlay2() {
+        function toggleOverlay2(ticket) {
             const overlay2 = document.getElementById('overlay2');
             overlay2.classList.toggle('show');
+            document.getElementById('ticketWorkstation').innerHTML=ticket.workstation;
+            document.getElementById('ticketUser').innerHTML=ticket.user;
         }
 
         setTimeout(function() {

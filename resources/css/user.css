@@ -1,13 +1,10 @@
-<<<<<<< HEAD
-body {
+<<<<<<< HEAD body {
     background-color: var(--white);
     height: 100vh;
     overflow: hidden;
 }
 
-=======
->>>>>>> 847d1674f58220e7f89efce942323c95548ccc55
-#buttons-container {
+=======>>>>>>>847d1674f58220e7f89efce942323c95548ccc55 #buttons-container {
     display: flex;
 }
 
@@ -44,6 +41,7 @@ body {
     opacity: 0;
     transition: transform 0.5s ease, opacity 0.5s ease;
     visibility: hidden;
+    top: 80px;
 }
 
 .overlay.show {
@@ -184,6 +182,8 @@ body {
 #overlay2 {
     background-color: #0d6efd;
     color: #ffffff;
+    position: fixed;
+    top: 80px;
 }
 
 #overlay2 .user-message {

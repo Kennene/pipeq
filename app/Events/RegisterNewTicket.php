@@ -11,17 +11,20 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 use \App\Models\Ticket;
+use \App\Models\TicketView;
 
 class RegisterNewTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    private TicketView $ticket_view;
 
     /**
      * Create a new event instance.
      */
     public function __construct(private Ticket $ticket)
     {
-        //
+        $this->ticket_view = TicketView::find($ticket->id)->forUser();
     }
 
     /**
@@ -37,8 +40,8 @@ class RegisterNewTicket implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'message' => __("ticket.new.confirmation"),
-            'ticket_nr' => $this->ticket->ticket_nr
+            'message' => "Successfully registered new ticket",
+            'ticket' => $this->ticket_view
         ];
     }
 }

@@ -17,14 +17,14 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public TicketView $ticket_view;
+    private TicketView $ticket_view;
 
     /**
      * Create a new event instance.
      */
     public function __construct(private Ticket $ticket, private ?string $message = null)
     {
-        $this->ticket_view = TicketView::find($ticket->id);
+        $this->ticket_view = TicketView::find($ticket->id)->forUser();
     }
 
     /**
@@ -37,7 +37,6 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
         return new PrivateChannel('register.' . $this->ticket->user_id);
     }
 
-    // todo: user doesn't need his entire ticket. limit the data sent
     public function broadcastWith()
     {
         return [

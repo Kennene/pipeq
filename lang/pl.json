@@ -14,6 +14,5 @@
     "statuses.1.description": "Oczekuje na wejście",
     "statuses.2.description": "Wpuszczony na stanowisko",
     "statuses.3.description": "Użytkownik jest obsługiwany",
-    "statuses.4.description": "Użytkownik wypuszczony",
-    "ticket.new.confirmation": "Poprawnie zarejestrowano twój bilet"
+    "statuses.4.description": "Użytkownik wypuszczony"
 }

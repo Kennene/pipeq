@@ -21,4 +21,21 @@ class Status extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    /**
+     * Translate all statuses to App locale
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function allTranslated()
+    {
+        $statuses = self::all();
+
+        $translation = $statuses->map(function ($status) {
+            $status->name = __($status->name);
+            $status->description = __($status->description);
+            return $status;
+        });
+
+        return $translation;
+    }
 }

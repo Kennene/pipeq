@@ -19,21 +19,32 @@ class CoordinatorController extends Controller
 {
     public function index()
     {
-        $variables["color"] = new Color();
-        $variables["tickets"] = TicketView::all();
-        $variables["statuses"] = Status::all();
-        $variables["destinations"] = Destination::with('workstations')->get();
-        $variables["workstations"] = Workstation::all();
-        $variables["translations"] = [
-            'statuses' => [
-                '1' => __('statuses.1.name'),
-                '2' => __('statuses.2.name'),
-                '3' => __('statuses.3.name'),
-                '4' => __('statuses.4.name'),
-            ]
-        ];
+        $color = new Color();
+        $tickets = TicketView::all();
+        $statuses = Status::allTranslated();
+        $destinations = Destination::with('workstations')->get();
 
-        return view('coordinator.coordinator')->with($variables);
+        // workstations są również w destinations, wiec możesz je stamtąd wyjąć.
+        // jeżeli potrzebujesz je osobno, np. dla czytelności kodu, odkomentuj poniższą linię i dorzuć do compact
+        // $workstations = Workstation::all();
+
+
+        //* dorzuciłem do statuses tłumaczenia. użyj proszę zmiennej $statuses zamiast $variables["translations"]
+            $variables["translations"] = [
+                'statuses' => [
+                    '1' => __('statuses.1.name'),
+                    '2' => __('statuses.2.name'),
+                    '3' => __('statuses.3.name'),
+                    '4' => __('statuses.4.name'),
+                ]
+            ];
+
+
+        return view('coordinator.coordinator')->with(compact('color', 'tickets', 'statuses', 'destinations'))
+
+        // todo: usunąć poniższe, lepiej to robić przez compact.
+        // można wtedy łatwiej wyjąć dane javascriptem poprzez @json($statuses);
+        ->with($variables);
     }
 
     // todo: przerzucić funkcje związane z ticketem do osobnego kontrolera TicketsController

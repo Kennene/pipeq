@@ -7,16 +7,16 @@ export default defineConfig({
         laravel({
             input: [
                 "resources/sass/app.scss",
-                "resources/js/app.js",
                 "resources/css/app.css",
-                "resources/js/app.js",
+                "resources/css/topbar.css",
+
                 "resources/css/user.css",
                 "resources/css/coordinator.css",
                 "resources/css/administrator.css",
                 "resources/css/display.css",
-                "resources/css/topbar.css",
+
+                "resources/js/app.js",
                 "resources/js/coordinator.js",
-                "resources/css/tickets-dashboard.css",
             ],
             refresh: true,
         }),

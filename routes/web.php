@@ -5,10 +5,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LanguageController;
 
+use App\Models\Role;
+use App\Http\Middleware\CheckRole;
+
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\AdministratorController;
-use App\Http\Controllers\DisplayController;
+
 
 // todo: clean up this code. user's don't have dashboards or need to register
 Route::get('/dashboard', function () {
@@ -30,10 +34,25 @@ require __DIR__ . '/auth.php';
 
 Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('locale.set');
 
-Route::get("/", [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('user');
-Route::get("/coordinator", [CoordinatorController::class, 'index'])->middleware(['auth', 'verified'])->name('coordinator');
-Route::get("/administrator", [AdministratorController::class, 'index'])->middleware(['auth', 'verified'])->name('administrator');
-Route::get("/display", [DisplayController::class, 'index'])->middleware(['auth', 'verified'])->name('display');
+
+Route::get("/", [UserController::class, 'index'])
+    ->middleware([CheckRole::class.':'.Role::DISPLAY])
+    ->name('user');
+
+
+Route::get("/display", [DisplayController::class, 'index'])
+    ->middleware(['auth', CheckRole::class.':'.Role::DISPLAY])
+    ->name('display');
+
+
+Route::get("/coordinator", [CoordinatorController::class, 'index'])
+->middleware(['auth', CheckRole::class.':'.Role::COORDINATOR])
+    ->name('coordinator');
+
+
+Route::get("/administrator", [AdministratorController::class, 'index'])
+    ->middleware(['auth', CheckRole::class.':'.Role::ADMINISTRATOR])
+    ->name('administrator');
 
 
 // API for client -> server communication

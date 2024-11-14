@@ -36,7 +36,7 @@
             </div>
             <div class="user-message-container">
                     <div class="user-message">
-                        <p class="username">{{auth()->user()->name}} dziękujemy za zgłoszenie</p>
+                        <p class="username">{{auth()->user()?->name}} dziękujemy za zgłoszenie</p>
                         <p class="waiting-message">Proszę czekać na swoją kolej</p>
                     </div>
                 </div>
@@ -74,7 +74,8 @@
 
 class PipeQ {
     constructor() {
-        const channel = Echo.private(`register.{{ Auth::user()->id }}`);
+        // todo: change channel to use something other than used id
+        const channel = Echo.private(`register.{{ Auth::user()?->id }}`);
         this.register = channel;
         this._listen();
     }

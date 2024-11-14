@@ -12,11 +12,11 @@
         <div class="dropdown">
             <a id="lang-button" class="btn btn-primary dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Language</a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                @foreach (config('app.available_locales') as $locale => $language)
-                    @if ($locale === App::getLocale())
-                        <a class="dropdown-item active" href="">{{ $language }}</a>
+                @foreach (config('app.available_locales') as $key => $locale)
+                    @if ($key === App::getLocale())
+                        <a class="dropdown-item active" href="{{ route('locale.set', $key) }}">{{ $locale }}</a>
                     @else
-                        <a class="dropdown-item" href="">{{ $language }}</a>
+                        <a class="dropdown-item" href="{{ route('locale.set', $key) }}">{{ $locale }}</a>
                     @endif
                 @endforeach
             </div>

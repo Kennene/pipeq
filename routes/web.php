@@ -2,15 +2,15 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\LanguageController;
+
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\AdministratorController;
-use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\DisplayController;
 
-use App\Http\Controllers\UserRegisterController;
-
+// todo: clean up this code. user's don't have dashboards or need to register
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -27,6 +27,8 @@ Route::post('/logout', function () {
 })->name('logout');
 
 require __DIR__ . '/auth.php';
+
+Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('locale.set');
 
 Route::get("/", [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('user');
 Route::get("/coordinator", [CoordinatorController::class, 'index'])->middleware(['auth', 'verified'])->name('coordinator');

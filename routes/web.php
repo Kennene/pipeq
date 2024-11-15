@@ -36,22 +36,34 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 
 Route::get("/", [UserController::class, 'index'])
-    ->middleware([CheckRole::class.':'.Role::DISPLAY])
+    ->middleware([
+        'auth',
+        CheckRole::class.':'.Role::USER
+    ])
     ->name('user');
 
 
 Route::get("/display", [DisplayController::class, 'index'])
-    ->middleware(['auth', CheckRole::class.':'.Role::DISPLAY])
+    ->middleware([
+        'auth',
+        CheckRole::class.':'.Role::DISPLAY
+    ])
     ->name('display');
 
 
 Route::get("/coordinator", [CoordinatorController::class, 'index'])
-->middleware(['auth', CheckRole::class.':'.Role::COORDINATOR])
+    ->middleware([
+        'auth',
+        CheckRole::class.':'.Role::COORDINATOR
+    ])
     ->name('coordinator');
 
 
 Route::get("/administrator", [AdministratorController::class, 'index'])
-    ->middleware(['auth', CheckRole::class.':'.Role::ADMINISTRATOR])
+    ->middleware([
+        'auth',
+        CheckRole::class.':'.Role::ADMINISTRATOR
+    ])
     ->name('administrator');
 
 

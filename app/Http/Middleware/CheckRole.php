@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Error;
 
 class CheckRole
 {
@@ -15,26 +17,46 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        // dd($role);
+        // get loggged user
+        $user = Auth::user();
 
-        // $user = Auth::user();
+        // prepare Unauthorized error
+        $error = new Error(title: 'Unauthorized', http: 403);
 
-        // if (!$user || !$user->roles) {
-        //     return response()->json(['error' => 'Unauthorized'], 403);
-        // }
+        // check if user doesn't exist or doesn't have roles
+        if (!$user || !$user->roles) {
+            return $error->toHTTPresponse();
+        }
 
-        // $userRoles = $user->roles->pluck('id')->toArray();
+        // grab user roles
+        $user_roles = $user->roles->pluck('id')->toArray();
 
-        // // Check for cascading roles
-        // foreach ($userRoles as $userRole) {
-        //     if ($userRole >= $role) {
-        //         return $next($request);
-        //     }
-        // }
+        /**
+         * Roles are cascading:
+         * 1. User
+         * 10. Display
+         * 20. Coordinator
+         * 30. API
+         * 40. Administrator
+         * 
+         * Each one of them are seperated by 10.
+         * Example:
+         *  - User can only access User
+         *  - API can access User, Display, Coordinator
+         *  - Administrator can access everything
+         * 
+         *  User can also have mutliple roles in database.
+         *  For now this is only for future use if infrastructure will change.
+         */
 
-        // return response()->json(['error' => 'Unauthorized'], 403);
+        // Check for cascading roles
+        foreach ($user_roles as $user_role) {
+            if ($user_role >= $role) {
+                return $next($request);
+            }
+        }
 
-
-        return $next($request);
+        // if user doesn't have required role, return error
+        return $error->toHTTPresponse();
     }
 }

@@ -15,22 +15,15 @@ use App\Http\Controllers\AdministratorController;
 
 
 // todo: clean up this code. user's don't have dashboards or need to register
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/dashboard', function () {return view('dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-Route::post('/logout', function () {
-    Auth::logout();
-    return redirect('/login');
-})->name('logout');
-
+Route::post('/logout', function () {Auth::logout();return redirect('/login');})->name('logout');
 require __DIR__ . '/auth.php';
+
 
 Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('locale.set');
 
@@ -38,7 +31,7 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 Route::get("/", [UserController::class, 'index'])
     ->middleware([
         'auth',
-        CheckRole::class.':'.Role::USER
+        'role:'.Role::USER
     ])
     ->name('user');
 
@@ -46,7 +39,7 @@ Route::get("/", [UserController::class, 'index'])
 Route::get("/display", [DisplayController::class, 'index'])
     ->middleware([
         'auth',
-        CheckRole::class.':'.Role::DISPLAY
+        'role:'.Role::DISPLAY
     ])
     ->name('display');
 
@@ -54,7 +47,7 @@ Route::get("/display", [DisplayController::class, 'index'])
 Route::get("/coordinator", [CoordinatorController::class, 'index'])
     ->middleware([
         'auth',
-        CheckRole::class.':'.Role::COORDINATOR
+        'role:'.Role::COORDINATOR
     ])
     ->name('coordinator');
 
@@ -62,7 +55,7 @@ Route::get("/coordinator", [CoordinatorController::class, 'index'])
 Route::get("/administrator", [AdministratorController::class, 'index'])
     ->middleware([
         'auth',
-        CheckRole::class.':'.Role::ADMINISTRATOR
+        'role:'.Role::ADMINISTRATOR
     ])
     ->name('administrator');
 

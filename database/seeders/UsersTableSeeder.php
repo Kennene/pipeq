@@ -17,16 +17,6 @@ class UsersTableSeeder extends Seeder
     {
         User::insert([
             [
-                'name' => 'Krzysztof',
-                'email' => 'krzysztof@107.pl',
-                'password' => bcrypt('12345678')
-            ],
-            [
-                'name' => 'Mateusz',
-                'email' => 'mateusz@107.pl',
-                'password' => bcrypt('12345678')
-            ],
-            [
                 'name' => 'User',
                 'email' => 'normal@107.pl',
                 'password' => bcrypt('12345678')
@@ -39,6 +29,16 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'Fixer',
                 'email' => 'coordinator@107.pl',
+                'password' => bcrypt('12345678')
+            ],
+            [
+                'name' => 'Krzysztof',
+                'email' => 'krzysztof@107.pl',
+                'password' => bcrypt('12345678')
+            ],
+            [
+                'name' => 'Mateusz',
+                'email' => 'mateusz@107.pl',
                 'password' => bcrypt('12345678')
             ],
         ]);

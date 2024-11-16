@@ -100,7 +100,13 @@ class PipeQ {
                 @endif
             })
             .catch(error => {
-                console.error(error.response.data.error);
+
+                if(error.response.data.error) {
+                    console.error(error.response.data.error);
+                } else {
+                    console.error(error);
+                }
+                
             });
     }
 }

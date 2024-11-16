@@ -21,7 +21,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
-    protected $fillable = ['destination_id'];
+    protected $fillable = ['destination_id', 'token'];
 
     /**
      * Boot function to add ticket_nr to the ticket
@@ -51,6 +51,7 @@ class Ticket extends Model
         });
     }
 
+    // relationships
     public function user()
     {
         return $this->belongsTo(User::class);

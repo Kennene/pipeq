@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Error;
 use App\Models\Color;
 
@@ -13,11 +15,9 @@ use App\Events\UpdateDisplayAboutTicket;
 use App\Models\Ticket;
 use App\Models\Destination;
 
-use function Symfony\Component\String\b;
-
 class UserController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $variables["color"] = new Color();
         $variables["destinations"] = Destination::all();
@@ -25,6 +25,7 @@ class UserController extends Controller
         return view('user.user')->with($variables);
     }
 
+    // todo: move it to seperate TicketController
     public function register(Request $request, $destination_id)
     {
         // check if specified destination exists
@@ -33,7 +34,8 @@ class UserController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // check if user can have multiple tickets registered
+        // todo: change it to seek the token, cut off from auth
+        //* check if user can have multiple tickets registered
         if (!env('MULTIPLE_TICKETS')) {
             if (auth()->user()->hasTickets()) {
                 // find user ticket
@@ -51,6 +53,7 @@ class UserController extends Controller
         // create new ticket
         $ticket = Ticket::create([
             'destination_id' => $destination_id,
+            'token' => Str::uuid(),
         ]);
 
         // broadcast event to user his ticket has been registered

@@ -30,7 +30,6 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 Route::get("/", [UserController::class, 'index'])
     ->middleware([
-        'auth',
         'role:'.Role::USER
     ])
     ->name('user');
@@ -62,6 +61,6 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 
 // API for client -> server communication
 // todo: przenieśc do routes/api.php
-Route::any("/register/{destination_id}", [UserController::class, 'register'])->middleware(['auth', 'verified'])->name('_register');
+Route::any("/register/{destination_id}", [UserController::class, 'register'])->name('_register');
 Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [CoordinatorController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
 Route::any("/end/{ticket_id}", [CoordinatorController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');

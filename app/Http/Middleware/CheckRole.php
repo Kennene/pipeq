@@ -15,8 +15,13 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, int $role): Response
     {
+        // if this is a user space, move forward // todo: maybe more elegant? or handle tokens?
+        if ($role === 1) {
+            return $next($request);
+        }
+
         // get loggged user
         $user = Auth::user();
 

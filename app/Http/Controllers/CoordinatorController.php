@@ -142,6 +142,8 @@ class CoordinatorController extends Controller
             return $error->toHTTPresponse();
         }
 
+        // todo: remove token from cookie and session from user
+
         return response()->json(['message' => "Success"], 200);
     }
 }

@@ -33,26 +33,25 @@ class UserController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // * Instruction on how to get ticket token from session
-        //todo: remove that, it's not needed just and instruction
-        // $ticketToken = session('ticket_token');//->uuid;
-        // dd($ticketToken->toString());
+        // get token from cookie within request
+        $token = $request->cookie('ticket_token');
 
-        // todo: change it to seek the token, cut off from auth
-        //* check if user can have multiple tickets registered
-        //! actually remove that. make user always have only one ticket
-        if (!env('MULTIPLE_TICKETS')) {
-            if (auth()->user()->hasTickets()) {
-                // find user ticket
-                $ticket = Ticket::where('user_id', auth()->user()->id)->first();
+        // check if token was found in cookie
+        if ($token) {
+            // If user sends custom token in cookie, Laravel won't decipher it, therefore reject it
+            session(['ticket_token' => $token]);
+        } elseif (session()->has('ticket_token')) {
+            // User may have deleted the cookie, but still have the session
+            $token = session('ticket_token');
+            Cookie::queue('ticket_token', $token);
+        }
 
-                // notify user about his already registered ticket
-                broadcast(new UpdateUserAboutHisTicket($ticket, "You already have a ticket registered"));
-
-                // return error
-                $error = new Error('User already registered');
-                return $error->toHTTPresponse();
-            }
+        // if token is set, that means user already has ticket
+        if (isset($token)) {
+            return response()->json([
+                'message' => 'You already have a ticket registered',
+                'channel' => $token
+            ], 200);
         }
 
         // create new ticket
@@ -68,6 +67,7 @@ class UserController extends Controller
         // Store ticket token in cookie and session
         //* Ticket's token is used for "light authentication" and listening on websocket channel
         Cookie::queue('ticket_token', $ticket->token);
+        session(['ticket_token' => $ticket->token]);
 
         // Return response with ticket token as channel to listen on 
         return response()->json([

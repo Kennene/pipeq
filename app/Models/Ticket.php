@@ -143,7 +143,7 @@ class Ticket extends Model
     {
         $message = [
             "Ticket id: {$this->id}.",
-            "User {$this->user->name} going to destination id {$this->destination->id}.",
+            "User {$this->user?->name} going to destination id {$this->destination->id}.",
             "Currently set to workstation {$this->workstation?->id} with status {$this->status->id}."
         ];
 

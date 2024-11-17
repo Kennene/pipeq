@@ -11,7 +11,7 @@ class PipeQ {
      * @param {number} statusId - ID of the ticket status.
      * @returns {Promise} - Promise with the server response.
      */
-    async _moveToSection(ticketId, workstationId, statusId = 3) {
+    async _moveToSection(ticketId, workstationId, statusId = 2) {
         if (!ticketId || !workstationId) {
             console.error(
                 "Missing ticketId or workstationId for _moveToSection"

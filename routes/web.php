@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Http\Controllers\LanguageController;
 
+use App\Http\Controllers\TicketController;
+
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\CoordinatorController;
@@ -60,6 +62,6 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 
 // API for client -> server communication
 // todo: przenieśc do routes/api.php
-Route::any("/register/{destination_id}", [UserController::class, 'register'])->name('_register');
-Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [CoordinatorController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
-Route::any("/end/{ticket_id}", [CoordinatorController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');
+Route::any("/register/{destination_id}", [TicketController::class, 'register'])->name('_register');
+Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [TicketController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
+Route::any("/end/{ticket_id}", [TicketController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');

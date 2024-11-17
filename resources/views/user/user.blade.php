@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -74,14 +75,43 @@
 
 class PipeQ {
     constructor() {
-        //
+        // todo: automatically join channel if user has token
+        
+        //* none of the below works
+        // $.removeCookie('ticket_token');
+        // document.cookie = "ticket_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
 
     _listen() {
-        this.register.listen('UpdateUserAboutHisTicket', function(e) {
+        this.register.listen('UpdateUserAboutHisTicket', (e) => {
             console.log(e);
             toggleOverlay2(e.ticket);
             showLoading();
+        })
+
+        this.register.listen('EndUserTicket', (e) => {
+            console.log('Your ticket has ended', e);
+
+
+            // todo: clear user session and cookie
+
+
+            //* none of the below works
+            // // if ticket has ended, clear cookie and session
+            // console.log(e.ticket.status_id)
+            // if (e.ticket.status_id == {!! App\Models\Status::END !!}) {
+            //     console.log('siema')
+            //     this._clearStorage();
+            // }
+            // console.log(e);
+            // toggleOverlay2(e.ticket);
+            // showLoading();
+            // // if ticket has ended, clear cookie and session
+            // console.log(e.ticket.status_id)
+            // if (e.ticket.status_id == {!! App\Models\Status::END !!}) {
+            //     console.log('siema')
+            //     this._clearStorage();
+            // }
         })
     }
 

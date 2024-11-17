@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cookie;
 use App\Models\Error;
 use App\Events\UpdateUserAboutHisTicket;
 use App\Events\UpdateDisplayAboutTicket;
+use App\Events\EndUserTicket;
 
 use App\Models\Status;
 use App\Models\Destination;
@@ -25,6 +26,7 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
+        //! what if user mistenly selects wrong destination and wants to correct it?
         // for debugging purposes, enable multiple tickets registration
         if (!env('APP_DEBUG')) {
             // get token from cookie within request
@@ -40,6 +42,7 @@ class TicketController extends Controller
                 Cookie::queue('ticket_token', $token);
             }
 
+            // todo: handle exception when user somehow still has valid token, but ticket is nowhere to be found
             // if token is set, that means user already has ticket
             if (isset($token)) {
                 //todo: somehow update the status of user's ticket (he may be already in the middle of the process)
@@ -49,8 +52,6 @@ class TicketController extends Controller
                 ], 200);
             }
         }
-
-        
 
         // create new ticket
         $ticket = Ticket::create([
@@ -62,7 +63,7 @@ class TicketController extends Controller
         broadcast(new UpdateDisplayAboutTicket($ticket));
 
         // Store ticket token in cookie and session
-        //* Ticket's token is used for "light authentication" and listening on websocket channel
+        // Ticket's token is used for "light authentication" and listening on websocket channel
         Cookie::queue('ticket_token', $ticket->token);
         session(['ticket_token' => $ticket->token]);
 
@@ -156,7 +157,7 @@ class TicketController extends Controller
         }
 
         // update user that his ticket has been changed
-        broadcast(new UpdateUserAboutHisTicket($ticket));
+        broadcast(new EndUserTicket($ticket));
 
         // update display about changes made in ticket
         broadcast(new UpdateDisplayAboutTicket($ticket));
@@ -167,7 +168,7 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // todo: remove token from cookie and session from user
+        // todo: somehow remove token from cookie and session from user :S
 
         return response()->json(['message' => "Success"], 200);
     }

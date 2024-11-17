@@ -34,7 +34,7 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('register.' . $this->ticket->token);
+        return new Channel('register.' . $this->ticket->token);
     }
 
     public function broadcastWith()

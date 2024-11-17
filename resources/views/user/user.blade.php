@@ -93,7 +93,7 @@ class PipeQ {
 
                 // if channel name is received, subscribe to it
                 if (response.data.channel) {
-                    this.register = Echo.private(`register.${response.data.channel}`);
+                    this.register = Echo.channel(`register.${response.data.channel}`);
                     this._listen();
                 } else {
                     console.error('Channel name not received');

@@ -30,7 +30,6 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 Route::get("/", [UserController::class, 'index'])
     ->middleware([
-        'auth',
         'role:'.Role::USER
     ])
     ->name('user');

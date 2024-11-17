@@ -74,39 +74,38 @@
 
 class PipeQ {
     constructor() {
-        // todo: change channel to use something other than used id
-        const channel = Echo.private(`register.{{ Auth::user()?->id }}`);
-        this.register = channel;
-        this._listen();
+        //
     }
 
     _listen() {
-        this.register.listen('RegisterNewTicket', function(e) {
-            console.log(e);
-        })
-
         this.register.listen('UpdateUserAboutHisTicket', function(e) {
-            console.log(e); toggleOverlay2(e.ticket); showLoading();
-            
+            console.log(e);
+            toggleOverlay2(e.ticket);
+            showLoading();
         })
-
     }
 
     _register(destination_id) {
         axios.post(`/register/${destination_id}`)
             .then(response => {
-                @if(env('APP_DEBUG'))
-                    console.log(response);
-                @endif
+                // Listen for response with channel name
+                console.log(response);
+
+                // if channel name is received, subscribe to it
+                if (response.data.channel) {
+                    this.register = Echo.private(`register.${response.data.channel}`);
+                    this._listen();
+                } else {
+                    console.error('Channel name not received');
+                }
             })
             .catch(error => {
-
+                // if error message is handled by the server, display it, otherwise display generic error
                 if(error.response.data.error) {
                     console.error(error.response.data.error);
                 } else {
                     console.error(error);
                 }
-                
             });
     }
 }

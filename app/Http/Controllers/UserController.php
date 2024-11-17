@@ -5,24 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cookie;
 use App\Models\Error;
 use App\Models\Color;
 
-use App\Events\RegisterNewTicket;
 use App\Events\UpdateUserAboutHisTicket;
-use App\Events\UpdateDisplayAboutTicket;
 
 use App\Models\Ticket;
 use App\Models\Destination;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $variables["color"] = new Color();
-        $variables["destinations"] = Destination::all();
+        $color = new Color();
+        $destinations = Destination::all();
 
-        return view('user.user')->with($variables);
+        return view('user.user')->with(compact('color', 'destinations'));
     }
 
     // todo: move it to seperate TicketController
@@ -34,8 +33,14 @@ class UserController extends Controller
             return $error->toHTTPresponse();
         }
 
+        // * Instruction on how to get ticket token from session
+        //todo: remove that, it's not needed just and instruction
+        // $ticketToken = session('ticket_token');//->uuid;
+        // dd($ticketToken->toString());
+
         // todo: change it to seek the token, cut off from auth
         //* check if user can have multiple tickets registered
+        //! actually remove that. make user always have only one ticket
         if (!env('MULTIPLE_TICKETS')) {
             if (auth()->user()->hasTickets()) {
                 // find user ticket
@@ -56,12 +61,18 @@ class UserController extends Controller
             'token' => Str::uuid(),
         ]);
 
-        // broadcast event to user his ticket has been registered
-        broadcast(new RegisterNewTicket($ticket));
+        //! broken functionality (for now)
+        // // update display about new registered ticket
+        // broadcast(new UpdateDisplayAboutTicket($ticket));
 
-        // update display about new registered ticket
-        broadcast(new UpdateDisplayAboutTicket($ticket));
+        // Store ticket token in cookie and session
+        //* Ticket's token is used for "light authentication" and listening on websocket channel
+        Cookie::queue('ticket_token', $ticket->token);
 
-        return response()->json(['message' => 'Ticket registered'], 201);
+        // Return response with ticket token as channel to listen on 
+        return response()->json([
+            'message' => 'Ticket registered',
+            'channel' => $ticket->token
+        ], 201);
     }
 }

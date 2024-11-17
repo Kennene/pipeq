@@ -3,10 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\LanguageController;
-
 use App\Models\Role;
-use App\Http\Middleware\CheckRole;
+use App\Http\Controllers\LanguageController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DisplayController;
@@ -30,6 +28,7 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 Route::get("/", [UserController::class, 'index'])
     ->middleware([
+        'auth',
         'role:'.Role::USER
     ])
     ->name('user');

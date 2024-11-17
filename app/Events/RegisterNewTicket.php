@@ -34,7 +34,7 @@ class RegisterNewTicket implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('register.' . $this->ticket->user_id);
+        return new PrivateChannel('register.' . $this->ticket->token);
     }
 
     public function broadcastWith()

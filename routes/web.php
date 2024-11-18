@@ -61,7 +61,10 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 
 // API for client -> server communication
 // todo: przenieśc do routes/api.php
+// todo: change any to post
 Route::any("/register/{destination_id}", [TicketController::class, 'register'])->name('_register');
+Route::any("/endByUser/{ticket_token?}", [TicketController::class, 'endByUser'])->name('_endByUser');
+Route::any("/clearStorage", [TicketController::class, 'clearStorage'])->name('_clear');
+
 Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [TicketController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
 Route::any("/end/{ticket_id}", [TicketController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');
-Route::any("/clear", [TicketController::class, 'clear'])->name('_clear');

@@ -27,25 +27,12 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
-        //! what if user mistenly selects wrong destination and wants to correct it?
         // for debugging purposes, enable multiple tickets registration
         if (!env('APP_DEBUG')) {
-            // get token from cookie within request
-            $token = $request->cookie('ticket_token');
-
-            // check if token was found in cookie
-            if ($token) {
-                // If user sends custom token in cookie, Laravel won't decipher it, therefore reject it
-                session(['ticket_token' => $token]);
-            } elseif (session()->has('ticket_token')) {
-                // User may have deleted the cookie, but still have the session
-                $token = session('ticket_token');
-                Cookie::queue('ticket_token', $token);
-            }
+            $token = $this->getUserToken($request);
 
             // todo: handle exception when user somehow still has valid token, but ticket is nowhere to be found
-            // if token is set, that means user already has ticket
-            if (isset($token)) {
+            if ($token !== null) {
                 //todo: somehow update the status of user's ticket (he may be already in the middle of the process)
                 return response()->json([
                     'message' => 'You already have a ticket registered',
@@ -134,7 +121,7 @@ class TicketController extends Controller
         broadcast(new UpdateDisplayAboutTicket($ticket));
 
         // for debugging purposes, return whole summary of ticket
-        if(env('APP_DEBUG')) {
+        if (env('APP_DEBUG')) {
             return response()->json(['message' => $ticket->summary() ], 200);
         }
         
@@ -168,10 +155,41 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
-        return response()->json(['message' => "Success"], 200);
+        return response()->json(['message' => "Ticket successfully deleted"], 200);
     }
 
-    public function clear(Request $request)
+    public function endByUser(Request $request, ?string $ticket_token = null)
+    {
+        $token = null;
+
+        // if ticket_token is provided, use it
+        if ($ticket_token !== null) {
+            $token = $ticket_token;
+        } else {
+            $token = $this->getUserToken($request);
+        }
+
+        // if no token was found, return error
+        if ($token === null) {
+            $error = new Error(title: 'No token provided', http: 400);
+            return $error->toHTTPresponse();
+        }
+
+        // check if ticket with provided token exists
+        $ticket = Ticket::where('token', $token)->first();
+        if ($ticket === null) {
+            $error = new Error(title: 'Ticket not found', http: 404);
+            return $error->toHTTPresponse();
+        }
+
+        // already clear user's storage. the same is probably done in javascript, but it's better to be sure
+        $this->clearStorage($request);
+
+        // end user's ticket
+        return $this->end($request, $ticket->id);
+    }
+
+    public function clearStorage(Request $request)
     {
         $message = '';
 
@@ -215,5 +233,57 @@ class TicketController extends Controller
         }
 
         return response()->json(['message' => $message], 200);
+    }
+
+    /**
+     * Get user's token from cookie or session
+     * 
+     * Function also corrects user's session if he has token, but no cookie and vice versa
+     * @param Request $request If user sends self-made token in cookie, Laravel won't decipher it, therefore reject it
+     * @return string|null
+     * 
+     */
+    private function getUserToken(?Request $request = null): ?string
+    {
+        // if request is provided, look for cookie with token
+        if ($request != null) {
+            $token = $request->cookie('ticket_token');
+            if ($token) {
+                $this->fixUserStorage($token);
+                return $token;
+            }
+        }
+
+        // look for token in user's session //? actually does it make sense? user can also delete session cookie
+        if (session()->has('ticket_token')) {
+            $token = session('ticket_token');
+            $this->fixUserStorage($token);
+            return $token;
+        }
+
+        return null;
+    }
+
+    /**
+     * Fix user's storage by overwriting ticket_token in session and cookie
+     * 
+     * @param string $token
+     * @return Error|null
+     * @throws \Exception
+     */
+    private function fixUserStorage(string $token): ?Error
+    {
+        try {
+            Cookie::queue('ticket_token', $token);
+            session(['ticket_token' => $token]);
+        } catch (\Exception $e) {
+            return new Error(
+                title: 'Failed to store token in session or cookie',
+                description: $e->getMessage(),
+                http: 500
+            );
+        }
+
+        return null;
     }
 }

@@ -17,4 +17,12 @@ class UserController extends Controller
 
         return view('user.user')->with(compact('color', 'destinations'));
     }
+
+    public function index2(Request $request): View
+    {
+        $color = new Color();
+        $destinations = Destination::all();
+
+        return view('copy')->with(compact('color', 'destinations'));
+    }
 }

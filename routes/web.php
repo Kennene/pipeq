@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
-use App\Http\Controllers\LanguageController;
 
 use App\Http\Controllers\TicketController;
 
@@ -29,11 +29,11 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 
 Route::get("/", [UserController::class, 'index'])
-    ->middleware([
-        'role:'.Role::USER
-    ])
+    ->middleware('role:'.Role::USER)
     ->name('user');
 
+// todo: remove this route
+Route::get("/2", [UserController::class, 'index2'])->middleware('role:'.Role::USER);
 
 Route::get("/display", [DisplayController::class, 'index'])
     ->middleware([
@@ -58,13 +58,24 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
     ])
     ->name('administrator');
 
+    
 
-// API for client -> server communication
-// todo: przenieśc do routes/api.php
-// todo: change any to post
-Route::any("/register/{destination_id}", [TicketController::class, 'register'])->name('_register');
-Route::any("/endByUser/{ticket_token?}", [TicketController::class, 'endByUser'])->name('_endByUser');
-Route::any("/clearStorage", [TicketController::class, 'clearStorage'])->name('_clear');
+//* API for client -> server communication
+// todo: change any to post at the end of the project
 
-Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [TicketController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
-Route::any("/end/{ticket_id}", [TicketController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');
+//* user space
+Route::middleware('role:'.Role::USER)->group(function () {
+    Route::controller(TicketController::class)->group(function () {
+        Route::any("/register/{destination_id}", 'register')->name('_register');
+        Route::any("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
+        Route::any("/clearStorage", 'clearStorage')->name('_clear');
+    });
+});
+
+//* coordinator space
+Route::middleware(['auth', 'verified', 'role:'.Role::COORDINATOR])->group(function () {
+    Route::controller(TicketController::class)->group(function () {
+        Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", 'move')->name('_move');
+        Route::any("/end/{ticket_id}", 'end')->name('_end');
+    });
+});

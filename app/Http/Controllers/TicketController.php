@@ -31,13 +31,20 @@ class TicketController extends Controller
         if (!env('APP_DEBUG')) {
             $token = $this->getUserToken($request);
 
-            // todo: handle exception when user somehow still has valid token, but ticket is nowhere to be found
             if ($token !== null) {
-                //todo: somehow update the status of user's ticket (he may be already in the middle of the process)
-                return response()->json([
-                    'message' => 'You already have a ticket registered',
-                    'channel' => $token
-                ], 200);
+                if (Ticket::where('token', $token)->exists()) {
+                    
+                    //todo: somehow update the status of user's ticket (he may be already in the middle of the process)
+
+                    return response()->json([
+                        'message' => 'You already have a ticket registered',
+                        'channel' => $token
+                    ], 200);
+                } else {
+                    // somehow user sent valid token, but ticket is not found
+                    // clear user's storage and continue creating new ticket
+                    $this->clearStorage($request);
+                }
             }
         }
 

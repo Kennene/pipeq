@@ -25,11 +25,6 @@ class UpdateDisplayAboutTicket implements ShouldBroadcastNow
         return new PrivateChannel('display');
     }
 
-    public function broadcastAs()
-    {
-        return 'UpdateDisplayAboutTicket';
-    }
-
     public function broadcastWith()
     {
         return [

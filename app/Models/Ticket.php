@@ -21,7 +21,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int'; 
 
-    protected $fillable = ['destination_id'];
+    protected $fillable = ['destination_id', 'token'];
 
     /**
      * Boot function to add ticket_nr to the ticket
@@ -51,6 +51,7 @@ class Ticket extends Model
         });
     }
 
+    // relationships
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -142,7 +143,7 @@ class Ticket extends Model
     {
         $message = [
             "Ticket id: {$this->id}.",
-            "User {$this->user->name} going to destination id {$this->destination->id}.",
+            "User {$this->user?->name} going to destination id {$this->destination->id}.",
             "Currently set to workstation {$this->workstation?->id} with status {$this->status->id}."
         ];
 

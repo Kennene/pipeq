@@ -78,7 +78,7 @@ class PipeQ {
         }
 
         // fill the card with ticket data
-        ticket_card.querySelector('h5').textContent = ticket.user;
+        ticket_card.querySelector('h5').textContent = ticket.ticket_nr;
         ticket_card.querySelector('p').textContent = ticket.status;
         ticket_card.querySelector('h6').textContent = ticket.workstation;
 

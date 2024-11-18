@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -74,33 +75,54 @@
 
 class PipeQ {
     constructor() {
-        // todo: change channel to use something other than used id
-        const channel = Echo.private(`register.{{ Auth::user()?->id }}`);
-        this.register = channel;
-        this._listen();
+        // todo: automatically join channel if user has token
+        
+        //* none of the below works
+        // $.removeCookie('ticket_token');
+        // document.cookie = "ticket_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
 
     _listen() {
-        this.register.listen('RegisterNewTicket', function(e) {
+        this.register.listen('UpdateUserAboutHisTicket', (e) => {
             console.log(e);
+            toggleOverlay2(e.ticket);
+            showLoading();
         })
 
-        this.register.listen('UpdateUserAboutHisTicket', function(e) {
-            console.log(e); toggleOverlay2(e.ticket); showLoading();
-            
-        })
+        this.register.listen('EndUserTicket', (e) => {
+            console.log('Your ticket has ended');
 
+            axios.post('{!! route("_clear"); !!}')
+                .then(response => {
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        })
     }
 
     _register(destination_id) {
         axios.post(`/register/${destination_id}`)
             .then(response => {
-                @if(env('APP_DEBUG'))
-                    console.log(response);
-                @endif
+                // Listen for response with channel name
+                console.log(response.data.message + ' token: ' + response.data.channel);
+
+                // if channel name is received, subscribe to it
+                if (response.data.channel) {
+                    this.register = Echo.channel(`register.${response.data.channel}`);
+                    this._listen();
+                } else {
+                    console.error('Channel name not received');
+                }
             })
             .catch(error => {
-                console.error(error.response.data.error);
+                // if error message is handled by the server, display it, otherwise display generic error
+                if(error.response.data.error) {
+                    console.error(error.response.data.error);
+                } else {
+                    console.error(error);
+                }
             });
     }
 }

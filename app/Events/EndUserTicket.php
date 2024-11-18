@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use \App\Models\Ticket;
 use \App\Models\TicketView;
 
-class UpdateUserAboutHisTicket implements ShouldBroadcastNow
+class EndUserTicket implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -40,7 +40,7 @@ class UpdateUserAboutHisTicket implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'message' => $this->message ?? 'Your ticket has been updated',
+            'message' => $this->message ?? 'Your ticket has been closed.',
             'ticket' => $this->ticket_view
         ];
     }

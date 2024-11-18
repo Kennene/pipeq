@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
 use App\Models\Error;
@@ -140,7 +141,7 @@ class TicketController extends Controller
         return response()->json(['message' => $handled_error ?? 'Success' ], 200);
     }
 
-    public function end(int $ticket_id)
+    public function end(Request $request, int $ticket_id)
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -148,7 +149,6 @@ class TicketController extends Controller
             $error = new Error(title: 'Ticket not found', http: 404);
             return $error->toHTTPresponse();
         }
-
 
         // try to update status
         $error = $ticket->updateStatus(Status::END);
@@ -168,8 +168,52 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
-        // todo: somehow remove token from cookie and session from user :S
-
         return response()->json(['message' => "Success"], 200);
+    }
+
+    public function clear(Request $request)
+    {
+        $message = '';
+
+        // try to remove ticket token from session
+        try {
+            if (session()->has('ticket_token')) {
+                Session::forget('ticket_token');
+                $message .= 'Ticket token removed from session';
+            }
+        } catch (\Exception $e) {
+            $error = new Error(title: 'Failed to clear token from session',
+            description: $e->getMessage(),
+            http: 500);
+            return $error->toHTTPresponse();
+        }
+
+        // try to remove ticket token from cookie
+        try {
+            if ($request->cookie('ticket_token')) {
+                Cookie::queue(Cookie::forget('ticket_token'));
+
+                // if token was previously found in cookie, add additional message
+                if ($message == '') {
+                    $message .= 'Ticket token removed from cookie';
+                } else {
+                    $message = 'Ticket token removed from both session and cookie';
+                }
+            }
+        } catch (\Exception $e) {
+            $error = new Error(
+                title: 'Failed to remove cookie with ticket token', 
+                description: $e->getMessage(), 
+                http: 500
+            );
+            return $error->toHTTPresponse();
+        }
+
+        // if no token was found, return different message
+        if ($message == '') {
+            $message = 'No ticket token found';
+        }
+
+        return response()->json(['message' => $message], 200);
     }
 }

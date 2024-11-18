@@ -90,28 +90,15 @@ class PipeQ {
         })
 
         this.register.listen('EndUserTicket', (e) => {
-            console.log('Your ticket has ended', e);
+            console.log('Your ticket has ended');
 
-
-            // todo: clear user session and cookie
-
-
-            //* none of the below works
-            // // if ticket has ended, clear cookie and session
-            // console.log(e.ticket.status_id)
-            // if (e.ticket.status_id == {!! App\Models\Status::END !!}) {
-            //     console.log('siema')
-            //     this._clearStorage();
-            // }
-            // console.log(e);
-            // toggleOverlay2(e.ticket);
-            // showLoading();
-            // // if ticket has ended, clear cookie and session
-            // console.log(e.ticket.status_id)
-            // if (e.ticket.status_id == {!! App\Models\Status::END !!}) {
-            //     console.log('siema')
-            //     this._clearStorage();
-            // }
+            axios.post('{!! route("_clear"); !!}')
+                .then(response => {
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         })
     }
 
@@ -119,7 +106,7 @@ class PipeQ {
         axios.post(`/register/${destination_id}`)
             .then(response => {
                 // Listen for response with channel name
-                console.log(response);
+                console.log(response.data.message + ' token: ' + response.data.channel);
 
                 // if channel name is received, subscribe to it
                 if (response.data.channel) {

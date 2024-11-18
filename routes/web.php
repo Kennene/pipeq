@@ -64,3 +64,4 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 Route::any("/register/{destination_id}", [TicketController::class, 'register'])->name('_register');
 Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", [TicketController::class, 'move'])->middleware(['auth', 'verified'])->name('_move');
 Route::any("/end/{ticket_id}", [TicketController::class, 'end'])->middleware(['auth', 'verified'])->name('_end');
+Route::any("/clear", [TicketController::class, 'clear'])->name('_clear');

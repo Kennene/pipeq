@@ -19,7 +19,7 @@ class Ticket extends Model
     protected $table = "tickets";
     protected $primaryKey = 'id';
     public $incrementing = true;
-    protected $keyType = 'int'; 
+    protected $keyType = 'int';
 
     protected $fillable = ['destination_id', 'token'];
 
@@ -73,12 +73,23 @@ class Ticket extends Model
     }
 
     /**
-     * Check if user is already registered
-     * @return bool
+     * Returns ticket by provided token
+     * 
+     * @param string|null $token
+     * @return Error|Ticket
      */
-    static function isUserAlreadyRegistered(int $user_id): bool
+    public static function getByToken(?string $token): Error|Ticket
     {
-        return Ticket::where('user_id', $user_id)->exists();
+        if ($token === null) {
+            return new Error(title: 'No token provided', http: 400);
+        }
+
+        $ticket = self::where('token', $token)->first();
+        if ($ticket === null) {
+            return new Error(title: 'Ticket not found', http: 404);
+        }
+
+        return $ticket;
     }
 
     /**
@@ -89,7 +100,7 @@ class Ticket extends Model
      * @throws \Exception
      * @throws \Throwable
      */
-    public function updateWorkstation(?int $workstation_id): ?Error
+    public function setWorkstation(?int $workstation_id): ?Error
     {
         // check if workstation exists if it is not null
         if ($workstation_id != null) {
@@ -98,7 +109,7 @@ class Ticket extends Model
                 return new Error(title: 'Workstation not found', http: 404);
             }
         }
-        
+
         // try to update workstation
         try {
             $this->workstation_id = $workstation_id;
@@ -117,7 +128,7 @@ class Ticket extends Model
      * @throws \Exception
      * @throws \Throwable
      */
-    public function updateStatus(int $status_id): ?Error
+    public function setStatus(int $status_id): ?Error
     {
         $status = Status::find($status_id);
         if ($status === null) {
@@ -160,7 +171,7 @@ class Ticket extends Model
     public function end(): ?Error
     {
         // be sure to update status to END
-        $error = $this->updateStatus(Status::END);
+        $error = $this->setStatus(Status::END);
         if ($error !== null) {
             return $error;
         }
@@ -183,7 +194,7 @@ class Ticket extends Model
                 'original_created_at' => $this->created_at,
                 'original_updated_at' => $this->updated_at,
                 'modified_by' => $this->modified_by,
-    
+
                 'user' => $tv->user,
                 'status' => $tv->status,
                 'destination' => $tv->destination,

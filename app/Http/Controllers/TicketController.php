@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use \Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
@@ -19,7 +20,14 @@ use App\Models\Ticket;
 
 class TicketController extends Controller
 {
-    public function register(Request $request, $destination_id)
+    /**
+     * Register new ticket
+     * 
+     * @param Request $request
+     * @param int $destination_id
+     * @return JsonResponse
+     */
+    public function register(Request $request, $destination_id): JsonResponse
     {
         // check if specified destination exists
         if (Destination::find($destination_id) === null) {
@@ -67,28 +75,24 @@ class TicketController extends Controller
         ], 201);
     }
 
-    public function status(Request $request, ?string $ticket_token = null)
+    /**
+     * Get status of user's ticket
+     * 
+     * @param Request $request
+     * @param string|null $ticket_token
+     * @return JsonResponse
+     */
+    public function status(Request $request, ?string $ticket_token = null): JsonResponse
     {
-        $token = null;
+        // use provided token or try to get it from user's storage
+        $token = $ticket_token ?? $this->getUserToken($request);
 
-        // if ticket_token is provided, use it
-        if ($ticket_token !== null) {
-            $token = $ticket_token;
-        } else {
-            $token = $this->getUserToken($request);
-        }
+        // search for ticket with provided token
+        $ticket = Ticket::getByToken($token);
 
-        // if no token was found, return error
-        if ($token === null) {
-            $error = new Error(title: 'No token provided', http: 400);
-            return $error->toHTTPresponse();
-        }
-
-        // check if ticket with provided token exists
-        $ticket = Ticket::where('token', $token)->first();
-        if ($ticket === null) {
-            $error = new Error(title: 'Ticket with that token do not exist', http: 404);
-            return $error->toHTTPresponse();
+        // if no ticket is found, return error
+        if ($ticket instanceof Error) {
+            return $ticket->toHTTPresponse();
         }
 
         // update user about status of his ticket
@@ -97,7 +101,16 @@ class TicketController extends Controller
         return response()->json(['message' => 'Status sent via WebSocket'], 200);
     }
 
-    public function move(Request $request, int $ticket_id, ?string $workstation_id, int $status_id = null)
+    /**
+     * Move ticket to another workstation with specified status
+     * 
+     * @param Request $request
+     * @param int $ticket_id
+     * @param string|null $workstation_id If provided with null value, status will be set to WAITING
+     * @param int|null $status_id If provided with null value, status will default to IN
+     * @return JsonResponse
+     */
+    public function move(Request $request, int $ticket_id, ?string $workstation_id, ?int $status_id = null): JsonResponse
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -125,7 +138,7 @@ class TicketController extends Controller
         }
 
         // try to update workstation
-        $error = $ticket->updateWorkstation($workstation_id);
+        $error = $ticket->setWorkstation($workstation_id);
         if ($error !== null) {
             return $error->toHTTPresponse();
         }
@@ -133,14 +146,14 @@ class TicketController extends Controller
         // if workstation_id is provided, try to update status
         if ($workstation_id != null) {
             // try to update status
-            $error = $ticket->updateStatus($status_id);
+            $error = $ticket->setStatus($status_id);
             if ($error !== null) {
                 return $error->toHTTPresponse();
             }
         } else {
             // workstation_id is not provided, set status to WAITING
             // if workstation_id is null, but status is anything other that WAITING, user would not know where to go
-            $error = $ticket->updateStatus(Status::WAITING);
+            $error = $ticket->setStatus(Status::WAITING);
             if ($error !== null) {
                 return $error->toHTTPresponse();
             }
@@ -163,7 +176,16 @@ class TicketController extends Controller
         return response()->json(['message' => $handled_error ?? 'Success'], 200);
     }
 
-    public function end(Request $request, int $ticket_id)
+    /**
+     * Ends lifecycle of ticket
+     * 
+     * This method can be directly called from coordinator or indirectly from user
+     * 
+     * @param Request $request
+     * @param int $ticket_id
+     * @return JsonResponse
+     */
+    public function end(Request $request, int $ticket_id): JsonResponse
     {
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
@@ -173,7 +195,7 @@ class TicketController extends Controller
         }
 
         // try to update status
-        $error = $ticket->updateStatus(Status::END);
+        $error = $ticket->setStatus(Status::END);
         if ($error !== null) {
             return $error->toHTTPresponse();
         }
@@ -193,29 +215,28 @@ class TicketController extends Controller
         return response()->json(['message' => "Ticket successfully deleted"], 200);
     }
 
-    public function endByUser(Request $request, ?string $ticket_token = null)
+    /**
+     * Ends lifecycle of ticket by user
+     * 
+     * This method is used when user demands to end his ticket, for example
+     * if he made a mistake when choosing destination. Method clears user's
+     * storage and the calls end method
+     * 
+     * @param Request $request
+     * @param string|null $ticket_token If not provided, method will attempt to get it from user's storage
+     * @return JsonResponse
+     */
+    public function endByUser(Request $request, ?string $ticket_token = null): JsonResponse
     {
-        // todo: duplicated code from status method
-        $token = null;
+        // use provided token or try to get it from user's storage
+        $token = $ticket_token ?? $this->getUserToken($request);
 
-        // if ticket_token is provided, use it
-        if ($ticket_token !== null) {
-            $token = $ticket_token;
-        } else {
-            $token = $this->getUserToken($request);
-        }
+        // search for ticket with provided token
+        $ticket = Ticket::getByToken($token);
 
-        // if no token was found, return error
-        if ($token === null) {
-            $error = new Error(title: 'No token provided', http: 400);
-            return $error->toHTTPresponse();
-        }
-
-        // check if ticket with provided token exists
-        $ticket = Ticket::where('token', $token)->first();
-        if ($ticket === null) {
-            $error = new Error(title: 'Ticket not found', http: 404);
-            return $error->toHTTPresponse();
+        // if no ticket is found, return error
+        if ($ticket instanceof Error) {
+            return $ticket->toHTTPresponse();
         }
 
         // already clear user's storage. the same is probably done in javascript, but it's better to be sure
@@ -225,7 +246,13 @@ class TicketController extends Controller
         return $this->end($request, $ticket->id);
     }
 
-    public function clearStorage(Request $request)
+    /**
+     * Clear user's storage, which means removing ticket token from session and cookie
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function clearStorage(Request $request): JsonResponse
     {
         $message = '';
 
@@ -277,24 +304,17 @@ class TicketController extends Controller
      * Get user's token from cookie or session
      * 
      * Function also corrects user's session if he has token, but no cookie and vice versa
-     * @param Request $request If user sends self-made token in cookie, Laravel won't decipher it, therefore reject it
+     * @param Request|null $request If user sends self-made token in cookie, Laravel won't decipher it, therefore reject it
      * @return string|null
      * 
      */
     private function getUserToken(?Request $request = null): ?string
     {
-        // if request is provided, look for cookie with token
-        if ($request != null) {
-            $token = $request->cookie('ticket_token');
-            if ($token) {
-                $this->fixUserStorage($token);
-                return $token;
-            }
-        }
+        // try to get token from cookie or session
+        $token = $request->cookie('ticket_token') ?? session('ticket_token');
 
-        // look for token in user's session //? actually does it make sense? user can also delete session cookie
-        if (session()->has('ticket_token')) {
-            $token = session('ticket_token');
+        // if token is found, fix user's storage and return token
+        if ($token !== null) {
             $this->fixUserStorage($token);
             return $token;
         }
@@ -303,7 +323,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Fix user's storage by overwriting ticket_token in session and cookie
+     * Fix user's storage by overwriting ticket_token in both session and cookie
      * 
      * @param string $token
      * @return Error|null

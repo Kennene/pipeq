@@ -32,10 +32,8 @@ class TicketController extends Controller
             $token = $this->getUserToken($request);
 
             if ($token !== null) {
+                // user registers new ticket, but he already has one
                 if (Ticket::where('token', $token)->exists()) {
-                    
-                    //todo: somehow update the status of user's ticket (he may be already in the middle of the process)
-
                     return response()->json([
                         'message' => 'You already have a ticket registered',
                         'channel' => $token
@@ -67,6 +65,36 @@ class TicketController extends Controller
             'message' => 'Ticket registered',
             'channel' => $ticket->token
         ], 201);
+    }
+
+    public function status(Request $request, ?string $ticket_token = null)
+    {
+        $token = null;
+
+        // if ticket_token is provided, use it
+        if ($ticket_token !== null) {
+            $token = $ticket_token;
+        } else {
+            $token = $this->getUserToken($request);
+        }
+
+        // if no token was found, return error
+        if ($token === null) {
+            $error = new Error(title: 'No token provided', http: 400);
+            return $error->toHTTPresponse();
+        }
+
+        // check if ticket with provided token exists
+        $ticket = Ticket::where('token', $token)->first();
+        if ($ticket === null) {
+            $error = new Error(title: 'Ticket with that token do not exist', http: 404);
+            return $error->toHTTPresponse();
+        }
+
+        // update user about status of his ticket
+        broadcast(new UpdateUserAboutHisTicket($ticket, 'Your ticket status has been requested'));
+
+        return response()->json(['message' => 'Status sent via WebSocket'], 200);
     }
 
     public function move(Request $request, int $ticket_id, ?string $workstation_id, int $status_id = null)
@@ -129,10 +157,10 @@ class TicketController extends Controller
 
         // for debugging purposes, return whole summary of ticket
         if (env('APP_DEBUG')) {
-            return response()->json(['message' => $ticket->summary() ], 200);
+            return response()->json(['message' => $ticket->summary()], 200);
         }
-        
-        return response()->json(['message' => $handled_error ?? 'Success' ], 200);
+
+        return response()->json(['message' => $handled_error ?? 'Success'], 200);
     }
 
     public function end(Request $request, int $ticket_id)
@@ -167,6 +195,7 @@ class TicketController extends Controller
 
     public function endByUser(Request $request, ?string $ticket_token = null)
     {
+        // todo: duplicated code from status method
         $token = null;
 
         // if ticket_token is provided, use it
@@ -207,9 +236,11 @@ class TicketController extends Controller
                 $message .= 'Ticket token removed from session';
             }
         } catch (\Exception $e) {
-            $error = new Error(title: 'Failed to clear token from session',
-            description: $e->getMessage(),
-            http: 500);
+            $error = new Error(
+                title: 'Failed to clear token from session',
+                description: $e->getMessage(),
+                http: 500
+            );
             return $error->toHTTPresponse();
         }
 
@@ -227,8 +258,8 @@ class TicketController extends Controller
             }
         } catch (\Exception $e) {
             $error = new Error(
-                title: 'Failed to remove cookie with ticket token', 
-                description: $e->getMessage(), 
+                title: 'Failed to remove cookie with ticket token',
+                description: $e->getMessage(),
                 http: 500
             );
             return $error->toHTTPresponse();

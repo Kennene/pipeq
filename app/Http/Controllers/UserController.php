@@ -23,6 +23,6 @@ class UserController extends Controller
         $color = new Color();
         $destinations = Destination::all();
 
-        return view('copy')->with(compact('color', 'destinations'));
+        return view('subscriber.user')->with(compact('color', 'destinations'));
     }
 }

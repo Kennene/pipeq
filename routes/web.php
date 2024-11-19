@@ -15,13 +15,18 @@ use App\Http\Controllers\AdministratorController;
 
 
 // todo: clean up this code. user's don't have dashboards or need to register
-Route::get('/dashboard', function () {return view('dashboard');})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::post('/logout', function () {Auth::logout();return redirect('/login');})->name('logout');
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/login');
+})->name('logout');
 require __DIR__ . '/auth.php';
 
 
@@ -29,16 +34,16 @@ Route::get('/language/{locale}', [LanguageController::class, 'set'])->name('loca
 
 
 Route::get("/", [UserController::class, 'index'])
-    ->middleware('role:'.Role::USER)
+    ->middleware('role:' . Role::USER)
     ->name('user');
 
 // todo: remove this route
-Route::get("/2", [UserController::class, 'index2'])->middleware('role:'.Role::USER);
+Route::get("/2", [UserController::class, 'index2'])->middleware('role:' . Role::USER);
 
 Route::get("/display", [DisplayController::class, 'index'])
     ->middleware([
         'auth',
-        'role:'.Role::DISPLAY
+        'role:' . Role::DISPLAY
     ])
     ->name('display');
 
@@ -46,7 +51,7 @@ Route::get("/display", [DisplayController::class, 'index'])
 Route::get("/coordinator", [CoordinatorController::class, 'index'])
     ->middleware([
         'auth',
-        'role:'.Role::COORDINATOR
+        'role:' . Role::COORDINATOR
     ])
     ->name('coordinator');
 
@@ -54,26 +59,27 @@ Route::get("/coordinator", [CoordinatorController::class, 'index'])
 Route::get("/administrator", [AdministratorController::class, 'index'])
     ->middleware([
         'auth',
-        'role:'.Role::ADMINISTRATOR
+        'role:' . Role::ADMINISTRATOR
     ])
     ->name('administrator');
 
-    
+
 
 //* API for client -> server communication
 // todo: change any to post at the end of the project
 
 //* user space
-Route::middleware('role:'.Role::USER)->group(function () {
+Route::middleware('role:' . Role::USER)->group(function () {
     Route::controller(TicketController::class)->group(function () {
         Route::any("/register/{destination_id}", 'register')->name('_register');
+        Route::any("/status/{ticket_token?}", 'status')->name('_status');
         Route::any("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
         Route::any("/clearStorage", 'clearStorage')->name('_clear');
     });
 });
 
 //* coordinator space
-Route::middleware(['auth', 'verified', 'role:'.Role::COORDINATOR])->group(function () {
+Route::middleware(['auth', 'verified', 'role:' . Role::COORDINATOR])->group(function () {
     Route::controller(TicketController::class)->group(function () {
         Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", 'move')->name('_move');
         Route::any("/end/{ticket_id}", 'end')->name('_end');

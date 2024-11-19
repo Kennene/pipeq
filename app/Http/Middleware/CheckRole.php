@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Error;
+use App\Models\Role;
 
 class CheckRole
 {
@@ -17,16 +18,14 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, int $role): Response
     {
-        // if this is a user space, move forward // todo: maybe more elegant? or handle tokens?
-        if ($role === 1) {
+        // if this is a user space, move forward
+        if ($role < Role::DISPLAY) {
             return $next($request);
         }
 
-        // get loggged user
+        // get loggged user and prepare Unauthorized error
         $user = Auth::user();
-
-        // prepare Unauthorized error
-        $error = new Error(title: 'Unauthorized', http: 403);
+        $error = new Error(title: 'Unauthorized', http: RESPONSE::HTTP_UNAUTHORIZED);
 
         // check if user doesn't exist or doesn't have roles
         if (!$user || !$user->roles) {
@@ -51,7 +50,7 @@ class CheckRole
          *  - Administrator can access everything
          * 
          *  User can also have mutliple roles in database.
-         *  For now this is only for future use if infrastructure will change.
+         *  ^ For now this is only for future use if infrastructure will change.
          */
 
         // Check for cascading roles

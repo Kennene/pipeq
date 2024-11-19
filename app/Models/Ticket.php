@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\Error;
@@ -81,12 +82,12 @@ class Ticket extends Model
     public static function getByToken(?string $token): Error|Ticket
     {
         if ($token === null) {
-            return new Error(title: 'No token provided', http: 400);
+            return new Error(title: 'No token provided', http: RESPONSE::HTTP_BAD_REQUEST);
         }
 
         $ticket = self::where('token', $token)->first();
         if ($ticket === null) {
-            return new Error(title: 'Ticket not found', http: 404);
+            return new Error(title: 'Ticket not found', http: RESPONSE::HTTP_NOT_FOUND);
         }
 
         return $ticket;
@@ -106,7 +107,7 @@ class Ticket extends Model
         if ($workstation_id != null) {
             $workstation = Workstation::find($workstation_id);
             if ($workstation === null) {
-                return new Error(title: 'Workstation not found', http: 404);
+                return new Error(title: 'Workstation not found', http: RESPONSE::HTTP_NOT_FOUND);
             }
         }
 
@@ -115,7 +116,7 @@ class Ticket extends Model
             $this->workstation_id = $workstation_id;
             $this->save();
         } catch (\Exception $errorMessage) {
-            return new Error('Failed to update workstation', $errorMessage, 500);
+            return new Error('Failed to update workstation', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return null;
@@ -132,14 +133,14 @@ class Ticket extends Model
     {
         $status = Status::find($status_id);
         if ($status === null) {
-            return new Error(title: 'Status not found', http: 404);
+            return new Error(title: 'Status not found', http: RESPONSE::HTTP_NOT_FOUND);
         }
 
         try {
             $this->status_id = $status_id;
             $this->save();
         } catch (\Exception $errorMessage) {
-            return new Error('Failed to update status', $errorMessage, 500);
+            return new Error('Failed to update status', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return null;
@@ -176,12 +177,6 @@ class Ticket extends Model
             return $error;
         }
 
-        // check if corralated view for sure exists, because why not, better to be safe
-        $tv = TicketView::find($this->id);
-        if ($tv === null) {
-            return new Error('Correlated view does not exist. Panic!', 404);
-        }
-
         // try to insert ended ticket into tickets_ended table
         try {
             DB::table('tickets_ended')->insert([
@@ -201,7 +196,11 @@ class Ticket extends Model
                 'workstation' => $tv->workstation
             ]);
         } catch (\Exception $errorMessage) {
-            return new Error('Failed to safe data into tickets_ended', $errorMessage, 500);
+            return new Error(
+                'Failed to safe data into tickets_ended',
+                $errorMessage,
+                RESPONSE::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         $this->delete();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 use \Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Session;
@@ -31,7 +32,7 @@ class TicketController extends Controller
     {
         // check if specified destination exists
         if (Destination::find($destination_id) === null) {
-            $error = new Error(title: 'Destination not found', http: 404);
+            $error = new Error(title: 'Destination not found', http: RESPONSE::HTTP_NOT_FOUND);
             return $error->toHTTPresponse();
         }
 
@@ -72,7 +73,7 @@ class TicketController extends Controller
         return response()->json([
             'message' => 'Ticket registered',
             'channel' => $ticket->token
-        ], 201);
+        ], RESPONSE::HTTP_CREATED);
     }
 
     /**
@@ -98,7 +99,7 @@ class TicketController extends Controller
         // update user about status of his ticket
         broadcast(new UpdateUserAboutHisTicket($ticket, 'Your ticket status has been requested'));
 
-        return response()->json(['message' => 'Status sent via WebSocket'], 200);
+        return response()->json(['message' => 'Status sent via WebSocket'], RESPONSE::HTTP_OK);
     }
 
     /**
@@ -115,7 +116,7 @@ class TicketController extends Controller
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
         if ($ticket === null) {
-            $error = new Error(title: 'Ticket not found', http: 404);
+            $error = new Error(title: 'Ticket not found', http: RESPONSE::HTTP_NOT_FOUND);
             return $error->toHTTPresponse();
         }
 
@@ -124,7 +125,7 @@ class TicketController extends Controller
 
             // check if status_id is valid
             if (Status::find($status_id) === null) {
-                $error = new Error(title: 'Provided status does not exist', http: 404);
+                $error = new Error(title: 'Provided status does not exist', http: RESPONSE::HTTP_NOT_FOUND);
                 return $error->toHTTPresponse();
             }
 
@@ -170,10 +171,10 @@ class TicketController extends Controller
 
         // for debugging purposes, return whole summary of ticket
         if (env('APP_DEBUG')) {
-            return response()->json(['message' => $ticket->summary()], 200);
+            return response()->json(['message' => $ticket->summary()], RESPONSE::HTTP_OK);
         }
 
-        return response()->json(['message' => $handled_error ?? 'Success'], 200);
+        return response()->json(['message' => $handled_error ?? 'Success'], RESPONSE::HTTP_OK);
     }
 
     /**
@@ -190,7 +191,7 @@ class TicketController extends Controller
         // check if specified ticket exists
         $ticket = Ticket::find($ticket_id);
         if ($ticket === null) {
-            $error = new Error(title: 'Ticket not found', http: 404);
+            $error = new Error(title: 'Ticket not found', http: RESPONSE::HTTP_NOT_FOUND);
             return $error->toHTTPresponse();
         }
 
@@ -212,7 +213,7 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
-        return response()->json(['message' => "Ticket successfully deleted"], 200);
+        return response()->json(['message' => "Ticket successfully deleted"], RESPONSE::HTTP_OK);
     }
 
     /**
@@ -266,7 +267,7 @@ class TicketController extends Controller
             $error = new Error(
                 title: 'Failed to clear token from session',
                 description: $e->getMessage(),
-                http: 500
+                http: RESPONSE::HTTP_INTERNAL_SERVER_ERROR
             );
             return $error->toHTTPresponse();
         }
@@ -287,7 +288,7 @@ class TicketController extends Controller
             $error = new Error(
                 title: 'Failed to remove cookie with ticket token',
                 description: $e->getMessage(),
-                http: 500
+                http: RESPONSE::HTTP_INTERNAL_SERVER_ERROR
             );
             return $error->toHTTPresponse();
         }
@@ -297,7 +298,7 @@ class TicketController extends Controller
             $message = 'No ticket token found';
         }
 
-        return response()->json(['message' => $message], 200);
+        return response()->json(['message' => $message], RESPONSE::HTTP_OK);
     }
 
     /**
@@ -338,7 +339,7 @@ class TicketController extends Controller
             return new Error(
                 title: 'Failed to store token in session or cookie',
                 description: $e->getMessage(),
-                http: 500
+                http: RESPONSE::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 

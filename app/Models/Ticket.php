@@ -160,7 +160,6 @@ class Ticket extends Model
         return implode(' ', $message);
     }
 
-    // todo: inaczej to jakoś zaprojektować, to chyba nie jest zbyt eleganckie
     /**
      * Removes ticket from queue and moves in into tickets_ended table, for historical purposes
      * @return Error|null

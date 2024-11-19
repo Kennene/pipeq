@@ -45,29 +45,32 @@
 <script>
     class PipeQ {
         constructor() {
-            // todo: automatically join channel if user has token
             console.log('PipeQ initialized');
 
-            //! //todo: websocket closes connection when waiting for too long
+            // Upon page refresh, try to autoconnect to the user's channel
+            axios.post(`/getChannel`)
+                .then(response => {
+                    if (response.status == 200) {
+                        const channel = response.data.channel;
+                        this._listen(channel);
+                        axios.post(`/status/${channel}`)
+                    }
+                })
+                .catch(error => {});
         }
 
-        _listen() {
-            this.register.listen('UpdateUserAboutHisTicket', (e) => {
-                console.log(e.message, e.ticket);
-            })
+        _listen(channel) {
 
-            // todo: why it spams as well as _updateTicketStatusByRequest?
-            this.register.listen('EndUserTicket', (e) => {
-                console.log('Your ticket has ended');
+            Echo.channel(`register.${channel}`)
 
-                axios.post('{!! route("_clear"); !!}')
-                    .then(response => {
-                        console.log(response.data.message);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            })
+                .listen('UpdateUserAboutHisTicket', (e) => {
+                    console.log(e);
+                })
+
+                .listen('EndUserTicket', (e) => {
+                    console.log(e);
+                    axios.post(`/clearStorage`);
+                })
         }
 
         _register(destination_id) {
@@ -79,24 +82,13 @@
 
                     // if channel name is received, subscribe to it
                     if (response.data.channel) {
-                        const channel = response.data.channel;
-                        this.register = Echo.channel(`register.${channel}`);
-                        this._listen();
-                        this._updateTicketStatusByRequest();
+                        this._listen(response.data.channel);
                     } else {
                         console.error('Channel name not received');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                });
-        }
-
-        _updateTicketStatusByRequest(channel = '') {
-            // todo: why it spams multiple requests, but only when ticket is already registered?
-            axios.post(`/status/${channel}`)
-                .catch(error => {
-                    console.log(error);
                 });
         }
     }

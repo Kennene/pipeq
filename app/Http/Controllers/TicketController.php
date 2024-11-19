@@ -103,6 +103,30 @@ class TicketController extends Controller
     }
 
     /**
+     * Provide user with his channel name
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getChannel(Request $request): JsonResponse
+    {
+        // try to get token from user's storage
+        $token = $this->getUserToken($request);
+
+        // search for ticket with provided token
+        $ticket = Ticket::getByToken($token);
+
+        // if no ticket is found, return error
+        if ($ticket instanceof Error) {
+            return response()->json(['message' => 'Channel does not exist'], RESPONSE::HTTP_NOT_FOUND);
+        } else {
+            // don't need, just to be sure
+            $this->fixUserStorage($token);
+            return response()->json(['channel' => $token], RESPONSE::HTTP_OK);
+        }
+    }
+
+    /**
      * Move ticket to another workstation with specified status
      * 
      * @param Request $request

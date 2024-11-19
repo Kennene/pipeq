@@ -16,6 +16,7 @@ export default defineConfig({
                 "resources/css/display.css",
 
                 "resources/js/app.js",
+                "resources/js/user.js",
                 "resources/js/coordinator.js",
             ],
             refresh: true,

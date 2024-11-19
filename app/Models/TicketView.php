@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class TicketView extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'tickets_view';
     public $timestamps = false;
 
     // necessary for function forUser
-    protected $fillable = ['user', 'destination', 'status', 'workstation'];
+    protected $fillable = ['user', 'ticket_nr', 'destination', 'status', 'workstation'];
 
     /**
      * Translate status, destination and workstation on retrieved
@@ -21,7 +21,7 @@ class TicketView extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::retrieved(function ($ticket) {
             $ticket->status = __($ticket->status);
             $ticket->destination = __($ticket->destination);
@@ -47,6 +47,7 @@ class TicketView extends Model
     {
         return $this->make([
             'user' => $this->user,
+            'ticket_nr' => $this->ticket_nr,
             'destination' => $this->destination,
             'status' => $this->status,
             'workstation' => $this->workstation,

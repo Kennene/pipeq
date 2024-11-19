@@ -177,6 +177,8 @@ class Ticket extends Model
             return $error;
         }
 
+        $tv = TicketView::find($this->id);
+
         // try to insert ended ticket into tickets_ended table
         try {
             DB::table('tickets_ended')->insert([

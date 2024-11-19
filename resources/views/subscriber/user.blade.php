@@ -47,6 +47,8 @@
         constructor() {
             // todo: automatically join channel if user has token
             console.log('PipeQ initialized');
+
+            //! //todo: websocket closes connection when waiting for too long
         }
 
         _listen() {

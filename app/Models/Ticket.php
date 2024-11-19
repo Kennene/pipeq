@@ -114,7 +114,6 @@ class Ticket extends Model
         // try to update workstation
         try {
             $this->workstation_id = $workstation_id;
-            $this->save();
         } catch (\Exception $errorMessage) {
             return new Error('Failed to update workstation', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -138,7 +137,6 @@ class Ticket extends Model
 
         try {
             $this->status_id = $status_id;
-            $this->save();
         } catch (\Exception $errorMessage) {
             return new Error('Failed to update status', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -177,35 +175,10 @@ class Ticket extends Model
             return $error;
         }
 
-        $tv = TicketView::find($this->id);
-
-        // try to insert ended ticket into tickets_ended table
-        try {
-            DB::table('tickets_ended')->insert([
-                'original_id' => $this->id,
-                'user_id' => $this->user_id,
-                'ticket_nr' => $this->ticket_nr,
-                'status_id' => $this->status_id,
-                'destination_id' => $this->destination_id,
-                'workstation_id' => $this->workstation_id,
-                'original_created_at' => $this->created_at,
-                'original_updated_at' => $this->updated_at,
-                'modified_by' => $this->modified_by,
-
-                'user' => $tv->user,
-                'status' => $tv->status,
-                'destination' => $tv->destination,
-                'workstation' => $tv->workstation
-            ]);
-        } catch (\Exception $errorMessage) {
-            return new Error(
-                'Failed to safe data into tickets_ended',
-                $errorMessage,
-                RESPONSE::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-
+        // save ticket with updated status and delete it
+        $this->save();
         $this->delete();
+
         return null;
     }
 

@@ -15,10 +15,10 @@ class StatusesTableSeeder extends Seeder
     public function run(): void
     {
         Status::insert([
-            ['name' => 'statuses.1.name', 'description' => 'statuses.1.description'],
-            ['name' => 'statuses.2.name', 'description' => 'statuses.2.description'],
-            ['name' => 'statuses.3.name', 'description' => 'statuses.3.description'],
-            ['name' => 'statuses.4.name', 'description' => 'statuses.4.description'],
+            ['id' => STATUS::WAITING, 'name' => 'statuses.1.name', 'description' => 'statuses.1.description', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => STATUS::IN,      'name' => 'statuses.2.name', 'description' => 'statuses.2.description', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => STATUS::SERVING, 'name' => 'statuses.3.name', 'description' => 'statuses.3.description', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => STATUS::END,     'name' => 'statuses.4.name', 'description' => 'statuses.4.description', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

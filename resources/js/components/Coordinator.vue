@@ -241,11 +241,11 @@ export default {
         console.log("Komponent Koordynatora zamontowany");
 
         window.Echo.private("display")
-            .listen(".UpdateDisplayAboutTicket", (e) => {
+            .listen("UpdateDisplayAboutTicket", (e) => {
                 console.log("Odebrano zdarzenie UpdateDisplayAboutTicket:", e);
                 this.handleNewTicket(e.ticket);
             })
-            .listen(".TicketEnded", (e) => {
+            .listen("TicketEnded", (e) => {
                 console.log("Odebrano zdarzenie TicketEnded:", e);
                 this.handleTicketEnd({ id: e.ticket.id });
             });

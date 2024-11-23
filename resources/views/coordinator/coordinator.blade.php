@@ -16,10 +16,13 @@
         window.STATUS_IN = {{ \App\Models\Status::IN }};
         window.STATUS_END = {{ \App\Models\Status::END }};
         console.log(@json($tickets));
+        console.log(@json($destinations));
     </script>
     @include('topbar')
     <div id="app">
-        <coordinator :initial-tickets='@json($tickets)' :translations='@json($translations)'></coordinator>
+        <coordinator :initial-tickets='@json($tickets)' :translations='@json($translations)'
+            :destinations='@json($destinations)'>
+        </coordinator>
     </div>
 
 </body>

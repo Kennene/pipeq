@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "artisan": "php artisan reverb:start --debug"
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.6",

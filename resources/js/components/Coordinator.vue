@@ -215,29 +215,15 @@ export default {
             type: Object,
             default: () => ({ statuses: {} }),
         },
+        destinations: {
+            type: Array,
+            required: true,
+        },
     },
     data() {
         return {
-            tickets: [],
+            tickets: this.initialTickets,
             sections: [],
-            destinations: [
-                {
-                    id: 1,
-                    name: "Dziekanat",
-                    workstations: [
-                        { id: 1, name: "Stanowisko 1" },
-                        { id: 2, name: "Stanowisko 2" },
-                    ],
-                },
-                {
-                    id: 2,
-                    name: "Płatności",
-                    workstations: [
-                        { id: 3, name: "Stanowisko 3" },
-                        { id: 4, name: "Stanowisko 4" },
-                    ],
-                },
-            ],
             selectedDestination: null,
             showSideMenu: true,
             showDestinationModal: true,
@@ -251,7 +237,7 @@ export default {
         };
     },
     mounted() {
-        // Usuwamy automatyczny wybór destination
+        // Inicjalizacja sekcji i biletów na podstawie wybranej destynacji, jeśli istnieje
         console.log("Komponent Koordynatora zamontowany");
 
         window.Echo.private("display")
@@ -263,10 +249,19 @@ export default {
                 console.log("Odebrano zdarzenie TicketEnded:", e);
                 this.handleTicketEnd({ id: e.ticket.id });
             });
+
+        // Jeśli wybrana destynacja jest już ustawiona, zaktualizuj sekcje i bilety
+        if (this.selectedDestination) {
+            this.updateSectionsAndTickets();
+        }
     },
     watch: {
         selectedDestination(newVal, oldVal) {
             this.updateSectionsAndTickets();
+        },
+        // Opcjonalnie, jeśli `destinations` mogą się zmieniać dynamicznie
+        destinations(newDestinations) {
+            // Możesz tutaj zaktualizować sekcje lub inne zależne dane
         },
     },
     methods: {
@@ -582,6 +577,10 @@ export default {
                     (ticket) => ticket.id !== id
                 );
             });
+        },
+        // Nowa metoda do automatycznego dodawania destynacji
+        addDestination(newDestination) {
+            this.destinations.push(newDestination);
         },
     },
 };

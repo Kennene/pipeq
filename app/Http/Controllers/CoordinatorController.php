@@ -14,6 +14,8 @@ use App\Models\Workstation;
 
 class CoordinatorController extends Controller
 {
+    // app/Http/Controllers/CoordinatorController.php
+
     public function index(Request $request): View
     {
         $color = new Color();
@@ -21,28 +23,20 @@ class CoordinatorController extends Controller
         $statuses = Status::allTranslated();
         $destinations = Destination::with('workstations')->get();
 
-        // workstations są również w destinations, wiec możesz je stamtąd wyjąć.
-        // jeżeli potrzebujesz je osobno, np. dla czytelności kodu, odkomentuj poniższą linię i dorzuć do compact
-        // $workstations = Workstation::all();
+        // Przygotowanie tłumaczeń statusów
+        $translations = [
+            'statuses' => [
+                '1' => __('statuses.1.name'),
+                '2' => __('statuses.2.name'),
+                '3' => __('statuses.3.name'),
+                '4' => __('statuses.4.name'),
+            ]
+        ];
 
-
-        //* dorzuciłem do statuses tłumaczenia. użyj proszę zmiennej $statuses zamiast $variables["translations"]
-            $variables["translations"] = [
-                'statuses' => [
-                    '1' => __('statuses.1.name'),
-                    '2' => __('statuses.2.name'),
-                    '3' => __('statuses.3.name'),
-                    '4' => __('statuses.4.name'),
-                ]
-            ];
-
-
-        return view('coordinator.coordinator')->with(compact('color', 'tickets', 'statuses', 'destinations'))
-
-            // todo: usunąć poniższe, lepiej to robić przez compact.
-            // można wtedy łatwiej wyjąć dane javascriptem poprzez @json($statuses);
-            ->with($variables);
+        // Przekazanie wszystkich danych za pomocą compact
+        return view('coordinator.coordinator')->with(compact('color', 'tickets', 'statuses', 'destinations', 'translations'));
     }
+
 
     // jeżeli chcesz coś zmienić lub podejrzeć w przepływie to przeniosłem to do kontrollera TicketController
 }

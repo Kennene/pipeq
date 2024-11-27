@@ -5,6 +5,10 @@ services:
         build:
             target: PipeQ
             context: .
+            args:
+                REVERB_PORT: ${REVERB_PORT}
         container_name: pipeq
         ports:
             - "8001:80"
+            - "${REVERB_PORT}:${REVERB_PORT}"
+        restart: unless-stopped

@@ -3,7 +3,7 @@
 <nav id="topbar" class="navbar py-2">
     <div class="container-fluid">
         <div class="navbar-brand d-flex align-items-center">
-            <img id="app-logo" src="/images/logo.png" class="img-fluid" style="height: 50px;" />
+            <img id="app-logo" src="/images/logo_pipeq.webp" class="img-fluid" style="height: 50px;" />
             <div class="app-name ms-2">
                 <h1 id="app-name" class="h1 mb-0 ml-1">{{ env('APP_NAME') }}</h1>
             </div>
@@ -21,6 +21,6 @@
                 @endforeach
             </div>
         </div>
-        
+
     </div>
 </nav>

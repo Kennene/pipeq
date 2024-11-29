@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import Coordinator from "@/components/Coordinator.vue";
 const app = createApp({
     components: {
@@ -6,4 +7,7 @@ const app = createApp({
     },
 });
 
+const pinia = createPinia();
+
+app.use(pinia);
 app.mount("#app");

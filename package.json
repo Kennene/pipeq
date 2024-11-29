@@ -26,6 +26,7 @@
     "dependencies": {
         "@vue/compiler-sfc": "^3.0.0",
         "jquery": "^3.7.1",
+        "pinia": "^2.2.8",
         "sass": "1.77.6",
         "vue": "^3.5.12",
         "vue-loader": "^17.0.0",

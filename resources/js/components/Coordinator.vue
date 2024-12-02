@@ -98,7 +98,7 @@
                             style="width: 150px"
                         >
                             <h5 class="font-bold text-sm mb-1">
-                                {{ element.user }}
+                                #{{ element.ticket_nr }}
                             </h5>
                             <p class="text-xs">{{ element.status }}</p>
                             <h6 class="text-xs">{{ element.destination }}</h6>
@@ -145,7 +145,7 @@
                                         style="width: 150px"
                                     >
                                         <h5 class="font-bold text-sm mb-1">
-                                            {{ element.user }}
+                                            #{{ element.ticket_nr }}
                                         </h5>
                                         <p class="text-xs">
                                             {{ element.status }}
@@ -165,8 +165,9 @@
                     >
                         <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
                             <h3 class="text-xl font-semibold mb-4">
-                                Czy na pewno chcesz usunąć bilet #{
-                                ticketStore.tempDraggedTicket?.id }?
+                                Czy na pewno chcesz usunąć bilet #{{
+                                    ticketStore.tempDraggedTicket?.ticket_nr
+                                }}?
                             </h3>
                             <div class="flex justify-end space-x-4">
                                 <button

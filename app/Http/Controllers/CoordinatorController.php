@@ -23,6 +23,14 @@ class CoordinatorController extends Controller
         $statuses = Status::allTranslated();
         $destinations = Destination::with('workstations')->get();
 
+        // Translate all destinations and workstations
+        foreach ($destinations as $destination) {
+            $destination->translate();
+            foreach ($destination->workstations as $workstation) {
+                $workstation->translate();
+            }
+        }
+
         // Przygotowanie tłumaczeń statusów
         $translations = [
             'statuses' => [
@@ -36,7 +44,4 @@ class CoordinatorController extends Controller
         // Przekazanie wszystkich danych za pomocą compact
         return view('coordinator.coordinator')->with(compact('color', 'tickets', 'statuses', 'destinations', 'translations'));
     }
-
-
-    // jeżeli chcesz coś zmienić lub podejrzeć w przepływie to przeniosłem to do kontrollera TicketController
 }

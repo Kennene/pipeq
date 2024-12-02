@@ -20,4 +20,10 @@ class Destination extends Model
     {
         return $this->hasMany(Workstation::class);
     }
+
+    public function translate()
+    {
+        $this->name = __('destinations.' . $this->id . '.name');
+        $this->description = __('destinations.' . $this->id . '.description');
+    }
 }

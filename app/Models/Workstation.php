@@ -20,4 +20,9 @@ class Workstation extends Model
     {
         return $this->belongsTo(Destination::class);
     }
+
+    public function translate()
+    {
+        $this->name = __('workstations.' . $this->id . '.name');
+    }
 }

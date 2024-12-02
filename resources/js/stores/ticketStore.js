@@ -397,8 +397,11 @@ export const useTicketStore = defineStore("ticketStore", {
                 .listen("UpdateDisplayAboutTicket", (e) => {
                     this.handleNewTicket(e.ticket);
                 })
-                .listen("TicketEnded", (e) => {
-                    this.handleTicketEnd({ id: e.ticket.id });
+                .listen("NotifyEndedTicketDisplay", (e) => {
+                    //* zakomentowałem bo nie wiem co to poniżej robi :P
+                    //this.handleTicketEnd({ id: e.ticket.id });
+
+                    console.log(e);
                 });
         },
     },

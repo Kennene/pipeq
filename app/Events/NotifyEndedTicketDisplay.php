@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use \App\Models\Ticket;
 use \App\Models\TicketView;
 
-class EndUserTicket implements ShouldBroadcastNow
+class NotifyEndedTicketDisplay implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -24,7 +24,7 @@ class EndUserTicket implements ShouldBroadcastNow
      */
     public function __construct(private Ticket $ticket, private ?string $message = null)
     {
-        $this->ticket_view = TicketView::find($ticket->id)->forUser();
+        $this->ticket_view = TicketView::find($ticket->id);
     }
 
     /**
@@ -34,14 +34,14 @@ class EndUserTicket implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('register.' . $this->ticket->token);
+        return new PrivateChannel('display');
     }
 
     public function broadcastWith()
     {
         return [
-            'message' => $this->message ?? 'Your ticket has been closed.',
-            'ticket' => $this->ticket_view
+            'message' => $this->message ?? 'The following ticket has been closed',
+            'ticket' => $this->ticket
         ];
     }
 }

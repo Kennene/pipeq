@@ -67,7 +67,7 @@
                     console.log(e);
                 })
 
-                .listen('EndUserTicket', (e) => {
+                .listen('NotifyEndedTicketUser', (e) => {
                     console.log(e);
                     axios.post(`/clearStorage`);
                 })

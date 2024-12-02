@@ -161,27 +161,6 @@ class Ticket extends Model
     }
 
     /**
-     * Removes ticket from queue and moves in into tickets_ended table, for historical purposes
-     * @return Error|null
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    public function end(): ?Error
-    {
-        // be sure to update status to END
-        $error = $this->setStatus(Status::END);
-        if ($error !== null) {
-            return $error;
-        }
-
-        // save ticket with updated status and delete it
-        $this->save();
-        $this->delete();
-
-        return null;
-    }
-
-    /**
      * Raw dogging database with SQL
      */
     // public function example() {

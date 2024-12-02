@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Cookie;
 use App\Models\Error;
 use App\Events\UpdateUserAboutHisTicket;
 use App\Events\UpdateDisplayAboutTicket;
-use App\Events\EndUserTicket;
+use App\Events\NotifyEndedTicketUser;
+use App\Events\NotifyEndedTicketDisplay;
 
 use App\Models\Status;
 use App\Models\Destination;
@@ -225,17 +226,17 @@ class TicketController extends Controller
             return $error->toHTTPresponse();
         }
 
+        // save changed status in ticket
+        $ticket->save();
+
         // update user that his ticket has been changed
-        broadcast(new EndUserTicket($ticket));
+        broadcast(new NotifyEndedTicketUser($ticket));
 
         // update display about changes made in ticket
-        broadcast(new UpdateDisplayAboutTicket($ticket));
+        broadcast(new NotifyEndedTicketDisplay($ticket));
 
-        // try to end ticket, and if that fails, return error
-        $error = $ticket->end();
-        if ($error !== null) {
-            return $error->toHTTPresponse();
-        }
+        // Delete ticket. Trigger will handle moving it to tickets_history
+        $ticket->delete();
 
         return response()->json(['message' => "Ticket successfully deleted"], RESPONSE::HTTP_OK);
     }

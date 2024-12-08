@@ -37,9 +37,6 @@ Route::get("/", [UserController::class, 'index'])
     ->middleware('role:' . Role::USER)
     ->name('user');
 
-// todo: remove this route
-Route::get("/2", [UserController::class, 'index2'])->middleware('role:' . Role::USER);
-
 Route::get("/display", [DisplayController::class, 'index'])
     ->middleware([
         'auth',
@@ -73,7 +70,6 @@ Route::middleware('role:' . Role::USER)->group(function () {
     Route::controller(TicketController::class)->group(function () {
         Route::any("/register/{destination_id}", 'register')->name('_register');
         Route::any("/status/{ticket_token?}", 'status')->name('_status');
-        Route::any("/getChannel", 'getChannel')->name('_getChannel');
         Route::any("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
         Route::any("/clearStorage", 'clearStorage')->name('_clear');
     });

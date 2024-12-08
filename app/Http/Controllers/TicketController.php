@@ -98,7 +98,7 @@ class TicketController extends Controller
         }
 
         // update user about status of his ticket
-        broadcast(new UpdateUserAboutHisTicket($ticket, 'Your ticket status has been requested'));
+        broadcast(new UpdateUserAboutHisTicket($ticket, 'Ticket status has been requested'));
 
         return response()->json(['message' => 'Status sent via WebSocket'], RESPONSE::HTTP_OK);
     }
@@ -230,7 +230,7 @@ class TicketController extends Controller
         $ticket->save();
 
         // update user that his ticket has been changed
-        broadcast(new NotifyEndedTicketUser($ticket));
+        broadcast(new UpdateUserAboutHisTicket($ticket));
 
         // update display about changes made in ticket
         broadcast(new NotifyEndedTicketDisplay($ticket));
@@ -272,6 +272,7 @@ class TicketController extends Controller
         return $this->end($request, $ticket->id);
     }
 
+    // todo: redirect user to home page after clearing storage
     /**
      * Clear user's storage, which means removing ticket token from session and cookie
      * 

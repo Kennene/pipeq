@@ -22,18 +22,7 @@ class UserController extends Controller
 
         return view('user.user')->with(compact('color', 'token', 'destinations'));
     }
-
-    public function index2(Request $request): View
-    {
-        $color = new Color();
-        $destinations = Destination::all();
-
-        return view('subscriber.user')->with(compact('color', 'destinations'));
-    }
-
-
-
-
+    
     // todo: wywalić to. kod powtarza się w TicketController
     protected function getUserToken(?Request $request = null): ?string
     {

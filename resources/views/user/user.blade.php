@@ -10,212 +10,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
-<style>
-    .destination-button {
-        height: 30vh;
-        font-size: 3.5rem;
-    }
-
-    .btn-animated {
-        transition:
-            background-color 0.3s ease,
-            transform 0.2s ease;
-    }
-
-    .btn-animated:active {
-        transform: scale(0.9);
-    }
-
-
-
-    #inPage {
-        background-color: #0d6efd;
-
-    }
-
-    .page {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgb(255, 255, 255);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transform: translateY(100%);
-        opacity: 0;
-        transition:
-            transform 0.5s ease,
-            opacity 0.5s ease;
-        visibility: hidden;
-        top: 80px;
-    }
-
-    .page.show {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .loader {
-        border: 8px solid #0d6efd;
-        border-top: 8px solid #ffffff;
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        animation: spin 1s linear infinite;
-    }
-
-    .loading-container {
-        text-align: center;
-        color: #000000;
-    }
-
-    .loading-container p {
-        font-size: 24px;
-        color: white;
-        background-color: #0d6efd;
-        border-radius: 8px;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .dot {
-        width: 25px;
-        height: 25px;
-        margin: 0 15px;
-        background-color: #0d6efd;
-        border-radius: 50%;
-        animation: dot-blink 1.5s infinite;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .dot:nth-child(1) {
-        animation-delay: 0s;
-    }
-
-    .dot:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    .dot:nth-child(4) {
-        animation-delay: 0.6s;
-    }
-
-    .dot:nth-child(5) {
-        animation-delay: 0.8s;
-    }
-
-
-
-    .checkmark-container {
-        color: #0d6efd;
-        font-size: 190px;
-        justify-content: center;
-        animation: popIn 0.5s ease forwards;
-    }
-
-    .inAnimation-container {
-        display: flex;
-        margin-left: -70px;
-        color: #fdfeff;
-        font-size: 190px;
-        justify-content: center;
-        animation: popIn 0.5s ease forwards;
-    }
-
-    @keyframes dot-blink {
-
-        0%,
-        20%,
-        100% {
-            transform: translateY(0);
-            opacity: 0.6;
-        }
-
-        50% {
-            transform: translateY(-10px);
-            opacity: 1;
-        }
-    }
-
-    .user-message-container {
-        background-color: #0d6efd;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 100%;
-        margin: 10px auto;
-    }
-
-
-
-
-    .user-message-container2 {
-        background-color: #ffffff;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 100%;
-        margin: 10px auto;
-    }
-
-    .bouncing {
-        animation: bounce 1s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-10px);
-        }
-    }
-
-    #waitingAnimation-container {
-        opacity: 0;
-        transition: opacity 2s;
-        font-size: 24px;
-        color: rgb(0, 0, 0);
-        background-color: #ffffff;
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 35px;
-    }
-
-
-
-    .fade-in-out {
-        transition: opacity 2s;
-    }
-
-    #user-info {
-        opacity: 1;
-        transition: color 2s ease;
-    }
-</style>
-
 <body>
 
     @include('topbar')
@@ -224,9 +18,9 @@
         <div class="container mt-5">
             <div class="d-flex flex-column justify-content-center full-height">
                 @foreach($destinations as $destination)
-                <button class="destination-button btn btn-primary shadow btn-lg btn-block btn-animated py-9 mb-10 custom-font-size" onclick="pipeq._register({{ $destination->id }});" title="{{ __($destination->description) }}">
-                    {{ __($destination->name) }}
-                </button>
+                    <button class="destination-button btn btn-primary shadow btn-lg btn-block py-9 mb-10 custom-font-size" onclick="pipeq._register({{ $destination->id }});" title="{{ __($destination->description) }}">
+                        {{ __($destination->name) }}
+                    </button>
                 @endforeach
             </div>
         </div>
@@ -250,7 +44,7 @@
 
             <!-- Waiting animation -->
             <br />
-            <div id="waitingAnimation-container">
+            <div id="waitingAnimation-container" class="mt-4">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
@@ -263,7 +57,7 @@
 
     <!-- //! static style in here, remove it, if possible -->
     <!-- //* In status page -->
-    <div id="inPage" class="page">
+    <div id="inPage" style="background-color: darkblue;" class="page">
         <div class="container-lg d-flex flex-column justify-content-start align-items-center" style="height: 100vh; padding-top: 5vh;">
             <!-- In animation -->
             <div class="inAnimation-container">
@@ -281,98 +75,129 @@
             </div>
         </div>
     </div>
+</body>
+
+<script>
+    class PipeQ {
+        constructor()
+        {
+            @if(!is_null($token))
+                this._listen('{!! $token !!}');
+            @endif
+        }
+
+        _listen(channel = null)
+        {
+            // if channel is passed, use it, otherwise use the one from the class
+            if (channel != null) {
+                this.channel = channel;
+            }
+
+            // Initialize Echo
+            var register = Echo.channel(`register.${this.channel}`);
+
+            @if(env('APP_DEBUG', false))
+                console.log('Listening on channel', register.name);
+            @endif
 
 
-    <!-- // todo: Correct this javascript, it's bad -->
-    <script>
-        //debugging
-        // displayStatusWaiting('ticket');
-        // displayStatusIn('ticket');
-        // displayStatusEnd('ticket');
-
-        class PipeQ {
-            constructor() {
-                @if(!is_null($token))
-                var token = '{{ $token }}';
-                this.register = Echo.channel(`register.${token}`);
-                this._listen();
+            // Listen for ticket update and decide what to do
+            register.listen('UpdateUserAboutHisTicket', (message) => {
+                @if(env('APP_DEBUG', false))
+                    console.log('Event UpdateUserAboutHisTicket:', message);
                 @endif
-            }
 
-            _listen() {
-                this.register.listen('UpdateUserAboutHisTicket', (e) => {
-                    console.log(e);
-                    displayStatusWaiting(e.ticket);
+                var ticket = message.ticket;
+                $('.page').removeClass('show');
+
+                switch (ticket.status_id) {
+                    case {{ App\Models\Status::WAITING }}:
+                        displayStatusWaiting(ticket);
+                        break;
+
+                    case {{ App\Models\Status::IN }}:
+                        displayStatusIn(ticket);
+                        break;
+
+                    case {{ App\Models\Status::END }}:
+                        this._clear();
+                        displayStatusEnd(ticket);
+                        break;
+
+                    default:
+                        console.error('Unknown status', ticket.status_id);
+                        break;
+                }
+            });
+
+            // when the WebSocket channel is ready, request update on ticket
+            register.subscribed(() => {
+                axios.post(`/status/${this.channel}`);
+            });
+        }
+
+        _register(destination_id)
+        {
+            axios.post(`/register/${destination_id}`)
+                .then(response => {
+                    @if(env('APP_DEBUG', false))
+                        console.log('Register response:', response.data);
+                    @endif
+
+                    // Get channel from response (if it exists)
+                    if( response.data.channel) {
+                        this.channel = response.data.channel;
+                        this._listen(this.channel);
+                    } else {
+                        console.error('Something went wrong! Channel not received from HTTP request');
+                    }
                 })
+                .catch(error => {
+                    // if error message is handled by the server, display it, otherwise display generic error
+                    if (error.response.data.error) {
+                        console.error(error.response.data.error);
+                    } else {
+                        console.error(error);
+                    }
+                });
+        }
 
-                this.register.listen('NotifyEndedTicketUser', (e) => {
-                    console.log('Your ticket has ended');
-
-                    axios.post('{!! route("_clear"); !!}')
-                        .then(response => {
-                            console.log(response.data.message);
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
+        _clear()
+        {
+            axios.post('{!! route("_clear"); !!}')
+                .then(response => {
+                    console.log(response.data.message);
                 })
-            }
-
-            _register(destination_id) {
-                axios.post(`/register/${destination_id}`)
-                    .then(response => {
-                        // Listen for response with channel name
-                        console.log(response.data.message + ' token: ' + response.data.channel);
-
-                        // if channel name is received, subscribe to it
-                        if (response.data.channel) {
-                            this.register = Echo.channel(`register.${response.data.channel}`);
-
-                            //* console.log(response)
-                            //* const ticket_nr = response.data.ticket_nr;
-                            //* document.getElementById('waitingPage-ticket_nr').innerHTML = ticket_nr;
-                            this._listen();
-                            displayStatusWaiting('ticket');
-                        } else {
-                            console.error('Channel name not received');
-                        }
-                    })
-                    .catch(error => {
-                        // if error message is handled by the server, display it, otherwise display generic error
-                        if (error.response.data.error) {
-                            console.error(error.response.data.error);
-                        } else {
-                            console.error(error);
-                        }
-                    });
-            }
+                .catch(error => {
+                    console.log(error);
+                });
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            pipeq = new PipeQ();
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        pipeq = new PipeQ();
+    });
 
-        function displayStatusWaiting(ticket) {
-            document.getElementById('waitingPage').style.display = 'flex';
-            const waitingPage = document.getElementById('waitingPage');
-            waitingPage.classList.toggle('show');
-        }
+    function displayStatusWaiting(ticket) {
+        $('#waitingPage-ticket_nr').html(ticket.ticket_nr);
+        $('#waitingPage').addClass('show');
 
-        function displayStatusIn(ticket) {
-            const inPage = document.getElementById('inPage');
-            inPage.classList.toggle('show');
-            document.getElementById('ticketWorkstation').innerHTML = ticket.workstation;
-            document.getElementById('ticketUser').innerHTML = ticket.user;
-        }
-
-        function displayStatusEnd(ticket) {
-            alert('unimplemented');
-        }
-
+        // Show waiting animation after some time
         setTimeout(function() {
             document.getElementById("waitingAnimation-container").style.opacity = "1";
         }, 2000);
-    </script>
-</body>
+    }
+
+    function displayStatusIn(ticket) {
+        $('#inPage').addClass('show');
+        $('#inWorkstationText').text(ticket.workstation.toLowerCase());
+    }
+
+    function displayStatusEnd(ticket) {
+        console.error('unimplemented');
+        console.log('Dziękujemy za skorzystanie z naszych usług');
+    }
+
+</script>
 
 </html>

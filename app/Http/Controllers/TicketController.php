@@ -128,6 +128,58 @@ class TicketController extends Controller
     }
 
     /**
+     * Change destination of ticket
+     * 
+     * Functionality is needed when ticket is moved between destination, beacuse user picked the wrong one.
+     * @param int $ticket_id
+     * @param int $destination_id
+     * @param int|null $workstation_id
+     * @return JsonResponse
+     */
+    public function changeDestination(Request $request, int $ticket_id, int $destination_id): JsonResponse
+    {
+        // check if specified ticket exists
+        $ticket = Ticket::find($ticket_id);
+        if ($ticket === null) {
+            $error = new Error(title: 'Ticket not found', http: RESPONSE::HTTP_NOT_FOUND);
+            return $error->toHTTPresponse();
+        }
+
+        // check if specified destination exists
+        if (Destination::find($destination_id) === null) {
+            $error = new Error(title: 'Destination not found', http: RESPONSE::HTTP_NOT_FOUND);
+            return $error->toHTTPresponse();
+        }
+
+        // if the current destination is the same as the new one, return error
+        if ($ticket->destination_id == $destination_id) {
+            $error = new Error(title: 'Destination is already set', http: RESPONSE::HTTP_CONFLICT);
+            return $error->toHTTPresponse();
+        }
+
+        // try to update destination
+        $error = $ticket->setDestination($destination_id);
+        if ($error !== null) {
+            return $error->toHTTPresponse();
+        }
+
+        $ticket->save();
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
+        // for debugging purposes, return whole summary of ticket
+        if (env('APP_DEBUG')) {
+            return response()->json(['message' => $ticket->summary()], RESPONSE::HTTP_OK);
+        }
+
+        return response()->json(['message' => 'Success'], RESPONSE::HTTP_OK);
+    }
+
+    /**
      * Move ticket to another workstation with specified status
      * 
      * @param Request $request
@@ -177,9 +229,9 @@ class TicketController extends Controller
                 return $error->toHTTPresponse();
             }
         } else {
-            // workstation_id is not provided, set status to WAITING
-            // if workstation_id is null, but status is anything other that WAITING, user would not know where to go
-            $error = $ticket->setStatus(Status::WAITING);
+            // workstation_id is not provided, send ticket back to queue
+            // if workstation_id is null (which is wait in queue), but status is anything other that WAITING, user would not know where to go
+            $error = $ticket->returnToQueue();
             if ($error !== null) {
                 return $error->toHTTPresponse();
             }

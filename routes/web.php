@@ -79,6 +79,7 @@ Route::middleware('role:' . Role::USER)->group(function () {
 Route::middleware(['auth', 'verified', 'role:' . Role::COORDINATOR])->group(function () {
     Route::controller(TicketController::class)->group(function () {
         Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", 'move')->name('_move');
+        Route::any("/changeDestination/{ticket_id}/{destination_id}", 'changeDestination')->name('_changeDestination');
         Route::any("/end/{ticket_id}", 'end')->name('_end');
     });
 });

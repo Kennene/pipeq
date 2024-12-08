@@ -94,6 +94,28 @@ class Ticket extends Model
     }
 
     /**
+     * Updates destination for the ticket
+     * 
+     * If destination is changed, the ticket must be returned to the queue.
+     * @param int $destination_id
+     * @return Error|null
+     * @throws \Exception
+     */
+    public function setDestination(int $destination_id): ?Error
+    {
+        // try to update destination and return ticket to the queue
+        try {
+            $this->destination_id = $destination_id;
+            $this->returnToQueue();
+        } catch (\Exception $errorMessage) {
+            // dd($errorMessage);
+            return new Error('Failed to update destination', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return null;
+    }
+
+    /**
      * Sets new workstation for the ticket
      * 
      * @param int|null $workstation_id Workstation can actually be null, because coordinator might mistakenly assign ticket to a first workstation, realize mistake, and put ticket back into queue to first workstation with  waiting status.
@@ -120,6 +142,39 @@ class Ticket extends Model
 
         return null;
     }
+
+    /**
+     * Returns ticket back to the queue
+     * 
+     * This function is used when a key component of the ticket has been changed.
+     * Resetting the workstation and status ensures that the user is aware of the
+     * his current state in the queue. Otherwise user could be very confused what he should do.
+     * @return Error|null
+     */
+    public function returnToQueue(): ?Error
+    {
+        try {
+            $this->workstation_id = null;
+            $this->status_id = Status::WAITING;
+        } catch (\Exception $errorMessage) {
+            return new Error('Failed to return ticket to queue', $errorMessage, RESPONSE::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return null;
+    }
+
+    /**
+     * Cool code that agreagates workstations with the least amount of tickets.
+     * Leaving it here for potential future reference.
+     * public function setLeastBusyWorkstation(): ?Error
+     * {
+     *     $results = Workstation::select('workstations.id', DB::raw('count(tickets.id) as tickets'))
+     *         ->leftJoin('tickets', 'workstations.id', '=', 'tickets.workstation_id')
+     *         ->where('workstations.destination_id', 1)
+     *         ->groupBy('workstations.id')
+     *         ->orderBy('tickets', 'asc')
+     *         ->get();
+     */
 
     /**
      * Sets new status for the ticket
@@ -162,15 +217,14 @@ class Ticket extends Model
 
     /**
      * Raw dogging database with SQL
+     * 
+     * public function example() {
+     *    $database = DB::connection();
+     *    $query = <<<SQL
+     *        SELECT count(id) FROM tickets;
+     *    SQL;
+     *    $result = $database->select($query);
+     *    return $result;
+     * }
      */
-    // public function example() {
-    //     $database = DB::connection();
-    //     $query = <<<SQL
-    //         SELECT count(id) FROM tickets;
-    //     SQL;
-    //     $result = $database->select($query);
-    //     return $result;
-    // }
-
-
 }

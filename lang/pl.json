@@ -14,5 +14,7 @@
     "statuses.1.description": "Oczekuje na wejście",
     "statuses.2.description": "Wpuszczony na stanowisko",
     "statuses.3.description": "Użytkownik jest obsługiwany",
-    "statuses.4.description": "Użytkownik wypuszczony"
+    "statuses.4.description": "Użytkownik wypuszczony",
+    "register.waiting.message": "Dziękujemy za rejestrację! Proszę poczekać na swoją kolej.",
+    "register.in.message": "Zapraszamy na"
 }

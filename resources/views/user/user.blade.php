@@ -13,6 +13,7 @@
 <style>
     .destination-button {
         height: 30vh;
+        font-size: 3.5rem;
     }
 
     .btn-animated {
@@ -23,6 +24,13 @@
 
     .btn-animated:active {
         transform: scale(0.9);
+    }
+
+
+
+    #inPage {
+        background-color: #0d6efd;
+
     }
 
     .page {
@@ -111,12 +119,7 @@
         animation-delay: 0.8s;
     }
 
-    .waitingAnimation-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 35px;
-    }
+
 
     .checkmark-container {
         color: #0d6efd;
@@ -125,7 +128,7 @@
         animation: popIn 0.5s ease forwards;
     }
 
-    .checkmark-container2 {
+    .inAnimation-container {
         display: flex;
         margin-left: -70px;
         color: #fdfeff;
@@ -159,25 +162,8 @@
         margin: 10px auto;
     }
 
-    #overlay2 {
-        background-color: #0d6efd;
-        color: #ffffff;
-        position: fixed;
-        top: 80px;
-    }
 
-    #overlay2 .user-message {
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-    }
 
-    .waitingAnimation-container p {
-        font-size: 24px;
-        color: rgb(0, 0, 0);
-        background-color: #ffffff;
-        border-radius: 8px;
-    }
 
     .user-message-container2 {
         background-color: #ffffff;
@@ -208,7 +194,17 @@
     #waitingAnimation-container {
         opacity: 0;
         transition: opacity 2s;
+        font-size: 24px;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 35px;
     }
+
+
 
     .fade-in-out {
         transition: opacity 2s;
@@ -237,23 +233,24 @@
     </div>
 
 
-    <!-- //! statc style in here, remove it -->
-    <!-- //! Dlaczego waitingAnimation-container to zarówno id i klasa? -->
+    <!-- //! static style in here, remove it, if possible -->
+    <!-- //* Waiting status page -->
     <div id="waitingPage" class="page">
         <div class="container-lg d-flex flex-column justify-content-start align-items-center" style="height: 100vh; padding-top: 5vh;">
             <!-- Ticket number -->
-            <div id="waitingPage-ticket_nr" style="width: 20vh; height: 20vh; font-size: 10vh; background-color: pink;" class="d-flex justify-content-center align-items-center rounded-circle shadow-lg"></div>
+            <div id="waitingPage-ticket_nr" style="width: 20vh; height: 20vh; font-size: 10vh; background-color: pink;" class="d-flex justify-content-center align-items-center rounded-circle shadow-lg">00</div>
 
             <!-- Waiting message -->
+            <br />
             <div class="user-message-container mt-4 p-3 rounded shadow-sm">
                 <div class="user-message">
-                    <p class="waiting-message">__("register.waiting.message")</p>
+                    <p class="waiting-message">{{ __("register.waiting.message") }}</p>
                 </div>
             </div>
 
             <!-- Waiting animation -->
             <br />
-            <div id="waitingAnimation-container" class="waitingAnimation-container">
+            <div id="waitingAnimation-container">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
@@ -263,26 +260,36 @@
         </div>
     </div>
 
-    <!-- //todo: correct this -->
-    <div id="overlay2" class="page">
-        <div class="waitingAnimation-container">
-            <div class="user-info d-flex flex-column align-items-center">
-                <div class="checkmark-container2">
-                    <i class="bi bi-box-arrow-in-right bouncing"></i>
-                </div>
-                <div class="user-message-container2">
-                    <div class="user-message2">
-                        <p class="username2">
-                            <span id='ticketUser'> User </span><span> zapraszamy!</span>
-                        </p>
-                        <p id="ticketWorkstation" class="waiting-message2">Stanowisko </p>
-                    </div>
+
+    <!-- //! static style in here, remove it, if possible -->
+    <!-- //* In status page -->
+    <div id="inPage" class="page">
+        <div class="container-lg d-flex flex-column justify-content-start align-items-center" style="height: 100vh; padding-top: 5vh;">
+            <!-- In animation -->
+            <div class="inAnimation-container">
+                <i class="bi bi-box-arrow-in-right bouncing"></i>
+            </div>
+
+            <!-- In message -->
+            <div style="background-color: lightblue;" class="user-message-container p-3 rounded shadow-sm">
+                <div class="user-message">
+                    <p class="waiting-message">
+                        <span id="inStaticText">{{ __("register.in.message") }}</span>
+                        <span id="inWorkstationText">inWorkstationText</span>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
+
+    <!-- // todo: Correct this javascript, it's bad -->
     <script>
+        //debugging
+        // displayStatusWaiting('ticket');
+        // displayStatusIn('ticket');
+        // displayStatusEnd('ticket');
+
         class PipeQ {
             constructor() {
                 @if(!is_null($token))
@@ -295,8 +302,7 @@
             _listen() {
                 this.register.listen('UpdateUserAboutHisTicket', (e) => {
                     console.log(e);
-                    toggleOverlay2(e.ticket);
-                    showLoading();
+                    displayStatusWaiting(e.ticket);
                 })
 
                 this.register.listen('NotifyEndedTicketUser', (e) => {
@@ -322,13 +328,11 @@
                         if (response.data.channel) {
                             this.register = Echo.channel(`register.${response.data.channel}`);
 
-                            console.log(response)
-                            // const ticket_nr = response.data.ticket_nr;
-                            // document.getElementById('waitingPage-ticket_nr').innerHTML = ticket_nr;
-
-                            showLoading();
-                            toggleOverlay();
+                            //* console.log(response)
+                            //* const ticket_nr = response.data.ticket_nr;
+                            //* document.getElementById('waitingPage-ticket_nr').innerHTML = ticket_nr;
                             this._listen();
+                            displayStatusWaiting('ticket');
                         } else {
                             console.error('Channel name not received');
                         }
@@ -348,21 +352,21 @@
             pipeq = new PipeQ();
         });
 
-
-        function showLoading() {
+        function displayStatusWaiting(ticket) {
             document.getElementById('waitingPage').style.display = 'flex';
-        }
-
-        function toggleOverlay() {
             const waitingPage = document.getElementById('waitingPage');
             waitingPage.classList.toggle('show');
         }
 
-        function toggleOverlay2(ticket) {
-            const overlay2 = document.getElementById('overlay2');
-            overlay2.classList.toggle('show');
+        function displayStatusIn(ticket) {
+            const inPage = document.getElementById('inPage');
+            inPage.classList.toggle('show');
             document.getElementById('ticketWorkstation').innerHTML = ticket.workstation;
             document.getElementById('ticketUser').innerHTML = ticket.user;
+        }
+
+        function displayStatusEnd(ticket) {
+            alert('unimplemented');
         }
 
         setTimeout(function() {

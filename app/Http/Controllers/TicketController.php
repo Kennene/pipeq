@@ -122,7 +122,7 @@ class TicketController extends Controller
             return response()->json(['message' => 'Channel does not exist'], RESPONSE::HTTP_NOT_FOUND);
         } else {
             // don't need, just to be sure
-            $this->fixUserStorage($token);
+            $this->setUserToken($token);
             return response()->json(['channel' => $token], RESPONSE::HTTP_OK);
         }
     }
@@ -334,14 +334,14 @@ class TicketController extends Controller
      * @return string|null
      * 
      */
-    private function getUserToken(?Request $request = null): ?string
+    protected function getUserToken(?Request $request = null): ?string
     {
         // try to get token from cookie or session
         $token = $request->cookie('ticket_token') ?? session('ticket_token');
 
         // if token is found, fix user's storage and return token
         if ($token !== null) {
-            $this->fixUserStorage($token);
+            $this->setUserToken($token); //! unhandled Error
             return $token;
         }
 
@@ -355,7 +355,7 @@ class TicketController extends Controller
      * @return Error|null
      * @throws \Exception
      */
-    private function fixUserStorage(string $token): ?Error
+    protected function setUserToken(string $token): ?Error
     {
         try {
             Cookie::queue('ticket_token', $token);

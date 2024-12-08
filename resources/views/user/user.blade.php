@@ -285,7 +285,11 @@
     <script>
         class PipeQ {
             constructor() {
-                // todo: automatically join channel if user has token
+                @if(!is_null($token))
+                var token = '{{ $token }}';
+                this.register = Echo.channel(`register.${token}`);
+                this._listen();
+                @endif
             }
 
             _listen() {
@@ -319,8 +323,8 @@
                             this.register = Echo.channel(`register.${response.data.channel}`);
 
                             console.log(response)
-                            const ticket_nr = response.data.ticket_nr;
-                            document.getElementById('waitingPage-ticket_nr').innerHTML = ticket_nr;
+                            // const ticket_nr = response.data.ticket_nr;
+                            // document.getElementById('waitingPage-ticket_nr').innerHTML = ticket_nr;
 
                             showLoading();
                             toggleOverlay();

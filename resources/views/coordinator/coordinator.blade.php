@@ -9,22 +9,22 @@
     <title>Coordinator</title>
 </head>
 
-<body>
-
-
+<body class="flex flex-col h-screen">
     <script>
         window.STATUS_IN = {{ \App\Models\Status::IN }};
         window.STATUS_END = {{ \App\Models\Status::END }};
-        console.log(@json($tickets));
-        console.log(@json($destinations));
     </script>
+
+    <!-- Topbar -->
     @include('topbar')
-    <div id="app">
+
+    <!-- Główny kontener -->
+    <div id="app" class="flex-1 overflow-hidden">
+        <!-- Komponent Coordinator -->
         <coordinator :initial-tickets='@json($tickets)' :translations='@json($translations)'
             :destinations='@json($destinations)'>
         </coordinator>
     </div>
-
 </body>
 
 </html>

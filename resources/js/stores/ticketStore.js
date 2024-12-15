@@ -7,8 +7,7 @@ export const useTicketStore = defineStore("ticketStore", {
         mainTickets: [],
         sections: [],
         selectedDestination: null,
-        showSideMenu: true,
-        showDestinationModal: true,
+        showSideMenu: false, // boczne menu nie jest używane, możemy zostawić to false
         draggedTicket: null,
         tempDraggedTicket: null,
         draggedFromSection: null,
@@ -17,65 +16,35 @@ export const useTicketStore = defineStore("ticketStore", {
         pipeQ: new PipeQ(),
         statusMap: {},
         destinations: [],
+        originalWorkstationId: null,
     }),
     actions: {
-        /**
-         * Inicjalizacja store'a z danymi przekazanymi jako propsy.
-         * @param {Object} translations - Obiekt tłumaczeń statusów.
-         * @param {Array} initialTickets - Początkowa lista biletów.
-         * @param {Array} destinations - Lista destynacji.
-         */
         initialize(translations, initialTickets, destinations) {
             this.statusMap = translations.statuses;
             this.destinations = destinations.map((dest) => ({
                 ...dest,
-                workstations: dest.workstations || [], // Upewnij się, że każda destynacja ma workstations
+                workstations: dest.workstations || [],
             }));
             this.allTickets = initialTickets;
 
-            // Jeśli destynacje są dostępne, automatycznie wybierz pierwszą lub pozostaw bez wyboru
             if (this.destinations.length > 0) {
-                this.selectDestination(this.destinations[0]); // Opcjonalnie automatycznie wybiera pierwszą destynację
+                this.selectDestination(this.destinations[0]);
             }
         },
 
-        /**
-         * Przełącza widoczność menu bocznego.
-         */
-        toggleSideMenu() {
-            this.showSideMenu = !this.showSideMenu;
-        },
-
-        /**
-         * Ustawia wybraną destynację i aktualizuje listę biletów oraz sekcji.
-         * @param {Object} destination - Wybrana destynacja.
-         */
         selectDestination(destination) {
             this.selectedDestination = destination;
             this.updateSectionsAndTickets();
         },
 
-        /**
-         * Zamknięcie modalu wyboru destynacji.
-         */
-        closeDestinationModal() {
-            this.showDestinationModal = false;
-        },
-
-        /**
-         * Aktualizuje `mainTickets` i `sections` na podstawie wybranej destynacji.
-         */
         updateSectionsAndTickets() {
             if (!this.selectedDestination) return;
 
             const destinationId = this.selectedDestination.id;
-
-            // Filtrowanie biletów dla wybranej destynacji
             const destinationTickets = this.allTickets.filter(
                 (ticket) => ticket.destination_id === destinationId
             );
 
-            // Bilety nieprzypisane do żadnego workstation (czyli w głównej sekcji)
             this.mainTickets = destinationTickets
                 .filter((ticket) => !ticket.workstation_id)
                 .map((ticket) => ({
@@ -83,7 +52,6 @@ export const useTicketStore = defineStore("ticketStore", {
                     status: this.statusMap[ticket.status_id] || "Oczekiwanie",
                 }));
 
-            // Przygotowanie sekcji (workstationów) dla tej destynacji
             const destinationWorkstations =
                 this.selectedDestination.workstations || [];
 
@@ -106,10 +74,6 @@ export const useTicketStore = defineStore("ticketStore", {
             });
         },
 
-        /**
-         * Obsługuje rozpoczęcie przeciągania biletu.
-         * @param {Object} evt - Event przeciągania.
-         */
         onDragStart(evt) {
             const fromComponent = evt.from.__draggable_component__;
             const fromList = fromComponent.realList;
@@ -119,38 +83,29 @@ export const useTicketStore = defineStore("ticketStore", {
             if (item && item.id) {
                 this.draggedTicket = item;
                 this.tempDraggedTicket = { ...item };
-
                 this.draggedFromSection = fromComponent.section || null;
+                this.originalWorkstationId = item.workstation_id;
             } else {
                 this.draggedTicket = null;
                 this.tempDraggedTicket = null;
                 this.draggedFromSection = null;
+                this.originalWorkstationId = null;
             }
         },
 
-        /**
-         * Obsługuje zakończenie przeciągania biletu.
-         * @param {Object} event - Event przeciągania.
-         */
         onEnd(event) {
             if (this.isDeleteDrop) {
                 this.isDeleteDrop = false;
                 return;
             }
-
-            // Resetowanie zmiennych przeciągania
             this.draggedTicket = null;
             this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
         },
 
-        /**
-         * Obsługuje upuszczenie biletu do sekcji.
-         * @param {Object} section - Sekcja, do której upuszczono bilet.
-         */
         async onSectionDrop(section) {
             if (!this.draggedTicket || !this.draggedTicket.id) return;
 
-            // Sprawdzenie, czy bilet jest przenoszony na tę samą workstation
             if (this.draggedTicket.workstation_id === section.workstationId) {
                 return;
             }
@@ -159,18 +114,15 @@ export const useTicketStore = defineStore("ticketStore", {
             const previousStatusId = this.draggedTicket.status_id;
             const previousStatus = this.draggedTicket.status;
 
-            const newStatusId = 2; // "Wpuszczony"
+            const newStatusId = 2; // Wpuszczony
             const newStatus = this.statusMap[newStatusId] || "Wpuszczony";
 
-            // Optymistyczna aktualizacja właściwości biletu
             this.draggedTicket.workstation_id = section.workstationId;
             this.draggedTicket.status_id = newStatusId;
             this.draggedTicket.status = newStatus;
 
-            // Aktualizacja UI natychmiast
             this.updateSectionsAndTickets();
 
-            // Wykonanie żądania API w tle
             this.moveTicket(
                 this.draggedTicket.id,
                 section.workstationId,
@@ -179,26 +131,20 @@ export const useTicketStore = defineStore("ticketStore", {
                 alert(
                     "Wystąpił błąd podczas przenoszenia biletu. Przywracanie poprzedniego stanu."
                 );
-
-                // Przywrócenie poprzedniego stanu biletu
                 this.draggedTicket.workstation_id = previousWorkstationId;
                 this.draggedTicket.status_id = previousStatusId;
                 this.draggedTicket.status = previousStatus;
                 this.updateSectionsAndTickets();
             });
 
-            // Resetowanie zmiennych przeciągania
             this.draggedTicket = null;
             this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
         },
 
-        /**
-         * Obsługuje upuszczenie biletu do głównej sekcji.
-         */
         async onMainAreaDrop() {
             if (!this.draggedTicket || !this.draggedTicket.id) return;
 
-            // Sprawdzenie, czy bilet jest już w głównej sekcji
             if (this.draggedTicket.workstation_id === null) {
                 return;
             }
@@ -207,40 +153,32 @@ export const useTicketStore = defineStore("ticketStore", {
             const previousStatusId = this.draggedTicket.status_id;
             const previousStatus = this.draggedTicket.status;
 
-            const newStatusId = 1; // "Oczekiwanie"
+            const newStatusId = 1; // Oczekiwanie
             const newStatus = this.statusMap[newStatusId] || "Oczekiwanie";
 
-            // Optymistyczna aktualizacja właściwości biletu
             this.draggedTicket.workstation_id = null;
             this.draggedTicket.status_id = newStatusId;
             this.draggedTicket.status = newStatus;
 
-            // Aktualizacja UI natychmiast
             this.updateSectionsAndTickets();
 
-            // Wykonanie żądania API w tle
             this.moveTicketToMain(this.draggedTicket.id).catch((error) => {
                 alert(
                     "Wystąpił błąd podczas przenoszenia biletu. Przywracanie poprzedniego stanu."
                 );
-
-                // Przywrócenie poprzedniego stanu biletu
                 this.draggedTicket.workstation_id = previousWorkstationId;
                 this.draggedTicket.status_id = previousStatusId;
                 this.draggedTicket.status = previousStatus;
                 this.updateSectionsAndTickets();
             });
 
-            // Resetowanie zmiennych przeciągania
             this.draggedTicket = null;
             this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
         },
 
-        /**
-         * Usuwa bilet z oryginalnej listy po przeciągnięciu.
-         * @param {Number} ticketId - ID biletu do usunięcia.
-         */
         removeFromOriginalList(ticketId) {
+            // Usuwanie z oryginalnej listy nie jest już tak istotne, ale pozostawiamy oryginalną logikę
             if (this.draggedFromSection) {
                 const index = this.draggedFromSection.tickets.findIndex(
                     (t) => t.id === ticketId
@@ -258,12 +196,6 @@ export const useTicketStore = defineStore("ticketStore", {
             }
         },
 
-        /**
-         * Przenosi bilet do sekcji na backendzie.
-         * @param {Number} ticketId - ID biletu.
-         * @param {Number} workstationId - ID workstation.
-         * @param {Number} statusId - Nowy status ID.
-         */
         async moveTicket(ticketId, workstationId, statusId) {
             try {
                 await this.pipeQ._moveToSection(
@@ -272,56 +204,57 @@ export const useTicketStore = defineStore("ticketStore", {
                     statusId
                 );
             } catch (error) {
-                // Obsługa błędu jest już wykonana w onSectionDrop/onMainAreaDrop
+                // Obsługa błędu w onSectionDrop
             }
         },
 
-        /**
-         * Przenosi bilet do głównej sekcji na backendzie.
-         * @param {Number} ticketId - ID biletu.
-         */
         async moveTicketToMain(ticketId) {
             try {
                 await this.pipeQ._moveToMain(ticketId);
             } catch (error) {
-                // Obsługa błędu jest już wykonana w onMainAreaDrop
+                // Obsługa błędu w onMainAreaDrop
             }
         },
 
-        /**
-         * Obsługuje przeciągnięcie biletu do kosza.
-         */
         handleDeleteDrop() {
             this.isDeleteDrop = true;
             this.showDeleteModal();
         },
 
-        /**
-         * Pokazuje modal potwierdzenia usunięcia biletu.
-         */
         showDeleteModal() {
             if (this.tempDraggedTicket) {
                 this.showDeleteConfirmation = true;
             }
         },
 
-        /**
-         * Anuluje usunięcie biletu.
-         */
+        cancelDeleteAndRestore() {
+            this.showDeleteConfirmation = false;
+
+            // Przywracamy oryginalne położenie biletu
+            if (this.tempDraggedTicket && this.tempDraggedTicket.id != null) {
+                const ticketId = this.tempDraggedTicket.id;
+                const ticket = this.allTickets.find((t) => t.id === ticketId);
+                if (ticket) {
+                    ticket.workstation_id = this.originalWorkstationId;
+                    this.updateSectionsAndTickets();
+                }
+            }
+
+            this.draggedTicket = null;
+            this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
+        },
+
         cancelDelete() {
             this.showDeleteConfirmation = false;
             this.draggedTicket = null;
             this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
         },
 
-        /**
-         * Potwierdza usunięcie biletu.
-         */
         async confirmDelete() {
             if (this.tempDraggedTicket && this.tempDraggedTicket.id) {
                 const ticketId = this.tempDraggedTicket.id;
-
-                // Optymistyczne usunięcie biletu z UI
                 const removedTicket = this.allTickets.find(
                     (ticket) => ticket.id === ticketId
                 );
@@ -331,35 +264,23 @@ export const useTicketStore = defineStore("ticketStore", {
                 this.updateSectionsAndTickets();
                 this.showDeleteConfirmation = false;
 
-                // Wykonanie żądania API w tle
-                this.pipeQ
-                    ._end(ticketId)
-                    .then((response) => {
-                        // Obsługa sukcesu może być dodana tutaj, jeśli jest potrzebna
-                    })
-                    .catch((error) => {
-                        alert(
-                            "Wystąpił błąd podczas usuwania biletu. Przywracanie biletu."
-                        );
-
-                        // Przywrócenie biletu w UI
-                        this.allTickets.push(removedTicket);
-                        this.updateSectionsAndTickets();
-                    });
+                this.pipeQ._end(ticketId).catch((error) => {
+                    alert(
+                        "Wystąpił błąd podczas usuwania biletu. Przywracanie biletu."
+                    );
+                    this.allTickets.push(removedTicket);
+                    this.updateSectionsAndTickets();
+                });
 
                 this.draggedTicket = null;
                 this.tempDraggedTicket = null;
+                this.originalWorkstationId = null;
             } else {
                 this.showDeleteConfirmation = false;
             }
         },
 
-        /**
-         * Obsługuje otrzymanie nowego biletu przez WebSocket.
-         * @param {Object} ticket - Nowy bilet.
-         */
         handleNewTicket(ticket) {
-            // Dodaj lub aktualizuj bilet w allTickets
             const existingIndex = this.allTickets.findIndex(
                 (t) => t.id === ticket.id
             );
@@ -374,14 +295,9 @@ export const useTicketStore = defineStore("ticketStore", {
                 this.allTickets.push(ticket);
             }
 
-            // Aktualizacja sekcji i mainTickets
             this.updateSectionsAndTickets();
         },
 
-        /**
-         * Obsługuje zakończenie biletu przez WebSocket.
-         * @param {Object} payload - Zawiera ID biletu.
-         */
         handleTicketEnd({ id }) {
             this.allTickets = this.allTickets.filter(
                 (ticket) => ticket.id !== id
@@ -389,9 +305,6 @@ export const useTicketStore = defineStore("ticketStore", {
             this.updateSectionsAndTickets();
         },
 
-        /**
-         * Inicjalizuje połączenie WebSocket.
-         */
         initializeWebSocket() {
             window.Echo.private("display")
                 .listen("UpdateDisplayAboutTicket", (e) => {
@@ -400,6 +313,64 @@ export const useTicketStore = defineStore("ticketStore", {
                 .listen("NotifyEndedTicketDisplay", (e) => {
                     this.handleTicketEnd({ id: e.ticket.id });
                 });
+        },
+
+        async changeTicketDestination(ticketId, destinationId) {
+            const ticketIndex = this.allTickets.findIndex(
+                (t) => t.id === ticketId
+            );
+            if (ticketIndex === -1) return;
+            const oldDestinationId =
+                this.allTickets[ticketIndex].destination_id;
+            const oldWorkstationId =
+                this.allTickets[ticketIndex].workstation_id;
+
+            this.allTickets[ticketIndex].destination_id = destinationId;
+            this.allTickets[ticketIndex].workstation_id = null; // wraca do kolejki głównej
+            this.updateSectionsAndTickets();
+
+            try {
+                await this.pipeQ._changeDestination(ticketId, destinationId);
+            } catch (error) {
+                alert(
+                    "Wystąpił błąd podczas zmiany destynacji. Przywracanie poprzedniego stanu."
+                );
+                this.allTickets[ticketIndex].destination_id = oldDestinationId;
+                this.allTickets[ticketIndex].workstation_id = oldWorkstationId;
+                this.updateSectionsAndTickets();
+            }
+
+            this.draggedTicket = null;
+            this.tempDraggedTicket = null;
+            this.originalWorkstationId = null;
+        },
+
+        async doubleClickToReEnter(ticket) {
+            if (!ticket.workstation_id) return;
+            const workstationId = ticket.workstation_id;
+            const statusId = 2; // Wpuszczony
+            const previousStatusId = ticket.status_id;
+            const previousStatus = ticket.status;
+
+            ticket.status_id = statusId;
+            ticket.status = this.statusMap[statusId] || "Wpuszczony";
+
+            this.updateSectionsAndTickets();
+
+            try {
+                await this.pipeQ._moveToSection(
+                    ticket.id,
+                    workstationId,
+                    statusId
+                );
+            } catch (error) {
+                alert(
+                    "Wystąpił błąd podczas ponownego wywołania wejścia. Przywracanie poprzedniego stanu."
+                );
+                ticket.status_id = previousStatusId;
+                ticket.status = previousStatus;
+                this.updateSectionsAndTickets();
+            }
         },
     },
 });

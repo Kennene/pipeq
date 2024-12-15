@@ -2,7 +2,57 @@ import "./echo";
 import axios from "axios";
 
 class PipeQ {
-    constructor() {}
+    constructor() {
+        this.channel = null;
+        this.onTicketUpdate = null;
+    }
+
+    _listen(channel) {
+        if (!channel) return;
+
+        this.channel = channel;
+        const registerChannel = window.Echo.channel(`register.${this.channel}`);
+
+        registerChannel.listen("UpdateUserAboutHisTicket", (message) => {
+            if (
+                this.onTicketUpdate &&
+                typeof this.onTicketUpdate === "function"
+            ) {
+                this.onTicketUpdate(message.ticket);
+            }
+        });
+
+        // Kiedy subskrypcja jest gotowa, żądamy update
+        registerChannel.subscribed(() => {
+            axios.post(`/status/${this.channel}`);
+        });
+    }
+
+    async _register(destination_id) {
+        try {
+            const response = await axios.post(`/register/${destination_id}`);
+            if (response.data.channel) {
+                this._listen(response.data.channel);
+            } else {
+                console.error("No channel received");
+            }
+        } catch (error) {
+            if (error.response && error.response.data.error) {
+                console.error(error.response.data.error);
+            } else {
+                console.error(error);
+            }
+        }
+    }
+
+    async _clear() {
+        try {
+            const response = await axios.post(window.routes.clear);
+            console.log(response.data.message);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     async _moveToSection(ticketId, workstationId, statusId = 2) {
         if (!ticketId || !workstationId) {
@@ -48,7 +98,6 @@ class PipeQ {
         }
     }
 
-    // Nowa metoda zmiany destynacji
     async _changeDestination(ticketId, destinationId) {
         if (!ticketId || !destinationId) {
             throw new Error("Missing ticketId or destinationId");

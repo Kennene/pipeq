@@ -57,7 +57,8 @@
                 >
                     <template #item="{ element }">
                         <div
-                            class="bg-white border border-gray-300 rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                            class="rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                            :class="getTicketTimeClass(element)"
                             @dblclick="onTicketDoubleClick(element)"
                         >
                             <h5
@@ -71,6 +72,9 @@
                             <h6 class="text-xs text-gray-500 truncate">
                                 {{ element.destination }}
                             </h6>
+                            <div class="text-xs text-gray-700 mt-1">
+                                Czas: {{ getTicketTime(element) }}
+                            </div>
                         </div>
                     </template>
                 </draggable>
@@ -105,7 +109,8 @@
                         >
                             <template #item="{ element }">
                                 <div
-                                    class="bg-white border border-gray-300 rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                                    class="rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                                    :class="getTicketTimeClass(element)"
                                     @dblclick="onTicketDoubleClick(element)"
                                 >
                                     <h5
@@ -119,6 +124,9 @@
                                     <h6 class="text-xs text-gray-500 truncate">
                                         {{ element.destination }}
                                     </h6>
+                                    <div class="text-xs text-gray-700 mt-1">
+                                        Czas: {{ getTicketTime(element) }}
+                                    </div>
                                 </div>
                             </template>
                         </draggable>
@@ -171,7 +179,7 @@
 </template>
 
 <script>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref, onBeforeUnmount } from "vue";
 import { useTicketStore } from "../stores/ticketStore";
 import draggable from "vuedraggable";
 
@@ -240,6 +248,51 @@ export default {
             ticketStore.cancelDeleteAndRestore();
         };
 
+        // LOGIKA CZASU
+        const now = ref(Date.now());
+        let interval = null;
+
+        onMounted(() => {
+            // aktualizacja co 1 sekund
+            interval = setInterval(() => {
+                now.value = Date.now();
+            }, 1000);
+        });
+
+        onBeforeUnmount(() => {
+            clearInterval(interval);
+        });
+
+        const getTicketTime = (ticket) => {
+            if (!ticket.created_at) return "";
+            const createdAt = new Date(ticket.created_at).getTime();
+            const diffMs = now.value - createdAt;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffSecs = Math.floor((diffMs % 60000) / 1000); // sekundy resztowe
+
+            return `${diffMins}min ${diffSecs}s`;
+        };
+
+        const getTicketTimeClass = (ticket) => {
+            if (!ticket.created_at) {
+                return "bg-white border border-gray-300";
+            }
+            const createdAt = new Date(ticket.created_at).getTime();
+            const diffMs = now.value - createdAt;
+            const diffMins = Math.floor(diffMs / 60000);
+
+            if (diffMins >= 10) {
+                // powyżej 10 min: czerwone tło i pulsująca animacja
+                return "bg-red-200 border-red-500 animate-pulse";
+            } else if (diffMins >= 5) {
+                // między 5 a 10 min: żółte tło
+                return "bg-yellow-200 border-yellow-400";
+            } else {
+                // mniej niż 5 min: białe tło
+                return "bg-white border border-gray-300";
+            }
+        };
+
         return {
             ticketStore,
             selectDestination,
@@ -249,6 +302,8 @@ export default {
             onTicketDoubleClick,
             cancelDeleteAction,
             ticketCountByDestination,
+            getTicketTime,
+            getTicketTimeClass,
         };
     },
 };

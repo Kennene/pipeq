@@ -22,9 +22,10 @@ class PipeQ {
             }
         });
 
-        // Kiedy subskrypcja jest gotowa, żądamy update
         registerChannel.subscribed(() => {
-            axios.post(`/status/${this.channel}`);
+            axios.post(`/status/${this.channel}`).catch((error) => {
+                console.error("Error requesting status update:", error);
+            });
         });
     }
 
@@ -37,10 +38,14 @@ class PipeQ {
                 console.error("No channel received");
             }
         } catch (error) {
-            if (error.response && error.response.data.error) {
+            if (
+                error.response &&
+                error.response.data &&
+                error.response.data.error
+            ) {
                 console.error(error.response.data.error);
             } else {
-                console.error(error);
+                console.error("Error in _register:", error);
             }
         }
     }
@@ -50,7 +55,7 @@ class PipeQ {
             const response = await axios.post(window.routes.clear);
             console.log(response.data.message);
         } catch (error) {
-            console.log(error);
+            console.log("Error in _clear:", error);
         }
     }
 

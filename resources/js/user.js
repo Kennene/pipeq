@@ -1,6 +1,5 @@
 import { createApp } from "vue";
-import PageSwapper from "../../resources/views/subscriber/components/PageSwapper.vue";
+import UserPage from "./components/UserPage.vue";
 
-const app = createApp({});
-app.component("page-swapper", PageSwapper);
+const app = createApp(UserPage);
 app.mount("#app");

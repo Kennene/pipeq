@@ -4,7 +4,6 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import "./bootstrap";
 import "./echo";
 import { createApp } from "vue";
 
@@ -15,6 +14,26 @@ import { createApp } from "vue";
  */
 
 const app = createApp({});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const langButton = document.getElementById("lang-button");
+    const langMenu = document.getElementById("lang-menu");
+
+    langButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        langMenu.classList.toggle("hidden");
+    });
+
+    // Kliknięcie poza menu ukryje je
+    document.addEventListener("click", (event) => {
+        if (
+            !langMenu.contains(event.target) &&
+            !langButton.contains(event.target)
+        ) {
+            langMenu.classList.add("hidden");
+        }
+    });
+});
 
 /**
  * The following block of code may be used to automatically register your

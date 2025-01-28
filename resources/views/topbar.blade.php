@@ -1,7 +1,7 @@
 <nav id="topbar" class="bg-white py-2 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-            <img id="app-logo" src="/images/logo_pipeq.webp" class="h-12 w-auto" alt="App Logo" />
+            <img id="app-logo" src="/images/logo.webp" class="h-12 w-auto" alt="App Logo" />
             <h1 id="app-name" class="text-xl font-semibold">{{ env('APP_NAME') }}</h1>
         </div>
 

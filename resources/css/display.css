@@ -4,7 +4,7 @@ body {
 
 .ticket-card {
     width: 20rem;
-    background-color: var(--secondary);
+    background-color: var(--accent3);
     color: var(--black);
 }
 

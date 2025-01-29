@@ -32,9 +32,17 @@ class TicketController extends Controller
     public function register(Request $request, $destination_id): JsonResponse
     {
         // check if specified destination exists
-        if (Destination::find($destination_id) === null) {
+        $destination = Destination::find($destination_id);
+        if ($destination === null) {
             $error = new Error(title: 'Destination not found', http: RESPONSE::HTTP_NOT_FOUND);
             return $error->toHTTPresponse();
+        }
+
+        // check if destination is open now. If not, return error
+        if(!$destination->isOpenNow()) {
+            return response()->json([
+                'message' => __("time-restricted.message")." ".$destination->getNextOpeningInfo(),
+            ], RESPONSE::HTTP_FORBIDDEN);
         }
 
         // for debugging purposes, enable multiple tickets registration

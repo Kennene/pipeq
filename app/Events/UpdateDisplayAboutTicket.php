@@ -27,12 +27,9 @@ class UpdateDisplayAboutTicket implements ShouldBroadcastNow
     }
 
     public function broadcastWith()
-    {
-        $ticket_view = TicketView::find($this->ticket->id)->toArray();
-        $ticket_view['status_color'] = Color::getByStatus($this->ticket->status);
-        
+    {        
         return [
-            'ticket' => $ticket_view
+            'ticket' => TicketView::find($this->ticket->id)->toArray()
         ];
     }
 }

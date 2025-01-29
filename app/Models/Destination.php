@@ -93,6 +93,6 @@ class Destination extends Model
             }
         }
 
-        return __("closed-indefinitely");
+        return __("time-restricted.closed-indefinitely");
     }
 }

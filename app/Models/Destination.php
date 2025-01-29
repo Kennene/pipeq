@@ -21,6 +21,11 @@ class Destination extends Model
         return $this->hasMany(Workstation::class);
     }
 
+    public function schedules()
+    {
+        return $this->hasMany(DestinationsSchedule::class);
+    }
+
     public function translate()
     {
         $this->name = __('destinations.' . $this->id . '.name');

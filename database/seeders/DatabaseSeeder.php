@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             StatusesTableSeeder::class,
             DestinationsTableSeeder::class,
             WorkstationsTableSeeder::class,
+
+            DestinationsScheduleSeeder::class,
         ]);
     }
 }

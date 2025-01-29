@@ -21,6 +21,10 @@ class Status extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    public function color() {
+        return $this->belongsTo(Color::class);
+    }
+
     /**
      * Translate all statuses to App locale
      * 

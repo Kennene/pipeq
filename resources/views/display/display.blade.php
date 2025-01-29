@@ -65,18 +65,22 @@
             // if ticket card does not exist, create it
             if (!ticket_card) {
                 $('#tickets-holder').append(`
-                <div id="ticket${ticket.id}" value="${ticket.id}" class="ticket-card card m-3 shadow-lg">
-                    <div class="card-body p-3">
-                        <h5 class="h2 card-title text-center"></h5>
-                        <hr>
-                        <p class="card-text mt-2"></p>
-                        <h6 class="card-subtitle mt-1"></h6>
+                    <div id="ticket${ticket.id}" value="${ticket.id}" class="ticket-card card m-3 shadow-lg">
+                        <div class="card-body p-3">
+                            <h5 class="h2 card-title text-center"></h5>
+                            <hr>
+                            <p class="card-text mt-2"></p>
+                            <h6 class="card-subtitle mt-1"></h6>
+                        </div>
                     </div>
-                </div>
-            `);
-
+                `);
                 ticket_card = document.getElementById(`ticket${ticket.id}`);
             }
+
+            // Update background color based of based
+            // todo: poprawić kolory, wrzucić do bazy dnaych
+            ticket_card.style.backgroundColor = ticket.status_color;
+
 
             // if workstation is not set, set it to destination
             if (!ticket.workstation) {
@@ -89,7 +93,10 @@
             ticket_card.querySelector('h6').textContent = ticket.workstation;
 
 
-            console.log(tickets);
+            @if(!env('APP_DEBUG'))
+                console.log(tickets);
+            @endif
+
         }
     }
 

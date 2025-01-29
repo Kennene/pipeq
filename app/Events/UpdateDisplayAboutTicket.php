@@ -8,6 +8,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 
 use App\Models\Ticket;
 use App\Models\TicketView;
+use App\Models\Color;
 
 class UpdateDisplayAboutTicket implements ShouldBroadcastNow
 {
@@ -27,8 +28,11 @@ class UpdateDisplayAboutTicket implements ShouldBroadcastNow
 
     public function broadcastWith()
     {
+        $ticket_view = TicketView::find($this->ticket->id)->toArray();
+        $ticket_view['status_color'] = Color::getByStatus($this->ticket->status);
+        
         return [
-            'ticket' => TicketView::find($this->ticket->id)->toArray(),
+            'ticket' => $ticket_view
         ];
     }
 }

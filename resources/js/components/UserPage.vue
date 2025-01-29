@@ -28,7 +28,8 @@
             >
                 <!-- Numer biletu -->
                 <div
-                    class="w-32 h-32 flex items-center justify-center bg-pink-300 rounded-full shadow-lg text-5xl font-bold mb-6"
+                    class="w-32 h-32 flex items-center justify-center rounded-full shadow-lg text-5xl font-bold mb-6"
+                    style="background-color: var(--accent3);"
                 >
                     {{ ticketNr }}
                 </div>
@@ -60,6 +61,7 @@
             <div
                 v-if="currentStatus === 'in'"
                 class="fixed inset-0 flex flex-col items-center justify-center bg-blue-900 bg-opacity-95 z-50"
+                style="background-color: var(--accent1);"
             >
                 <div
                     :key="inAnimationKey"
@@ -72,7 +74,8 @@
                         viewBox="0 0 24 24"
                         stroke-width="1.5"
                         stroke="currentColor"
-                        class="w-75 h-75 text-white mb-6 animate-bounce"
+                        class="w-75 h-75 mb-6 animate-bounce"
+                        style="color: var(--white);"
                     >
                         <path
                             stroke-linecap="round"
@@ -83,18 +86,18 @@
 
                     <!-- Komunikat -->
                     <div
-                        class="bg-blue-200 p-4 rounded-lg shadow-md text-center max-w-lg"
+                        class="p-4 rounded-lg shadow-md text-center max-w-lg"
+                        style="background-color: var(--primary);"
                     >
                         <p
-                            class="text-xl font-medium text-gray-800 leading-relaxed"
+                            class="text-xl font-bold leading-relaxed"
+                            style="color: var(--white);"
                         >
                             {{
                                 translations["register.in.message"] ||
                                 "Zapraszamy do stanowiska:"
                             }}
-                            <span class="font-bold lowercase ml-2">
-                                {{ inWorkstationText }}
-                            </span>
+                            {{ inWorkstationText }}
                         </p>
                     </div>
                 </div>

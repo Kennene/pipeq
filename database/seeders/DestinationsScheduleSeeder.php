@@ -15,27 +15,27 @@ class DestinationsScheduleSeeder extends Seeder
     {
         $destinations = DB::table('destinations')->get();
 
-   
-
         foreach ($destinations as $destination) {
             $schedules = [];
 
             for ($day = 0; $day <= 6; $day++) {
+                // mon - fri
                 if ($day >= 1 && $day <= 5) {
                     $schedules[] = [
                         'destination_id' => $destination->id,
                         'day_of_week' => $day,
-                        'open_time' => '08:00:00',
-                        'close_time' => '16:00:00',
+                        'open_time' => '01:00:00',
+                        'close_time' => '23:00:00',
                         'is_closed' => false
                     ];
                 } else {
+                // sat - sun
                     $schedules[] = [
                         'destination_id' => $destination->id,
                         'day_of_week' => $day,
-                        'open_time' => null,
-                        'close_time' => null,
-                        'is_closed' => true
+                        'open_time' => '01:00:00',
+                        'close_time' => '23:00:00',
+                        'is_closed' => false
                     ];
                 }
             }

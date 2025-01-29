@@ -16,5 +16,21 @@
     "statuses.3.description": "Użytkownik jest obsługiwany",
     "statuses.4.description": "Użytkownik wypuszczony",
     "register.waiting.message": "Dziękujemy za rejestrację! Proszę poczekać na swoją kolej.",
-    "register.in.message": "Zapraszamy na"
+    "register.in.message": "Zapraszamy na",
+    "day.0": "Niedziela",
+    "day.1": "Poniedziałek",
+    "day.2": "Wtorek",
+    "day.3": "Środa",
+    "day.4": "Czwartek",
+    "day.5": "Piątek",
+    "day.6": "Sobota",
+    "time-restricted.title": "Dziekanat jest nieczynny",
+    "time-restricted.message": "Uprzejmie informujemy, że w chwili obecnej dziekanat jest nieczynny. Najbliższy termin, w którym będziemy dostępni, to",
+    "time-restricted.sorry": "Przepraszamy za wszelkie niedogodności i dziękujemy za Twoją wyrozumiałość. Aktualne informacje o godzinach otwarcia dziekanatu znajdziesz tutaj:",
+    "time-restricted.contact": "W razie pytań lub pilnych spraw zapraszamy do kontaktu za pośrednictwem:",
+    "time-restricted.footnote": "Dziękujemy za zrozumienie i życzymy udanego dnia! 😊<br/>Z wyrazami szacunku,<br/>Dziekanat WSB Merito w Poznaniu",
+    "time-restricted.open": "Otwarte",
+    "time-restricted.opens_today": "dzisiaj o :time",
+    "time-restricted.opens_on": "w :day o :time",
+    "time-restricted.closed-indefinitely": "Zamknięte na stałe"
 }

@@ -17,9 +17,24 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $color = new Color();
-        $destinations = Destination::all();
         $token = $this->getUserToken($request);
 
+        $all_destinations = Destination::all();
+        $available_destinations = [];
+
+        foreach ($all_destinations as $destination) {
+            if($destination -> isOpenNow()) {
+                $available_destinations[] = $destination;
+            }
+        }
+
+        if(empty($available_destinations)) {
+            $opens = $all_destinations->first()->getNextOpeningInfo();
+            return view('user.time-restricted')->with(compact('opens'));
+        } else {
+            $destinations = collect($available_destinations);
+        }
+        
         return view('user.user')->with(compact('color', 'token', 'destinations'));
     }
     

@@ -16,5 +16,21 @@
     "statuses.3.description": "User currently being served",
     "statuses.4.description": "User currently being served",
     "register.waiting.message": "Thank you for registering! Please wait patiently for your turn.",
-    "register.in.message": "Please proceed to"
+    "register.in.message": "Please proceed to",
+    "day.0": "Sunday",
+    "day.1": "Monday",
+    "day.2": "Tuesday",
+    "day.3": "Wednesday",
+    "day.4": "Thursday",
+    "day.5": "Friday",
+    "day.6": "Saturday",
+    "time-restricted.title": "The Registrar's Office is closed",
+    "time-restricted.message": "We kindly inform you that the Registrar's Office is currently closed. The next available time we will be open is",
+    "time-restricted.sorry": "We apologize for any inconvenience and thank you for your understanding. Current information about the Registrar's Office opening hours can be found here:",
+    "time-restricted.contact": "If you have any questions or urgent matters, please contact us via:",
+    "time-restricted.footnote": "Thank you for your understanding and have a great day! 😊<br/>Best regards,<br/>The Registrar's Office of WSB Merito in Poznań",
+    "time-restricted.open": "Now open",
+    "time-restricted.opens_today": "today at :time",
+    "time-restricted.opens_on": "on :day at :time",
+    "time-restricted.closed-indefinitely": "Closed indefinitely"
 }

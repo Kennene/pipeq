@@ -2,10 +2,8 @@
 <html lang="pl">
 
 <head>
-    @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js', 'resources/js/coordinator.js'])
-    @vite(['resources/css/coordinator.css'])
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @extends('layouts.head')
+    @vite(['resources/css/coordinator.css', 'resources/js/coordinator.js'])
     <title>Coordinator</title>
 </head>
 

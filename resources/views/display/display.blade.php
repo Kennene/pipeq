@@ -58,6 +58,14 @@
                 return;
             }
 
+            @if(env('IS_DISPLAY_SOUND', false))
+                // play notification sound
+                const notificationSound = new Audio();
+                notificationSound.src = '{!! env('APP_URL') !!}/notification.mp3';
+                notificationSound.load();
+                notificationSound.play().catch(error => console.error("Audio play failed:", error));
+            @endif
+
             // if ticket card does not exist, create it
             if (!ticket_card) {
                 $('#tickets-holder').append(`
@@ -73,10 +81,13 @@
                 ticket_card = document.getElementById(`ticket${ticket.id}`);
             }
 
-            // Update background color based of based
-            // todo: poprawić kolory, wrzucić do bazy dnaych
-            ticket_card.style.backgroundColor = ticket.status_color;
+            // animate card
+            ticket_card.classList.remove('ticket-pop');
+            void ticket_card.offsetWidth;
+            ticket_card.classList.add('ticket-pop');
 
+            // Update background color
+            ticket_card.style.backgroundColor = ticket.status_color;
 
             // if workstation is not set, set it to destination
             if (!ticket.workstation) {
@@ -88,11 +99,9 @@
             ticket_card.querySelector('p').textContent = ticket.status;
             ticket_card.querySelector('h6').textContent = ticket.workstation;
 
-
             @if(!env('APP_DEBUG'))
                 console.log(tickets);
             @endif
-
         }
     }
 

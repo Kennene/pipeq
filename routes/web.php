@@ -63,24 +63,24 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 
 
 //* API for client -> server communication
-// todo: change any to post at the end of the project
+// todo: change post to post at the end of the project
 
 //* user space
 Route::middleware('role:' . Role::USER)->group(function () {
     Route::controller(TicketController::class)->group(function () {
-        Route::any("/register/{destination_id}", 'register')->name('_register');
-        Route::any("/status/{ticket_token?}", 'status')->name('_status');
-        Route::any("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
-        Route::any("/clearStorage", 'clearStorage')->name('_clear');
+        Route::post("/register/{destination_id}", 'register')->name('_register');
+        Route::post("/status/{ticket_token?}", 'status')->name('_status');
+        Route::post("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
+        Route::post("/clearStorage", 'clearStorage')->name('_clear');
     });
 });
 
 //* coordinator space
 Route::middleware(['auth', 'verified', 'role:' . Role::COORDINATOR])->group(function () {
     Route::controller(TicketController::class)->group(function () {
-        Route::any("/move/{ticket_id}/{workstation_id?}/{status_id?}", 'move')->name('_move');
-        Route::any("/changeDestination/{ticket_id}/{destination_id}", 'changeDestination')->name('_changeDestination');
-        Route::any("/end/{ticket_id}", 'end')->name('_end');
-        Route::any("/endAll/{destination_id?}", 'endAll')->name('_endAll');
+        Route::post("/move/{ticket_id}/{workstation_id?}/{status_id?}", 'move')->name('_move');
+        Route::post("/changeDestination/{ticket_id}/{destination_id}", 'changeDestination')->name('_changeDestination');
+        Route::post("/end/{ticket_id}", 'end')->name('_end');
+        Route::post("/endAll/{destination_id?}", 'endAll')->name('_endAll');
     });
 });

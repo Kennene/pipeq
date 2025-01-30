@@ -61,38 +61,41 @@ class Destination extends Model
      */
     public function getNextOpeningInfo(): string
     {
-        $now = now();
-        $dayOfWeek = $now->dayOfWeek; // 0 = Sunday, 6 = Saturday
-        $time = $now->format('H:i:s');
+        // current day of week
+        $day = now()->dayOfWeek;
+        $current_day_schedule = $this->schedules()->where('day_of_week', $day)->first();
 
-        // Check if it's open now
-        if ($this->isOpenNow()) {
-            return __("time-restricted.open");
+        // if it's closed today
+        if (!$current_day_schedule->is_closed) {
+            // but may be will be open later?
+            if(now()->format('H:i:s') < $current_day_schedule->open_time) {
+                return __('time-restricted.opens_today', ['time' => date('H:i', strtotime($current_day_schedule->open_time))]);
+            }
         }
 
-        // Look for the next opening day
         for ($i = 0; $i < 7; $i++) {
-            $nextDay = ($dayOfWeek + $i) % 7;
+            // days are numbered from 0 to 6 where 0 is Sunday and 6 is Saturday
+            if ($day == 6) {
+                $day = 0;
+            } else {
+                $day++;
+            }
 
-            $nextSchedule = $this->schedules()
-                ->where('day_of_week', $nextDay)
-                ->where('is_closed', false)
-                ->orderBy('open_time', 'asc')
-                ->first();
+            // get schedule for this day
+            $current_day_schedule = $this->schedules()->where('day_of_week', $day)->first();
 
-            if ($nextSchedule) {
-                if ($i == 0 && $nextSchedule->open_time > $time) {
-                    return __('time-restricted.opens_today', ['time' => date('H:i', strtotime($nextSchedule->open_time))]);
-                }
+            // if this day is not closed return it's open_time
+            if (!$current_day_schedule->is_closed) {
+                $opens = $current_day_schedule->open_time;
 
-                // todo: tu jest chyba coś pochrzanione z tym -1
                 return __('time-restricted.opens_on', [
-                    'day' => __("day.".now()->startOfWeek()->addDays($nextDay-1)->format('w')),
-                    'time' => date('H:i', strtotime($nextSchedule->open_time))
+                    'day' => __("day.{$day}"),
+                    'time' => date('H:i', strtotime($opens))
                 ]);
             }
         }
 
+        // edge case if whole week is_closed
         return __("time-restricted.closed-indefinitely");
     }
 }

@@ -18,7 +18,8 @@ class WorkstationsTableSeeder extends Seeder
             ['name' => 'workstations.1.name', 'destination_id' => 1],
             ['name' => 'workstations.2.name', 'destination_id' => 1],
             ['name' => 'workstations.3.name', 'destination_id' => 1],
-            ['name' => 'workstations.4.name', 'destination_id' => 2],
+            ['name' => 'workstations.4.name', 'destination_id' => 1],
+            ['name' => 'workstations.5.name', 'destination_id' => 2],
         ]);
     }
 }

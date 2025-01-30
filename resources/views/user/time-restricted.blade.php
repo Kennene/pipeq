@@ -17,7 +17,7 @@
 
     #time-restricted-title {
         font-weight: bold;
-        color: var(--accent2);
+        color: var(--red);
     }
 
     #time-restricted-message-soonest {

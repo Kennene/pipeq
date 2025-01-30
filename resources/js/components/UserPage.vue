@@ -29,7 +29,7 @@
                 <!-- Numer biletu -->
                 <div
                     class="w-32 h-32 flex items-center justify-center rounded-full shadow-lg text-5xl font-bold mb-6"
-                    style="background-color: var(--accent3);"
+                    style="background-color: var(--yellow);"
                 >
                     {{ ticketNr }}
                 </div>
@@ -61,7 +61,7 @@
             <div
                 v-if="currentStatus === 'in'"
                 class="fixed inset-0 flex flex-col items-center justify-center bg-blue-900 bg-opacity-95 z-50"
-                style="background-color: var(--accent1);"
+                style="background-color: var(--green);"
             >
                 <div
                     :key="inAnimationKey"

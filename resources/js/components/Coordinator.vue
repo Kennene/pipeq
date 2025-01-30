@@ -5,7 +5,8 @@
             Dodano gradientowe tło, lepsze zaokrąglenia i subtelny styl na przyciskach.
         -->
         <div
-            class="bg-gradient-to-r from-blue-900 to-blue-700 text-white flex justify-center p-4 space-x-4 flex-shrink-0 items-center shadow-md"
+            class="text-white flex justify-center p-4 space-x-4 flex-shrink-0 items-center shadow-md"
+            style="background: linear-gradient(to right, var(--darkblue), var(--primary));"
         >
             <div
                 v-for="dest in ticketStore.destinations"

@@ -302,6 +302,51 @@ class TicketController extends Controller
     }
 
     /**
+     * Ends lifecycle of all tickets
+     * 
+     * This method is used when coordinator wants to end all tickets, for example
+     * when the destination is being close. Method clears user's storage and the calls end method
+     * 
+     * @param Request $request
+     * @param int|null $destination_id If not provided, method will remove all tickets
+     * @return JsonResponse
+     */
+    public function endAll(Request $request, ?int $destination_id = null): JsonResponse
+    {
+        // check if destination_id is provided
+        if ($destination_id != null) {
+            // check if specified destination is valid
+            $destination = Destination::find($destination_id);
+            if ($destination === null) {
+                $error = new Error(title: 'Provided destination does not exist', http: RESPONSE::HTTP_NOT_FOUND);
+                return $error->toHTTPresponse();
+            }
+            $message = "All tickets for destination {$destination->id} successfully removed";
+            $tickets = Ticket::where('destination_id', $destination_id)->get();
+        } else {
+            $message = "All tickets successfully removed";
+            $tickets = Ticket::all();
+        }
+
+        // if array is empty, return message
+        if ($tickets->isEmpty()) {
+            return response()->json(['message' => 'No tickets found'], RESPONSE::HTTP_OK);
+        }
+
+        // Delete all tickets
+        foreach ($tickets as $ticket) {
+            $removed_tickets[] = $ticket->ticket_nr;
+            $this->end($request, $ticket->id);
+        }
+
+        // return response
+        return response()->json([
+            'message' => $message,
+            'removed_tickets' => $removed_tickets ?? []
+        ], RESPONSE::HTTP_OK); 
+    }
+
+    /**
      * Ends lifecycle of ticket by user
      * 
      * This method is used when user demands to end his ticket, for example

@@ -33,5 +33,13 @@
     "time-restricted.opens_today": "dzisiaj o :time",
     "time-restricted.opens_on": "w :day o :time",
     "time-restricted.closed-indefinitely": "zamknięte na stałe",
-    "workstations.5.name": "Stanowisko 5"
+    "workstations.5.name": "Stanowisko 5",
+    "reason.other": "Inne",
+    "reason.1": "Odbiór/przedłużenie legitymacji",
+    "reason.2": "Odbiór/zamówienie zaświadczenia",
+    "reason.3": "Złożenie podania",
+    "reason.4": "Odbiór dyplomu",
+    "reason.5": "Pomoc stypendialna",
+    "reason.6": "Wniosek płatnościowy",
+    "reason.7": "Problem z płatnościami"
 }

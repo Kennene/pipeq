@@ -70,6 +70,7 @@ Route::middleware('role:' . Role::USER)->group(function () {
         Route::post("/status/{ticket_token?}", 'status')->name('_status');
         Route::post("/endByUser/{ticket_token?}", 'endByUser')->name('_endByUser');
         Route::post("/clearStorage", 'clearStorage')->name('_clear');
+        Route::any("/reason/{reason_id}/{ticket_token?}", 'updateReason')->name('_updateReason');
     });
 });
 

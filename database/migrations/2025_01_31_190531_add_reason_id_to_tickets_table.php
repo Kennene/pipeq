@@ -34,7 +34,6 @@ return new class extends Migration
                 workstations.name AS workstation,
                 tickets.workstation_id,
                 tickets.created_at,
-                reasons.id AS reason_id,
                 reasons.description AS reason
             FROM tickets
             LEFT JOIN users ON tickets.user_id = users.id

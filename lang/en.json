@@ -33,5 +33,13 @@
     "time-restricted.opens_today": "today at :time",
     "time-restricted.opens_on": "on :day at :time",
     "time-restricted.closed-indefinitely": "closed indefinitely",
-    "workstations.5.name": "Desk 5"
+    "workstations.5.name": "Desk 5",
+    "reason.other": "Other",
+    "reason.1": "ID card collection/renewal",
+    "reason.2": "Certificate collection/request",
+    "reason.3": "Application submission",
+    "reason.4": "Diploma collection",
+    "reason.5": "Scholarship assistance",
+    "reason.6": "Payment request",
+    "reason.7": "Payment issue"
 }

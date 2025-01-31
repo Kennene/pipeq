@@ -11,7 +11,7 @@ class Reason extends Model
     protected $fillable = [
         'destination_id',
         'description',
-        'active',
+        'is_active',
     ];
 
     public function destination()

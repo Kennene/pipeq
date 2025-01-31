@@ -13,11 +13,10 @@ class ReasonsSeeder extends Seeder
      */
     public function run(): void
     {
-
-        for( $i=0; $i<6; $i++) {
+        for( $i=0; $i<4; $i++) {
             DB::table('reasons')->insert([
                 'destination_id' => 1,
-                'description' => 'reason.' . $i,
+                'description' => 'reason.' . $i+1,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -26,10 +25,28 @@ class ReasonsSeeder extends Seeder
         for( $limit=$i+3 ; $i<$limit; $i++) {
             DB::table('reasons')->insert([
                 'destination_id' => 2,
-                'description' => 'reason.' . $i,
+                'description' => 'reason.' . $i+1,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
         }
+
+        $i = $i + 1;
+        DB::table('reasons')->insert([
+            'destination_id' => 1,
+            'description' => 'Not active reason 1. If you see this, you messed up.',
+            'is_active' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        $i = $i + 1;
+        DB::table('reasons')->insert([
+            'destination_id' => 2,
+            'description' => 'Not active reason 2. If you see this, you messed up.',
+            'is_active' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 }

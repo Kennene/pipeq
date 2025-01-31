@@ -84,3 +84,8 @@ Route::middleware(['auth', 'verified', 'role:' . Role::COORDINATOR])->group(func
         Route::post("/endAll/{destination_id?}", 'endAll')->name('_endAll');
     });
 });
+
+
+Route::any('/cas', function () {
+    return view('cas');
+})->middleware('cas.auth');

@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Error;
 use App\Models\Role;
+use App\Models\User;
 
 class CheckRole
 {
@@ -23,8 +24,15 @@ class CheckRole
             return $next($request);
         }
 
+        // check if user is authenticated via CAS. If not, use the built-in logging page
+        if(cas()->isAuthenticated()) {
+            $user_name = cas()->getCurrentUser();
+        } else {
+            $user_name = Auth::user()->name;
+        }
+
         // get loggged user and prepare Unauthorized error
-        $user = Auth::user();
+        $user = User::where('name', $user_name)->first();
         $error = new Error(title: 'Unauthorized', http: RESPONSE::HTTP_UNAUTHORIZED);
 
         // check if user doesn't exist or doesn't have roles

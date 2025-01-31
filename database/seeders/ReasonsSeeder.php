@@ -13,7 +13,7 @@ class ReasonsSeeder extends Seeder
      */
     public function run(): void
     {
-        for( $i=0; $i<4; $i++) {
+        for( $i=0; $i<3; $i++) {
             DB::table('reasons')->insert([
                 'destination_id' => 1,
                 'description' => 'reason.' . $i+1,
@@ -22,7 +22,7 @@ class ReasonsSeeder extends Seeder
             ]);
         }
 
-        for( $limit=$i+3 ; $i<$limit; $i++) {
+        for( $limit=$i+2 ; $i<$limit; $i++) {
             DB::table('reasons')->insert([
                 'destination_id' => 2,
                 'description' => 'reason.' . $i+1,

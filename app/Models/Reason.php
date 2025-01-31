@@ -18,4 +18,9 @@ class Reason extends Model
     {
         return $this->belongsTo(Destination::class);
     }
+
+    public function translate()
+    {
+        $this->description = __('reason.' . $this->id);
+    }
 }

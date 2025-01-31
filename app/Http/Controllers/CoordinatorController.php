@@ -10,7 +10,6 @@ use App\Models\Ticket;
 use App\Models\TicketView;
 use App\Models\Status;
 use App\Models\Destination;
-use App\Models\Workstation;
 
 use App\Models\User;
 
@@ -33,13 +32,15 @@ class CoordinatorController extends Controller
         $statuses = Status::allTranslated();
         $destinations = Destination::with('workstations')->get();
 
-        // Translate all destinations and workstations
-        foreach ($destinations as $destination) {
+        // Translate all destinations and workstations (map is faster than loop)
+        $destinations = $destinations->map(function($destination) {
             $destination->translate();
-            foreach ($destination->workstations as $workstation) {
+            $destination->workstations = $destination->workstations->map(function($workstation) {
                 $workstation->translate();
-            }
-        }
+                return $workstation;
+            });
+            return $destination;
+        });
 
         // Przygotowanie tłumaczeń statusów
         $translations = [

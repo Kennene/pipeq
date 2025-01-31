@@ -13,7 +13,7 @@ class TicketView extends Model
     public $timestamps = false;
 
     // necessary for function forUser
-    protected $fillable = ['user', 'ticket_nr', 'destination', 'status', 'status_id', 'workstation'];
+    protected $fillable = ['user', 'ticket_nr', 'destination', 'status', 'status_id', 'workstation', 'reason'];
 
     /**
      * Translate status, destination and workstation on retrieved
@@ -26,6 +26,7 @@ class TicketView extends Model
             $ticket->status = __($ticket->status);
             $ticket->destination = __($ticket->destination);
             $ticket->workstation = __($ticket->workstation);
+            $ticket->reason = __($ticket->reason);
         });
     }
 
@@ -52,6 +53,7 @@ class TicketView extends Model
             'status' => $this->status,
             'status_id' => $this->status_id,
             'workstation' => $this->workstation,
+            'reason' => $this->reason,
         ]);
     }
 }

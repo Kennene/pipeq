@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
 use App\Models\Destination;
+use App\Models\Reason;
 
 class UserController extends Controller
 {
@@ -22,23 +23,37 @@ class UserController extends Controller
         $all_destinations = Destination::all();
         $available_destinations = [];
 
+        // collect all destinations that are open right now
         foreach ($all_destinations as $destination) {
             if($destination -> isOpenNow()) {
                 $available_destinations[] = $destination;
             }
         }
 
+        // check if there are any open destinations
         if(empty($available_destinations)) {
+            // if there are no available destinations, get the next opening time and return info about it
             $opens = $all_destinations->first()->getNextOpeningInfo();
             return view('user.time-restricted')->with(compact('opens'));
-        } else {
-            $destinations = collect($available_destinations);
         }
         
+        // convert array to collection
+        $destinations = collect($available_destinations);
+
+        // Translate all destinations and reasons within
+        $destinations = $destinations->map(function($destination) {
+            $destination->translate();
+            $destination->reasons = $destination->reasons->map(function($reason) {
+                $reason->translate();
+                return $reason;
+            });
+            return $destination;
+        });
+       
         return view('user.user')->with(compact('color', 'token', 'destinations'));
     }
     
-    // todo: wywalić to. kod powtarza się w TicketController
+    // todo: wywalić to. kod powtarza się w TicketController - wziąć te metody stamtąd
     protected function getUserToken(?Request $request = null): ?string
     {
         // try to get token from cookie or session

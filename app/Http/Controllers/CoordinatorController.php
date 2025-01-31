@@ -12,12 +12,22 @@ use App\Models\Status;
 use App\Models\Destination;
 use App\Models\Workstation;
 
+use App\Models\User;
+
 class CoordinatorController extends Controller
 {
     // app/Http/Controllers/CoordinatorController.php
 
     public function index(Request $request): View
     {
+        // if that's production, check CAS user
+        if (!config('app.debug')) {
+            // check if CAS user is missing from local database
+            if(User::where('name', cas()->getCurrentUser())->first() == null) {
+                return view('layouts.code403');
+            }
+        }
+
         $color = new Color();
         $tickets = TicketView::all();
         $statuses = Status::allTranslated();

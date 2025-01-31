@@ -15,7 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->appendToGroup('web', SetLocale::class);
-        $middleware->alias(['role' => CheckRole::class]);
+
+        $middleware->alias([
+            'role' => CheckRole::class,
+            'cas.auth' => \Subfission\Cas\Middleware\CASAuth::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -99,7 +99,7 @@
             ticket_card.querySelector('p').textContent = ticket.status;
             ticket_card.querySelector('h6').textContent = ticket.workstation;
 
-            @if(!env('APP_DEBUG'))
+            @if(!config('app.debug'))
                 console.log(tickets);
             @endif
         }

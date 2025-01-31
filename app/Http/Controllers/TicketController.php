@@ -46,7 +46,7 @@ class TicketController extends Controller
         }
 
         // for debugging purposes, enable multiple tickets registration
-        if (!env('APP_DEBUG')) {
+        if (!config('app.debug')) {
             $token = $this->getUserToken($request);
 
             if ($token !== null) {
@@ -180,7 +180,7 @@ class TicketController extends Controller
         broadcast(new UpdateDisplayAboutTicket($ticket));
 
         // for debugging purposes, return whole summary of ticket
-        if (env('APP_DEBUG')) {
+        if (config('app.debug')) {
             return response()->json(['message' => $ticket->summary()], RESPONSE::HTTP_OK);
         }
 
@@ -255,7 +255,7 @@ class TicketController extends Controller
         broadcast(new UpdateDisplayAboutTicket($ticket));
 
         // for debugging purposes, return whole summary of ticket
-        if (env('APP_DEBUG')) {
+        if (config('app.debug')) {
             return response()->json(['message' => $ticket->summary()], RESPONSE::HTTP_OK);
         }
 

@@ -47,8 +47,7 @@
     "administrator.tickets_history": "History of tickets",
     "administrator.created": "Created",
     "administrator.updated_when": "Updated",
-    "administrator.tickets_order": "The event records are arranged from the newest to the oldest"
-    "workstations.5.name": "Desk 5",
+    "administrator.tickets_order": "The event records are arranged from the newest to the oldest",
     "reason.other": "Other",
     "reason.1": "ID card collection/renewal",
     "reason.2": "Certificate collection/request",
@@ -56,5 +55,5 @@
     "reason.4": "Diploma collection",
     "reason.5": "Scholarship assistance",
     "reason.6": "Payment request",
-    "reason.7": "Payment issue"
+    "reason.7": "Payment issue",
 }

@@ -43,6 +43,51 @@ return new class extends Migration
             LEFT JOIN workstations ON tickets.workstation_id = workstations.id
             LEFT JOIN reasons ON tickets.reason_id = reasons.id
         ");
+
+        //* Messing with this table probably dropped both triggers, so here are the triggers again
+        DB::unprepared('
+            CREATE TRIGGER after_tickets_insert
+            AFTER INSERT ON tickets
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO tickets_history (ticket_id, ticket_nr, token, username, status, destination, workstation, original_created_at, original_updated_at, modified_by, created_at, updated_at)
+                SELECT 
+                    NEW.id, 
+                    NEW.ticket_nr, 
+                    NEW.token, 
+                    (SELECT name FROM users WHERE id = NEW.user_id), 
+                    NEW.status_id, 
+                    NEW.destination_id, 
+                    NEW.workstation_id, 
+                    NEW.created_at, 
+                    NEW.updated_at, 
+                    (SELECT name FROM users WHERE id = NEW.modified_by), 
+                    CURRENT_TIMESTAMP, 
+                    CURRENT_TIMESTAMP;
+            END;
+        ');
+
+        DB::unprepared('
+            CREATE TRIGGER after_tickets_update
+            AFTER UPDATE ON tickets
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO tickets_history (ticket_id, ticket_nr, token, username, status, destination, workstation, original_created_at, original_updated_at, modified_by, created_at, updated_at)
+                SELECT 
+                    NEW.id, 
+                    NEW.ticket_nr, 
+                    NEW.token, 
+                    (SELECT name FROM users WHERE id = NEW.user_id), 
+                    NEW.status_id, 
+                    NEW.destination_id, 
+                    NEW.workstation_id, 
+                    NEW.created_at, 
+                    NEW.updated_at, 
+                    (SELECT name FROM users WHERE id = NEW.modified_by), 
+                    CURRENT_TIMESTAMP, 
+                    CURRENT_TIMESTAMP;
+            END;
+        ');
     }
 
     /**
@@ -78,5 +123,9 @@ return new class extends Migration
             LEFT JOIN colors ON statuses.color_id = colors.id
             LEFT JOIN workstations ON tickets.workstation_id = workstations.id
         ");
+
+        // Drop triggers for backwards compatibility. however they should remain at all times
+        DB::unprepared('DROP TRIGGER IF EXISTS after_tickets_update');
+        DB::unprepared('DROP TRIGGER IF EXISTS after_tickets_insert');
     }
 };

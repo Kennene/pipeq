@@ -12,4 +12,16 @@ class DestinationsSchedule extends Model
     {
         return $this->belongsTo(Destination::class);
     }
+
+    /**
+     * Function for HTM?L purposes to check checkbox if destination is closed
+     */
+    public function checked(): string
+    {
+        if($this->is_closed) {
+            return 'checked';
+        } else {
+            return '';
+        }
+    }
 }

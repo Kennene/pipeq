@@ -33,5 +33,19 @@
     "time-restricted.opens_today": "dzisiaj o :time",
     "time-restricted.opens_on": "w :day o :time",
     "time-restricted.closed-indefinitely": "zamknięte na stałe",
-    "workstations.5.name": "Stanowisko 5"
+    "workstations.5.name": "Stanowisko 5",
+    "administrator.schedules": "Harmonogram otwarcia",
+    "administrator.day": "Dzień",
+    "administrator.is_closed": "Zamknięte",
+    "administrator.open_time": "Otwiera się",
+    "administrator.close_time": "Zamyka się",
+    "administrator.user": "Użytkownik",
+    "administrator.role_id": "role_id",
+    "administrator.role_name": "Rola",
+    "administrator.role_description": "Opis",
+    "administrator.users": "Użytkownicy",
+    "administrator.tickets_history": "Historia biletów",
+    "administrator.created": "Utworzony",
+    "administrator.updated_when": "Zaktualizowany",
+    "administrator.tickets_order": "Zapisy zdarzeń są uporządkowane od najnowszych do najstarszych"
 }

@@ -33,5 +33,19 @@
     "time-restricted.opens_today": "today at :time",
     "time-restricted.opens_on": "on :day at :time",
     "time-restricted.closed-indefinitely": "closed indefinitely",
-    "workstations.5.name": "Desk 5"
+    "workstations.5.name": "Desk 5",
+    "administrator.schedules": "Opening schedules",
+    "administrator.day": "Day",
+    "administrator.is_closed": "Closed",
+    "administrator.open_time": "Opens",
+    "administrator.close_time": "Closes",
+    "administrator.user": "User",
+    "administrator.role_id": "role_id",
+    "administrator.role_name": "Role",
+    "administrator.role_description": "Description",
+    "administrator.users": "Users",
+    "administrator.tickets_history": "History of tickets",
+    "administrator.created": "Created",
+    "administrator.updated_when": "Updated",
+    "administrator.tickets_order": "The event records are arranged from the newest to the oldest"
 }

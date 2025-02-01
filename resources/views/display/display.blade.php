@@ -58,10 +58,10 @@
                 return;
             }
 
-            @if(env('IS_DISPLAY_SOUND', false))
+            @if(config('pipeq.is_display_sound'))
                 // play notification sound
                 const notificationSound = new Audio();
-                notificationSound.src = '{!! env('APP_URL') !!}/notification.mp3';
+                notificationSound.src = '{!! config("pipeq.display_sound_path") !!}';
                 notificationSound.load();
                 notificationSound.play().catch(error => console.error("Audio play failed:", error));
             @endif

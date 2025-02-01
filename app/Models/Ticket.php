@@ -37,12 +37,14 @@ class Ticket extends Model
     {
         parent::boot();
         static::creating(function ($ticket) {
-
             // adds ticket_nr to the ticket
-            $ticket_nr = env('MAX_TICKET_NUMBER', 99);
-            $nextId = (static::max('id') ?? 0) + 1;
-            $ticket->ticket_nr = ($nextId % $ticket_nr) ?: $ticket_nr;
+            $tickets_sequence = DB::table('sqlite_sequence')
+                                    ->where('name', 'tickets')
+                                    ->value('seq');
 
+            $ticket->ticket_nr = $tickets_sequence % config('pipeq.max_ticket_number') + 1;
+
+            // todo: change this Auth. It won't work with the CAS
             // adds user_id to the ticket
             $ticket->user_id = Auth::id();
         });

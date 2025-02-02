@@ -55,5 +55,6 @@
     "reason.4": "Odbiór dyplomu",
     "reason.5": "Pomoc stypendialna",
     "reason.6": "Wniosek płatnościowy",
-    "reason.7": "Problem z płatnościami"
+    "reason.7": "Problem z płatnościami",
+    "register.reason.message": "Proszę wybrać powód wizyty"
 }

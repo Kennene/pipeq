@@ -11,7 +11,7 @@
     @include('topbar')
 
 
-    @foreach($destinations as $destination)
+    <!-- @foreach($destinations as $destination)
         <div class="bg-info text-xl">Jeżeli wybrano destination_id {{ $destination->id }}, czyli {{ $destination->name }} to pojawia się:</div>
 
         @foreach($destination->reasons as $reason)
@@ -20,7 +20,7 @@
                 style="width: 30%; cursor: pointer; transition: transform 0.2s ease-in-out;"
                 onmouseover="this.style.transform='scale(1.05)';"
                 onmouseout="this.style.transform='scale(1)';"
-                href="{{ route('_updateReason', [$reason, $token]) }}"
+                href="{{ route('_updateReason', [$reason]) }}"
             >
                 reason_id {{ $reason->id }}: {{ $reason->description }}
             </a>
@@ -39,7 +39,7 @@
     
     <div class="bg-warning text-xl text-black">PO WYBRANIU REASON, MENU WYBORU ZNIKA</div>
     <div class="bg-secondary text-l text-white">Z racji, że to nie jest obowiązkowe menu, to lepiej, żeby wyglądało drugorzędnie, opcjonalnie, mniej więcej jak powyżej</div>
-
+ -->
 
 
     <script>
@@ -57,7 +57,9 @@
 
         window.translations = {
             "register.waiting.message": "{{ __('register.waiting.message') }}",
-            "register.in.message": "{{ __('register.in.message') }}"
+            "register.in.message": "{{ __('register.in.message') }}",
+            "register.reason.message": "{{ __('register.reason.message') }}",
+            "reason.other": "{{ __('reason.other') }}"
         };
     </script>
     <div id="app" class="flex-1 overflow-hidden"></div>

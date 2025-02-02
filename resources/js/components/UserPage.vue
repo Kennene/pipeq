@@ -1,17 +1,18 @@
 <template>
     <div class="min-h-screen flex flex-col bg-gray-50 relative">
-        <!-- Sekcja główna z listą destynacji -->
+        <!-- Ekran początkowy / initial -->
         <div
             v-if="currentStatus === 'initial'"
             class="flex-1 flex flex-col justify-center items-center p-4"
         >
             <div class="w-full max-w-lg mx-auto">
                 <div class="flex flex-col space-y-8">
+                    <!-- Przycisk każdej destynacji -->
                     <button
                         v-for="destination in destinations"
                         :key="destination.id"
                         class="bg-blue-600 text-white font-semibold py-8 px-6 rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 transition transform active:scale-95 text-3xl"
-                        @click="register(destination.id)"
+                        @click="register(destination)"
                         :title="destination.description"
                     >
                         {{ destination.name }}
@@ -20,7 +21,7 @@
             </div>
         </div>
 
-        <!-- Strona oczekiwania (Waiting) -->
+        <!-- Ekran oczekiwania / waiting -->
         <transition name="fade">
             <div
                 v-if="currentStatus === 'waiting'"
@@ -29,13 +30,13 @@
                 <!-- Numer biletu -->
                 <div
                     class="w-32 h-32 flex items-center justify-center rounded-full shadow-lg text-5xl font-bold mb-6"
-                    style="background-color: var(--yellow);"
+                    style="background-color: var(--yellow)"
                 >
                     {{ ticketNr }}
                 </div>
 
                 <!-- Komunikat oczekiwania -->
-                <div class="bg-white p-4 rounded-lg shadow-md text-center mb-4">
+                <div class="bg-white p-4 rounded-lg shadow-md text-center">
                     <p class="text-lg font-medium text-gray-700">
                         {{
                             translations["register.waiting.message"] ||
@@ -45,7 +46,7 @@
                 </div>
 
                 <!-- Animacja czekania (kropki) -->
-                <div class="flex space-x-3 mt-4">
+                <div class="flex space-x-3 mt-8">
                     <div
                         v-for="n in 5"
                         :key="n"
@@ -53,15 +54,49 @@
                         :style="{ 'animation-delay': (n - 1) * 0.2 + 's' }"
                     ></div>
                 </div>
+
+                <!-- Przycisk do wybrania (lub zmiany) powodu wizyty -->
+                <div class="mt-8">
+                    <button
+                        @click="openReasonModal"
+                        class="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform active:scale-95 transition-all text-lg"
+                    >
+                        <!-- Ikonka np. "tag" / "edit" / "question-mark" -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="size-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6 6h.008v.008H6V6Z"
+                            />
+                        </svg>
+
+                        <span>{{
+                            translations["register.reason.choose"] ||
+                            "Wybierz powód wizyty"
+                        }}</span>
+                    </button>
+                </div>
             </div>
         </transition>
 
-        <!-- Strona "In" -->
+        <!-- In -->
         <transition name="fade">
             <div
                 v-if="currentStatus === 'in'"
                 class="fixed inset-0 flex flex-col items-center justify-center bg-blue-900 bg-opacity-95 z-50"
-                style="background-color: var(--green);"
+                style="background-color: var(--green)"
             >
                 <div
                     :key="inAnimationKey"
@@ -75,7 +110,7 @@
                         stroke-width="1.5"
                         stroke="currentColor"
                         class="w-75 h-75 mb-6 animate-bounce"
-                        style="color: var(--white);"
+                        style="color: var(--white)"
                     >
                         <path
                             stroke-linecap="round"
@@ -83,15 +118,14 @@
                             d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"
                         />
                     </svg>
-
                     <!-- Komunikat -->
                     <div
                         class="p-4 rounded-lg shadow-md text-center max-w-lg"
-                        style="background-color: var(--primary);"
+                        style="background-color: var(--primary)"
                     >
                         <p
                             class="text-xl font-bold leading-relaxed"
-                            style="color: var(--white);"
+                            style="color: var(--white)"
                         >
                             {{
                                 translations["register.in.message"] ||
@@ -103,6 +137,61 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Modal / bottom sheet wyboru powodu (reason) -->
+        <transition name="sheet">
+            <div
+                v-if="showReasonModal"
+                class="fixed inset-0 flex flex-col justify-end bg-black bg-opacity-50 z-50"
+            >
+                <div
+                    class="relative bg-white w-full rounded-t-2xl p-6 shadow-md"
+                >
+                    <!-- Pasek do "złapania" (typowe w bottom sheet) -->
+                    <div
+                        class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"
+                    ></div>
+
+                    <!-- Nazwa wybranej destynacji -->
+                    <h2
+                        class="text-xl font-semibold mb-4 text-gray-800 text-center"
+                    >
+                        {{ selectedDestination?.name }}
+                    </h2>
+                    <p class="mb-4 text-gray-600 text-center">
+                        {{
+                            translations["register.reason.message"] ||
+                            "Wybierz powód wizyty:"
+                        }}
+                    </p>
+
+                    <!-- Lista powodów z danej destynacji -->
+                    <div class="flex flex-col space-y-2">
+                        <button
+                            v-for="reason in selectedDestination?.reasons || []"
+                            :key="reason.id"
+                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-md text-left transition"
+                            @click="updateReason(reason.id)"
+                        >
+                            {{
+                                translations["reason." + reason.id] ||
+                                reason.description
+                            }}
+                        </button>
+                    </div>
+
+                    <!-- "Inny" (zamykamy modal bez wysyłania) -->
+                    <div class="mt-6 pt-4 border-t flex justify-center">
+                        <button
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md"
+                            @click="closeReasonModal"
+                        >
+                            {{ translations["reason.other"] || "Inne" }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -110,8 +199,8 @@
 import { onMounted, ref } from "vue";
 import PipeQ from "../pipeq";
 
+// Zmienne i referencje
 const destinations = ref(window.destinations || []);
-const token = ref(window.token || null);
 const translations = window.translations || {};
 
 const currentStatus = ref("initial");
@@ -119,8 +208,61 @@ const ticketNr = ref("00");
 const inWorkstationText = ref("");
 const inAnimationKey = ref(0);
 
+// Obsługa modala z powodami
+const showReasonModal = ref(false);
+const selectedDestination = ref(null);
+
+// Inicjalizacja PipeQ
 const pipeq = new PipeQ();
 
+/**
+ * Wywoływane po kliknięciu przycisku z konkretną destynacją.
+ * 1. Rejestruje użytkownika w kolejce (po stronie backendu).
+ * 2. Oczekujemy na zmianę statusu (ticket.status_id) na WAITING w onTicketUpdate.
+ */
+async function register(destination) {
+    try {
+        // Zapamiętujemy wybraną destynację
+        selectedDestination.value = destination;
+
+        // Rejestracja w kolejce
+        await pipeq._register(destination.id);
+
+        // Dalej nic nie robimy - czekamy, aż serwer ustawi status WAITING,
+        // co wywoła displayStatusWaiting(ticket).
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+/** Otwiera modal z powodami */
+function openReasonModal() {
+    // Dodatkowa asekuracja, żeby była wybrana destynacja
+    if (!selectedDestination.value) return;
+    showReasonModal.value = true;
+}
+
+/**
+ * Ustawienie (zaktualizowanie) powodu wizyty po stronie backendu.
+ * Po kliknięciu w powód w modalu.
+ */
+function updateReason(reasonId) {
+    pipeq
+        ._updateReason(reasonId)
+        .then(() => {
+            closeReasonModal();
+        })
+        .catch((error) => {
+            console.error("Error while updating reason:", error);
+        });
+}
+
+/** Zamknięcie modala bez wysyłania powodu ("Inne") */
+function closeReasonModal() {
+    showReasonModal.value = false;
+}
+
+// Słuchanie wydarzeń z kanału
 pipeq.onTicketUpdate = (ticket) => {
     switch (ticket.status_id) {
         case parseInt(window.statuses.WAITING):
@@ -139,24 +281,32 @@ pipeq.onTicketUpdate = (ticket) => {
     }
 };
 
-function register(destination_id) {
-    pipeq._register(destination_id);
-}
-
+// Funkcje zmieniające widok w zależności od statusu
 function displayStatusWaiting(ticket) {
     ticketNr.value = ticket.ticket_nr;
+
+    // Znajdź destynację odpowiadającą ticket.destination_id
+    const foundDestination = destinations.value.find(
+        (dest) => dest.name === ticket.destination
+    );
+    if (foundDestination) {
+        selectedDestination.value = foundDestination;
+    }
+
     currentStatus.value = "waiting";
 }
 
 function displayStatusIn(ticket) {
     inWorkstationText.value = ticket.workstation.toLowerCase();
 
+    // Odświeżamy animację w widgecie
     if (currentStatus.value === "in") {
         inAnimationKey.value += 1;
     } else {
         currentStatus.value = "in";
     }
 
+    // Wibracja (jeśli obsługiwana)
     if (navigator.vibrate) {
         navigator.vibrate([200, 100, 200]);
     }
@@ -168,8 +318,8 @@ function displayStatusEnd(ticket) {
 }
 
 onMounted(() => {
-    if (token.value) {
-        pipeq._listen(token.value);
+    if (window.token) {
+        pipeq._listen(window.token);
     }
 });
 </script>
@@ -184,6 +334,7 @@ onMounted(() => {
     opacity: 0;
 }
 
+/* Animacja kropek oczekiwania */
 @keyframes smooth-bounce {
     0%,
     100% {
@@ -195,8 +346,18 @@ onMounted(() => {
         opacity: 1;
     }
 }
-
 .waiting-dot {
     animation: smooth-bounce 1.5s infinite ease-in-out;
+}
+
+/* Animacja bottom-sheet */
+.sheet-enter-active,
+.sheet-leave-active {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+.sheet-enter-from,
+.sheet-leave-to {
+    transform: translateY(100%);
+    opacity: 0;
 }
 </style>

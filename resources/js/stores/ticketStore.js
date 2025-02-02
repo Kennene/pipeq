@@ -7,7 +7,7 @@ export const useTicketStore = defineStore("ticketStore", {
         mainTickets: [],
         sections: [],
         selectedDestination: null,
-        showSideMenu: false, // boczne menu nie jest używane, możemy zostawić to false
+        showSideMenu: false,
         draggedTicket: null,
         tempDraggedTicket: null,
         draggedFromSection: null,
@@ -17,6 +17,9 @@ export const useTicketStore = defineStore("ticketStore", {
         statusMap: {},
         destinations: [],
         originalWorkstationId: null,
+
+        // [ADDED] Nowy stan do modala "usuń wszystkie"
+        showClearAllConfirmation: false,
     }),
     actions: {
         initialize(translations, initialTickets, destinations) {
@@ -178,7 +181,6 @@ export const useTicketStore = defineStore("ticketStore", {
         },
 
         removeFromOriginalList(ticketId) {
-            // Usuwanie z oryginalnej listy nie jest już tak istotne, ale pozostawiamy oryginalną logikę
             if (this.draggedFromSection) {
                 const index = this.draggedFromSection.tickets.findIndex(
                     (t) => t.id === ticketId
@@ -230,7 +232,7 @@ export const useTicketStore = defineStore("ticketStore", {
         cancelDeleteAndRestore() {
             this.showDeleteConfirmation = false;
 
-            // Przywracamy oryginalne położenie biletu
+            // Przywrócenie oryginalnego położenia biletu
             if (this.tempDraggedTicket && this.tempDraggedTicket.id != null) {
                 const ticketId = this.tempDraggedTicket.id;
                 const ticket = this.allTickets.find((t) => t.id === ticketId);
@@ -294,7 +296,6 @@ export const useTicketStore = defineStore("ticketStore", {
                 // Dodanie nowego biletu
                 this.allTickets.push(ticket);
             }
-
             this.updateSectionsAndTickets();
         },
 
@@ -320,6 +321,7 @@ export const useTicketStore = defineStore("ticketStore", {
                 (t) => t.id === ticketId
             );
             if (ticketIndex === -1) return;
+
             const oldDestinationId =
                 this.allTickets[ticketIndex].destination_id;
             const oldWorkstationId =
@@ -347,6 +349,7 @@ export const useTicketStore = defineStore("ticketStore", {
 
         async doubleClickToReEnter(ticket) {
             if (!ticket.workstation_id) return;
+
             const workstationId = ticket.workstation_id;
             const statusId = 2; // Wpuszczony
             const previousStatusId = ticket.status_id;
@@ -354,7 +357,6 @@ export const useTicketStore = defineStore("ticketStore", {
 
             ticket.status_id = statusId;
             ticket.status = this.statusMap[statusId] || "Wpuszczony";
-
             this.updateSectionsAndTickets();
 
             try {
@@ -370,6 +372,36 @@ export const useTicketStore = defineStore("ticketStore", {
                 ticket.status_id = previousStatusId;
                 ticket.status = previousStatus;
                 this.updateSectionsAndTickets();
+            }
+        },
+
+        // [ADDED] Ukrywanie modala "wyczyść wszystkie"
+        hideClearAllModal() {
+            this.showClearAllConfirmation = false;
+        },
+
+        // [ADDED] Metoda do usuwania wszystkich biletów (lub biletów wybranej destynacji)
+        async _endAll(destinationId = null) {
+            try {
+                // Wywołanie do backendu
+                const response = await this.pipeQ._endAll(destinationId);
+
+                console.log(response.message || response.data?.message);
+
+                if (destinationId) {
+                    // Usuwamy tylko bilety z danej destynacji
+                    this.allTickets = this.allTickets.filter(
+                        (ticket) => ticket.destination_id !== destinationId
+                    );
+                } else {
+                    // Usuwamy wszystkie bilety
+                    this.allTickets = [];
+                }
+                // Odświeżamy widok
+                this.updateSectionsAndTickets();
+            } catch (error) {
+                console.error("Error in _endAll:", error);
+                throw error; // można też pokazać alert bądź obsłużyć inaczej
             }
         },
     },

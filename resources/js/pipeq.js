@@ -118,6 +118,18 @@ class PipeQ {
             throw error;
         }
     }
+
+    async _endAll(destinationId = null) {
+        try {
+            const url = destinationId ? `/endAll/${destinationId}` : `/endAll`;
+            const response = await axios.post(url);
+            console.log(response.data.message);
+            return response.data;
+        } catch (error) {
+            console.error("Error in _endAll:", error);
+            throw error;
+        }
+    }
 }
 
 export default PipeQ;

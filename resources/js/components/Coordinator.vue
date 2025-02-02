@@ -1,12 +1,15 @@
 <template>
     <div class="flex flex-col h-full">
-        <!-- 
-            Górne menu destynacji
-            Dodano gradientowe tło, lepsze zaokrąglenia i subtelny styl na przyciskach.
-        -->
+        <!-- Górne menu destynacji -->
         <div
             class="text-white flex justify-center p-4 space-x-4 flex-shrink-0 items-center shadow-md"
-            style="background: linear-gradient(to right, var(--darkblue), var(--primary));"
+            style="
+                background: linear-gradient(
+                    to right,
+                    var(--darkblue),
+                    var(--primary)
+                );
+            "
         >
             <div
                 v-for="dest in ticketStore.destinations"
@@ -32,12 +35,9 @@
             </div>
         </div>
 
-        <!-- 
-            Główna sekcja: brak bocznego menu, tylko main queue i sekcje 
-            Tło delikatne i jasne, karty i sekcje z cieniami i zaokrągleniami.
-        -->
+        <!-- Główna sekcja: kolejka główna + sekcje -->
         <div class="flex-1 overflow-hidden flex flex-col bg-gray-50">
-            <!-- Sekcja główna Bilety (Main Queue) -->
+            <!-- Kolejka główna (Main Queue) -->
             <div
                 class="p-4 flex-shrink-0"
                 data-section-id="0"
@@ -135,7 +135,7 @@
                 </div>
             </main>
 
-            <!-- Delete Confirmation Modal -->
+            <!-- Delete Confirmation Modal (pojedyncze bilety) -->
             <div
                 v-if="ticketStore.showDeleteConfirmation"
                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -162,18 +162,93 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Clear ALL Confirmation Modal (z SELECTEM) -->
+            <div
+                v-if="ticketStore.showClearAllConfirmation"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            >
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">
+                        Wybierz, co chcesz usunąć:
+                    </h3>
+
+                    <!-- SELECT do wyboru destynacji lub "Wszystkie" -->
+                    <div class="mb-4">
+                        <label
+                            for="destinationSelect"
+                            class="block text-gray-700 font-medium mb-1"
+                        >
+                            Miejsce docelowe:
+                        </label>
+                        <select
+                            id="destinationSelect"
+                            v-model="selectedClearAllDestinationId"
+                            class="form-select mt-1 block w-full border-gray-300 rounded-md"
+                        >
+                            <!-- Opcja na usunięcie wszystkich (null) -->
+                            <option :value="null">Wszystkie</option>
+
+                            <!-- Iteracja po available destinations -->
+                            <option
+                                v-for="dest in ticketStore.destinations"
+                                :key="dest.id"
+                                :value="dest.id"
+                            >
+                                {{ dest.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="text-gray-600 mb-6">
+                        <span v-if="selectedClearAllDestinationId">
+                            Czy na pewno chcesz usunąć wszystkie bilety z
+                            <strong>{{
+                                getDestinationName(
+                                    selectedClearAllDestinationId
+                                )
+                            }}</strong>
+                            ?
+                        </span>
+                        <span v-else>
+                            Czy na pewno chcesz usunąć
+                            <strong>wszystkie</strong> bilety?
+                        </span>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button
+                            @click="ticketStore.hideClearAllModal"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-150"
+                        >
+                            Anuluj
+                        </button>
+                        <button
+                            @click="confirmClearAll"
+                            class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors duration-150"
+                        >
+                            Usuń
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Trash Bin (Usuwanie biletów) -->
+        <!-- Trash Bin (Usuwanie biletów) + kliknięcie DWUKROTNE usuwa wszystkie -->
         <footer
             class="bg-red-600 text-white p-4 flex justify-center items-center flex-shrink-0 shadow-inner"
             @dragover.prevent
             @drop.prevent="ticketStore.handleDeleteDrop"
         >
             <div
-                class="bg-red-700 hover:bg-red-800 transition duration-200 p-4 rounded-full cursor-pointer shadow-md"
+                class="bg-red-700 hover:bg-red-800 transition duration-200 p-4 rounded-full cursor-pointer shadow-md text-center"
+                @dblclick="openClearAllModal"
             >
                 🗑️ Przeciągnij tutaj, aby usunąć bilet
+                <br />
+                <span class="text-sm">
+                    (Kliknij dwa razy, aby usunąć wszystkie)
+                </span>
             </div>
         </footer>
     </div>
@@ -187,6 +262,8 @@ import draggable from "vuedraggable";
 export default {
     name: "Coordinator",
     components: { draggable },
+
+    // Przyjmujemy 3 propsy z Blade
     props: {
         initialTickets: {
             type: Array,
@@ -201,22 +278,24 @@ export default {
             required: true,
         },
     },
+
     setup(props) {
+        // 1. Pobieramy store
         const ticketStore = useTicketStore();
 
-        // Inicjalizacja store'a z danymi z propsów
+        // 2. Inicjalizujemy store danymi z props
         ticketStore.initialize(
             props.translations,
             props.initialTickets,
             props.destinations
         );
 
-        // Inicjalizacja WebSocket
+        // 3. WebSocket (Echo) itp.
         onMounted(() => {
             ticketStore.initializeWebSocket();
         });
 
-        // Liczenie ticketów per destynacja
+        // Obliczamy liczbę biletów w poszczególnych destynacjach
         const ticketCountByDestination = computed(() => {
             const counts = {};
             for (const t of ticketStore.allTickets) {
@@ -225,11 +304,42 @@ export default {
             return counts;
         });
 
-        const selectDestination = (destination) =>
+        // REF do przechowywania wybranego ID destynacji w modalu 'usuń wszystkie' (null = wszystkie)
+        const selectedClearAllDestinationId = ref(null);
+
+        // Pomocnicza metoda do pobrania nazwy destynacji
+        const getDestinationName = (id) => {
+            const d = ticketStore.destinations.find((dest) => dest.id === id);
+            return d ? d.name : "";
+        };
+
+        // Otwarcie modala do usunięcia wszystkich bądź wybranej destynacji
+        const openClearAllModal = () => {
+            // Domyślnie ustawiamy na null (czyli "Wszystkie")
+            selectedClearAllDestinationId.value = null;
+            ticketStore.showClearAllConfirmation = true;
+        };
+
+        // Potwierdzenie usunięcia
+        const confirmClearAll = async () => {
+            try {
+                // Wywołanie w store, który wywołuje pipeQ._endAll(...)
+                await ticketStore._endAll(selectedClearAllDestinationId.value);
+            } catch (err) {
+                console.error("Błąd przy czyszczeniu biletów:", err);
+            } finally {
+                ticketStore.hideClearAllModal();
+            }
+        };
+
+        // Kliknięcie w destynację u góry
+        const selectDestination = (destination) => {
             ticketStore.selectDestination(destination);
+        };
+
+        // Metody drag & drop
         const onSectionDrop = (section) => ticketStore.onSectionDrop(section);
         const onMainAreaDrop = () => ticketStore.onMainAreaDrop();
-
         const onDestinationDrop = (dest) => {
             if (!ticketStore.draggedTicket || !ticketStore.draggedTicket.id)
                 return;
@@ -239,22 +349,23 @@ export default {
             );
         };
 
+        // Dwuklik na bilet -> re-enter do sekcji
         const onTicketDoubleClick = (ticket) => {
             if (ticket.workstation_id) {
                 ticketStore.doubleClickToReEnter(ticket);
             }
         };
 
+        // Anulowanie kasowania pojedynczego biletu
         const cancelDeleteAction = () => {
             ticketStore.cancelDeleteAndRestore();
         };
 
-        // LOGIKA CZASU
+        // Upływ czasu (tykający co 1 sekundę)
         const now = ref(Date.now());
         let interval = null;
 
         onMounted(() => {
-            // aktualizacja co 1 sekund
             interval = setInterval(() => {
                 now.value = Date.now();
             }, 1000);
@@ -264,16 +375,17 @@ export default {
             clearInterval(interval);
         });
 
+        // Wyświetlanie czasu od utworzenia biletu
         const getTicketTime = (ticket) => {
             if (!ticket.created_at) return "";
             const createdAt = new Date(ticket.created_at).getTime();
             const diffMs = now.value - createdAt;
             const diffMins = Math.floor(diffMs / 60000);
-            const diffSecs = Math.floor((diffMs % 60000) / 1000); // sekundy resztowe
-
+            const diffSecs = Math.floor((diffMs % 60000) / 1000);
             return `${diffMins}min ${diffSecs}s`;
         };
 
+        // Kolorystyka zależna od "wieku" biletu
         const getTicketTimeClass = (ticket) => {
             if (!ticket.created_at) {
                 return "bg-white border border-gray-300";
@@ -283,26 +395,28 @@ export default {
             const diffMins = Math.floor(diffMs / 60000);
 
             if (diffMins >= 10) {
-                // powyżej 10 min: czerwone tło i pulsująca animacja
                 return "bg-red-200 border-red-500 animate-pulse";
             } else if (diffMins >= 5) {
-                // między 5 a 10 min: żółte tło
                 return "bg-yellow-200 border-yellow-400";
             } else {
-                // mniej niż 5 min: białe tło
                 return "bg-white border border-gray-300";
             }
         };
 
+        // Zwracamy wszystko, co używamy w szablonie
         return {
             ticketStore,
+            ticketCountByDestination,
+            selectedClearAllDestinationId,
+            getDestinationName,
+            openClearAllModal,
+            confirmClearAll,
             selectDestination,
             onSectionDrop,
             onMainAreaDrop,
             onDestinationDrop,
             onTicketDoubleClick,
             cancelDeleteAction,
-            ticketCountByDestination,
             getTicketTime,
             getTicketTimeClass,
         };

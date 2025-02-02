@@ -41,6 +41,12 @@
     <div class="bg-secondary text-l text-white">Z racji, że to nie jest obowiązkowe menu, to lepiej, żeby wyglądało drugorzędnie, opcjonalnie, mniej więcej jak powyżej</div>
  -->
 
+    {!! json_encode($reasons) !!}
+    <script>
+        // JSON format: "destination_id" => [reasons]
+        reasons = @json($reasons);
+    </script>
+
 
     <script>
         window.destinations = @json($destinations->toArray());

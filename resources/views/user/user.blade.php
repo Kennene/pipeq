@@ -31,7 +31,12 @@
 
         window.translations = {
             "register.waiting.message": "{{ __('register.waiting.message') }}",
-            "register.in.message": "{{ __('register.in.message') }}"
+            "register.in.message": "{{ __('register.in.message') }}",
+            "register.end.button": "{{ __('register.end.button') }}",
+            "register.end.modal.title": "{{ __('register.end.modal.title') }}",
+            "register.end.modal.description": "{{ __('register.end.modal.description') }}",
+            "register.end.modal.confirm": "{{ __('register.end.modal.confirm') }}",
+            "register.end.modal.cancel": "{{ __('register.end.modal.cancel') }}"
         };
     </script>
     <div id="app" class="flex-1 overflow-hidden"></div>

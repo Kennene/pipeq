@@ -59,7 +59,7 @@
                     class="bg-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition transform active:scale-95 text-xl mt-6"
                     @click="showEndByUserModal = true"
                 >
-                    Zakończ
+                    {{ translations["register.end.button"] || "Zakończ" }}
                 </button>
             </div>
         </transition>
@@ -110,40 +110,52 @@
                     </div>
                 </div>
 
-                <!-- Zakończ kolejkę (otwiera modal) -->
+                <!-- Przycisk otwierający modal -->
                 <button
                     class="bg-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition transform active:scale-95 text-xl mt-6"
                     @click="showEndByUserModal = true"
                 >
-                    Zakończ
+                    {{ translations["register.end.button"] || "Zakończ" }}
                 </button>
             </div>
         </transition>
 
-        <!-- Potwierdzenie zakończenia -->
+        <!-- Modal potwierdzenia -->
         <div
             v-if="showEndByUserModal"
             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
         >
             <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
                 <h3 class="text-xl font-semibold mb-4 text-gray-800">
-                    Czy na pewno chcesz zakończyć oczekiwanie w kolejce?
+                    {{
+                        translations["register.end.modal.title"] ||
+                        "Czy na pewno chcesz zakończyć oczekiwanie w kolejce?"
+                    }}
                 </h3>
                 <p class="mb-4 text-gray-600">
-                    Spowoduje to usunięcie Twojego zgłoszenia z kolejki.
+                    {{
+                        translations["register.end.modal.description"] ||
+                        "Spowoduje to usunięcie Twojego biletu z kolejki."
+                    }}
                 </p>
                 <div class="flex justify-end space-x-4">
                     <button
                         class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-150"
                         @click="hideEndByUserModal"
                     >
-                        Anuluj
+                        {{
+                            translations["register.end.modal.cancel"] ||
+                            "Anuluj"
+                        }}
                     </button>
                     <button
                         class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors duration-150"
                         @click="confirmEndByUser"
                     >
-                        Zakończ
+                        {{
+                            translations["register.end.modal.confirm"] ||
+                            "Zakończ"
+                        }}
                     </button>
                 </div>
             </div>

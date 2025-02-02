@@ -130,6 +130,20 @@ class PipeQ {
             throw error;
         }
     }
+    async _endByUser(ticketToken = null) {
+        try {
+            const url = ticketToken
+                ? `/endByUser/${ticketToken}`
+                : `/endByUser`;
+
+            const response = await axios.post(url);
+            console.log(response.data);
+            return response;
+        } catch (error) {
+            console.error("Error in _endByUser:", error);
+            throw error;
+        }
+    }
 }
 
 export default PipeQ;

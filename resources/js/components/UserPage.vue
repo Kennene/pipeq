@@ -168,7 +168,7 @@
                     <!-- Lista powodów z danej destynacji -->
                     <div class="flex flex-col space-y-2">
                         <button
-                            v-for="reason in selectedDestination?.reasons || []"
+                            v-for="reason in activeReasons || []"
                             :key="reason.id"
                             class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-md text-left transition"
                             @click="updateReason(reason.id)"
@@ -196,7 +196,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import PipeQ from "../pipeq";
 
 // Zmienne i referencje
@@ -214,6 +214,23 @@ const selectedDestination = ref(null);
 
 // Inicjalizacja PipeQ
 const pipeq = new PipeQ();
+
+// Pobieranie reasonów z globalnego obiektu i przekształcenie na strukturę { destinationId: [...] }
+const reasonsByDestination = ref(
+    Array.isArray(window.reasons) ? {} : window.reasons || {}
+);
+
+// Aktywne reasons dla wybranej destynacji
+const activeReasons = computed(() => {
+    if (!selectedDestination.value) return [];
+
+    const destinationId = selectedDestination.value.id;
+    const reasons = reasonsByDestination.value[destinationId] || [];
+
+    return reasons.filter((reason) => reason.is_active === 1);
+});
+
+console.log(activeReasons);
 
 /**
  * Wywoływane po kliknięciu przycisku z konkretną destynacją.

@@ -41,12 +41,6 @@
     <div class="bg-secondary text-l text-white">Z racji, że to nie jest obowiązkowe menu, to lepiej, żeby wyglądało drugorzędnie, opcjonalnie, mniej więcej jak powyżej</div>
  -->
 
-    {!! json_encode($reasons) !!}
-    <script>
-        // JSON format: "destination_id" => [reasons]
-        reasons = @json($reasons);
-    </script>
-
 
     <script>
         window.destinations = @json($destinations->toArray());
@@ -60,15 +54,16 @@
             IN: {{ App\Models\Status::IN }},
             END: {{ App\Models\Status::END }}
         };
-
         window.translations = {
             "register.waiting.message": "{{ __('register.waiting.message') }}",
             "register.in.message": "{{ __('register.in.message') }}",
             "register.reason.message": "{{ __('register.reason.message') }}",
             "reason.other": "{{ __('reason.other') }}"
         };
+        window.reasons = @json($reasons);
     </script>
-    <div id="app" class="flex-1 overflow-hidden"></div>
+    <div id="app" class="flex-1 overflow-hidden">
+    </div>
 </body>
 
 </html>

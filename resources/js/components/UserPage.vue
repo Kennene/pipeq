@@ -262,7 +262,6 @@ const ticketNr = ref("00");
 const inWorkstationText = ref("");
 const inAnimationKey = ref(0);
 
-
 // Obsługa modala z powodami
 const showReasonModal = ref(false);
 const selectedDestination = ref(null);
@@ -284,8 +283,6 @@ const activeReasons = computed(() => {
 
     return reasons.filter((reason) => reason.is_active === 1);
 });
-
-console.log(activeReasons);
 
 /**
  * Wywoływane po kliknięciu przycisku z konkretną destynacją.
@@ -337,8 +334,6 @@ function closeReasonModal() {
 // Słuchanie wydarzeń z kanału
 const showEndByUserModal = ref(false);
 
-const pipeq = new PipeQ();
-
 // Obsługa aktualizacji biletu
 pipeq.onTicketUpdate = (ticket) => {
     switch (ticket.status_id) {
@@ -357,11 +352,6 @@ pipeq.onTicketUpdate = (ticket) => {
             break;
     }
 };
-
-// Funkcje zmieniające widok w zależności od statusu
-function register(destination_id) {
-    pipeq._register(destination_id);
-}
 
 // Zmiana widoku na oczekiwanie
 function displayStatusWaiting(ticket) {

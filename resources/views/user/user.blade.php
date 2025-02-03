@@ -58,7 +58,7 @@
             "register.waiting.message": "{{ __('register.waiting.message') }}",
             "register.in.message": "{{ __('register.in.message') }}",
             "register.reason.message": "{{ __('register.reason.message') }}",
-            "reason.other": "{{ __('reason.other') }}"
+            "reason.other": "{{ __('reason.other') }}",
             "register.end.button": "{{ __('register.end.button') }}",
             "register.end.modal.title": "{{ __('register.end.modal.title') }}",
             "register.end.modal.description": "{{ __('register.end.modal.description') }}",

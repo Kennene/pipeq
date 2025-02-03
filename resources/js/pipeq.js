@@ -134,7 +134,8 @@ class PipeQ {
             return response;
         } catch (error) {
             console.error("Error in _updateReason:", error);
-
+        }
+    }
 
     async _endAll(destinationId = null) {
         try {

@@ -22,7 +22,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['destination_id', 'token'];
+    protected $fillable = ['destination_id', 'token','reason_id'];
 
     /**
      * Boot function to add ticket_nr to the ticket

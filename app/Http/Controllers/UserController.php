@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 
 use App\Models\Destination;
+use App\Models\Reason;
 
 class UserController extends Controller
 {
@@ -19,26 +20,55 @@ class UserController extends Controller
         $color = new Color();
         $token = $this->getUserToken($request);
 
-        $all_destinations = Destination::all();
-        $available_destinations = [];
+        //? Czy modele przy funkcji boot nie mogłyby się same tłumaczyć?
 
-        foreach ($all_destinations as $destination) {
-            if($destination -> isOpenNow()) {
-                $available_destinations[] = $destination;
+
+        //! spaghetti code, poprawić to kiedyś.
+        //? Wystarczy jedna instancja Destination, ponieważ w Eloquent collection zawiera w sobie wszystkie submodele
+            $all_destinations = Destination::all();
+            $available_destinations = [];
+
+            // collect all destinations that are open right now
+            foreach ($all_destinations as $destination) {
+                if($destination -> isOpenNow()) {
+                    $available_destinations[] = $destination;
+                }
             }
-        }
 
-        if(empty($available_destinations)) {
-            $opens = $all_destinations->first()->getNextOpeningInfo();
-            return view('user.time-restricted')->with(compact('opens'));
-        } else {
+            // check if there are any open destinations
+            if(empty($available_destinations)) {
+                // if there are no available destinations, get the next opening time and return info about it
+                $opens = $all_destinations->first()->getNextOpeningInfo();
+                return view('user.time-restricted')->with(compact('opens'));
+            }
+            
+            // convert array to collection
             $destinations = collect($available_destinations);
-        }
-        
-        return view('user.user')->with(compact('color', 'token', 'destinations'));
+
+            // Translate all destinations and reasons within
+            $destinations = $destinations->map(function($destination) {
+                $destination->translate();
+                $destination->reasons = $destination->reasons->map(function($reason) {
+                    $reason->translate();
+                    return $reason;
+                });
+                return $destination;
+            });
+
+            // Collect all reasons in destinations to new array: destination_id => [reasons]
+            foreach($destinations as $destination) {
+                $reasons_in_destination = $destination->reasons->toArray();
+                foreach($reasons_in_destination as $reason) {
+                    if($reason["is_active"]) {
+                        $reasons[$destination->id][] = $reason;
+                    }
+                }
+            }
+       
+        return view('user.user')->with(compact('color', 'token', 'destinations', 'reasons'));
     }
     
-    // todo: wywalić to. kod powtarza się w TicketController
+    // todo: wywalić to. kod powtarza się w TicketController - wziąć te metody stamtąd
     protected function getUserToken(?Request $request = null): ?string
     {
         // try to get token from cookie or session

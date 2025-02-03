@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             WorkstationsTableSeeder::class,
 
             DestinationsScheduleSeeder::class,
+            ReasonsSeeder::class,
         ]);
     }
 }

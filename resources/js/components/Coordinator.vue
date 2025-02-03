@@ -35,6 +35,7 @@
             </div>
         </div>
 
+
         <!-- Główna sekcja: kolejka główna + sekcje -->
         <div class="flex-1 overflow-hidden flex flex-col bg-gray-50">
             <!-- Kolejka główna (Main Queue) -->
@@ -56,9 +57,10 @@
                     @start="ticketStore.onDragStart"
                     @end="ticketStore.onEnd"
                 >
+                    <!-- SLOT: pojedynczy ticket w głównej kolejce -->
                     <template #item="{ element }">
                         <div
-                            class="rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                            class="rounded-lg p-3 w-48 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
                             :class="getTicketTimeClass(element)"
                             @dblclick="onTicketDoubleClick(element)"
                         >
@@ -75,6 +77,23 @@
                             </h6>
                             <div class="text-xs text-gray-700 mt-1">
                                 Czas: {{ getTicketTime(element) }}
+                            </div>
+
+                            <!-- Reason (powód) w formie “badge” + dłuższy tekst zawijany -->
+                            <div
+                                v-if="element.reason"
+                                class="text-xs text-gray-700 mt-1 whitespace-normal break-words"
+                            >
+                                <!-- Etykieta Reason -->
+                                <span
+                                    class="inline-block bg-gray-200 text-gray-600 rounded-full px-2 py-0.5 font-medium"
+                                >
+                                    Powód
+                                </span>
+                                <!-- Tekst powodu niżej, zawijany w razie potrzeby -->
+                                <div class="mt-1">
+                                    {{ element.reason }}
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -108,9 +127,10 @@
                             class="flex flex-row flex-wrap gap-4 overflow-auto h-full"
                             style="align-content: flex-start"
                         >
+                            <!-- SLOT: pojedynczy ticket w danej sekcji -->
                             <template #item="{ element }">
                                 <div
-                                    class="rounded-lg p-3 w-36 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+                                    class="rounded-lg p-3 w-48 shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
                                     :class="getTicketTimeClass(element)"
                                     @dblclick="onTicketDoubleClick(element)"
                                 >
@@ -127,6 +147,21 @@
                                     </h6>
                                     <div class="text-xs text-gray-700 mt-1">
                                         Czas: {{ getTicketTime(element) }}
+                                    </div>
+
+                                    <!-- Reason (powód) w formie “badge” + dłuższy tekst zawijany -->
+                                    <div
+                                        v-if="element.reason"
+                                        class="text-xs text-gray-700 mt-1 whitespace-normal break-words"
+                                    >
+                                        <span
+                                            class="inline-block bg-gray-200 text-gray-600 rounded-full px-2 py-0.5 font-medium"
+                                        >
+                                            Powód
+                                        </span>
+                                        <div class="mt-1">
+                                            {{ element.reason }}
+                                        </div>
                                     </div>
                                 </div>
                             </template>
@@ -271,7 +306,7 @@ export default {
         },
         translations: {
             type: Object,
-            default: () => ({ statuses: {} }),
+            default: () => ({ statuses: {}, reason: {} }),
         },
         destinations: {
             type: Array,
@@ -283,12 +318,14 @@ export default {
         // 1. Pobieramy store
         const ticketStore = useTicketStore();
 
+
         // 2. Inicjalizujemy store danymi z props
         ticketStore.initialize(
             props.translations,
             props.initialTickets,
             props.destinations
         );
+
 
         // 3. WebSocket (Echo) itp.
         onMounted(() => {
@@ -341,8 +378,9 @@ export default {
         const onSectionDrop = (section) => ticketStore.onSectionDrop(section);
         const onMainAreaDrop = () => ticketStore.onMainAreaDrop();
         const onDestinationDrop = (dest) => {
-            if (!ticketStore.draggedTicket || !ticketStore.draggedTicket.id)
+            if (!ticketStore.draggedTicket || !ticketStore.draggedTicket.id) {
                 return;
+            }
             ticketStore.changeTicketDestination(
                 ticketStore.draggedTicket.id,
                 dest.id
@@ -361,11 +399,12 @@ export default {
             ticketStore.cancelDeleteAndRestore();
         };
 
-        // Upływ czasu (tykający co 1 sekundę)
+        // LOGIKA CZASU (liczenie upływu czasu od stworzenia biletu)
         const now = ref(Date.now());
         let interval = null;
 
         onMounted(() => {
+            // aktualizacja co 1 sekundę
             interval = setInterval(() => {
                 now.value = Date.now();
             }, 1000);
@@ -385,7 +424,8 @@ export default {
             return `${diffMins}min ${diffSecs}s`;
         };
 
-        // Kolorystyka zależna od "wieku" biletu
+
+        // Dynamika kolorowania w zależności od czasu
         const getTicketTimeClass = (ticket) => {
             if (!ticket.created_at) {
                 return "bg-white border border-gray-300";
@@ -399,6 +439,7 @@ export default {
             } else if (diffMins >= 5) {
                 return "bg-yellow-200 border-yellow-400";
             } else {
+                // < 5 min: białe tło
                 return "bg-white border border-gray-300";
             }
         };
@@ -423,3 +464,29 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+/* Animacja drag & drop - fade (opcjonalnie) */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Pulsowanie czerwonego tła po 10 min */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+</style>

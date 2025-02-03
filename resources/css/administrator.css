@@ -1,3 +1,7 @@
-body {
-    background-color: lightpink;
+th {
+    text-align: center;
+}
+
+textarea {
+    overflow: hidden;
 }

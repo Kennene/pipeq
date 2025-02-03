@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TicketView extends Model
 {
@@ -13,7 +14,7 @@ class TicketView extends Model
     public $timestamps = false;
 
     // necessary for function forUser
-    protected $fillable = ['user', 'ticket_nr', 'destination', 'status', 'status_id', 'workstation'];
+    protected $fillable = ['user', 'ticket_nr', 'destination', 'status', 'status_id', 'workstation', 'reason'];
 
     /**
      * Translate status, destination and workstation on retrieved
@@ -26,6 +27,7 @@ class TicketView extends Model
             $ticket->status = __($ticket->status);
             $ticket->destination = __($ticket->destination);
             $ticket->workstation = __($ticket->workstation);
+            $ticket->reason = __($ticket->reason);
         });
     }
 
@@ -52,6 +54,38 @@ class TicketView extends Model
             'status' => $this->status,
             'status_id' => $this->status_id,
             'workstation' => $this->workstation,
+            'reason' => $this->reason,
         ]);
+    }
+
+
+    /**
+     * Get all the ticket history
+     * 
+     * @return array The ticket history
+     */
+    public static function getHistory(): array
+    {
+        $database = DB::connection();
+        $query = <<<SQL
+            SELECT 
+                th.ticket_id,
+                th.ticket_nr,
+                s.name AS status,
+                d.name AS destination,
+                w.name AS workstation,
+                th.original_created_at AS created_when,
+                th.original_updated_at AS updated_when,
+                th.modified_by AS updated_by
+
+            FROM tickets_history th 
+            JOIN statuses s ON th.status = s.id 
+            JOIN destinations d ON th.destination = d.id
+            JOIN workstations w ON th.workstation = w.id
+
+            ORDER BY th.id DESC;
+        SQL;
+        $tickets_history = $database->select($query);
+        return $tickets_history;
     }
 }

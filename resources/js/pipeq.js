@@ -119,6 +119,23 @@ class PipeQ {
         }
     }
 
+    async _updateReason(reasonId, token = null) {
+        if (!reasonId) {
+            throw new Error("Missing reasonId");
+        }
+
+        let url = `/reason/${reasonId}`;
+        if (token) {
+            url += `/${token}`;
+        }
+
+        try {
+            const response = await axios.post(url);
+            return response;
+        } catch (error) {
+            console.error("Error in _updateReason:", error);
+
+
     async _endAll(destinationId = null) {
         try {
             const url = destinationId ? `/endAll/${destinationId}` : `/endAll`;

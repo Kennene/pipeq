@@ -18,6 +18,7 @@ use App\Events\NotifyEndedTicketDisplay;
 use App\Models\Status;
 use App\Models\Destination;
 use App\Models\Ticket;
+use App\Models\Reason;
 
 
 class TicketController extends Controller
@@ -83,6 +84,49 @@ class TicketController extends Controller
             'message' => 'Ticket registered',
             'channel' => $ticket->token
         ], RESPONSE::HTTP_CREATED);
+    }
+
+    /**
+     * Update reason of a ticket
+     * 
+     * This method is used when user wants to give or update his
+     * reason for visiting the destination
+     * 
+     * @param Request $request
+     * @param int $reason_id
+     * @param string|null $ticket_token
+     * @return JsonResponse
+     */
+    public function updateReason(Request $request, int $reason_id, ?string $ticket_token = null): JsonResponse
+    {
+        // check if provided reason exists
+        $reason = Reason::find($reason_id);
+        if ($reason === null) {
+            $error = new Error(title: 'Reason not found', http: RESPONSE::HTTP_NOT_FOUND);
+            return $error->toHTTPresponse();
+        }
+
+        // get user's ticket. check first if the token is set and if the ticket with that token exists
+        $token = $ticket_token ?? $this->getUserToken($request);
+        $ticket = Ticket::getByToken($token);
+
+        // if no ticket is found, return error
+        if ($ticket instanceof Error) {
+            return $ticket->toHTTPresponse();
+        }
+
+        // at this point you have vaild ticket and valid reason_id. Update ticket with reason
+        $ticket->reason_id = $reason_id;
+        $ticket->save();
+
+        // update user that his ticket has been changed
+        broadcast(new UpdateUserAboutHisTicket($ticket));
+
+        // update display about changes made in ticket
+        broadcast(new UpdateDisplayAboutTicket($ticket));
+
+        // return confirmation response
+        return response()->json(['message' => 'Reason updated'], RESPONSE::HTTP_OK);
     }
 
     /**
@@ -377,7 +421,8 @@ class TicketController extends Controller
         return $this->end($request, $ticket->id);
     }
 
-    // todo: redirect user to home page after clearing storage
+    //? why?
+        // todo: redirect user to home page after clearing storage
     /**
      * Clear user's storage, which means removing ticket token from session and cookie
      * 

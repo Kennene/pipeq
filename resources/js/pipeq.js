@@ -118,6 +118,7 @@ class PipeQ {
             throw error;
         }
     }
+
     async _updateReason(reasonId, token = null) {
         if (!reasonId) {
             throw new Error("Missing reasonId");
@@ -133,6 +134,30 @@ class PipeQ {
             return response;
         } catch (error) {
             console.error("Error in _updateReason:", error);
+
+
+    async _endAll(destinationId = null) {
+        try {
+            const url = destinationId ? `/endAll/${destinationId}` : `/endAll`;
+            const response = await axios.post(url);
+            console.log(response.data.message);
+            return response.data;
+        } catch (error) {
+            console.error("Error in _endAll:", error);
+            throw error;
+        }
+    }
+    async _endByUser(ticketToken = null) {
+        try {
+            const url = ticketToken
+                ? `/endByUser/${ticketToken}`
+                : `/endByUser`;
+
+            const response = await axios.post(url);
+            console.log(response.data);
+            return response;
+        } catch (error) {
+            console.error("Error in _endByUser:", error);
             throw error;
         }
     }

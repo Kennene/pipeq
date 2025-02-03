@@ -54,7 +54,6 @@
                         :style="{ 'animation-delay': (n - 1) * 0.2 + 's' }"
                     ></div>
                 </div>
-
                 <!-- Przycisk do wybrania (lub zmiany) powodu wizyty -->
                 <div class="mt-8">
                     <button
@@ -88,6 +87,13 @@
                         }}</span>
                     </button>
                 </div>
+                <!--  Zakończ kolejkę (otwiera modal) -->
+                <button
+                    class="bg-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition transform active:scale-95 text-xl mt-6"
+                    @click="showEndByUserModal = true"
+                >
+                    {{ translations["register.end.button"] || "Zakończ" }}
+                </button>
             </div>
         </transition>
 
@@ -135,9 +141,16 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Przycisk otwierający modal -->
+                <button
+                    class="bg-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition transform active:scale-95 text-xl mt-6"
+                    @click="showEndByUserModal = true"
+                >
+                    {{ translations["register.end.button"] || "Zakończ" }}
+                </button>
             </div>
         </transition>
-
         <!-- Modal / bottom sheet wyboru powodu (reason) -->
         <transition name="sheet">
             <div
@@ -192,6 +205,46 @@
                 </div>
             </div>
         </transition>
+        <!-- Modal potwierdzenia -->
+        <div
+            v-if="showEndByUserModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">
+                    {{
+                        translations["register.end.modal.title"] ||
+                        "Czy na pewno chcesz zakończyć oczekiwanie w kolejce?"
+                    }}
+                </h3>
+                <p class="mb-4 text-gray-600">
+                    {{
+                        translations["register.end.modal.description"] ||
+                        "Spowoduje to usunięcie Twojego biletu z kolejki."
+                    }}
+                </p>
+                <div class="flex justify-end space-x-4">
+                    <button
+                        class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-150"
+                        @click="hideEndByUserModal"
+                    >
+                        {{
+                            translations["register.end.modal.cancel"] ||
+                            "Anuluj"
+                        }}
+                    </button>
+                    <button
+                        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors duration-150"
+                        @click="confirmEndByUser"
+                    >
+                        {{
+                            translations["register.end.modal.confirm"] ||
+                            "Zakończ"
+                        }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -203,10 +256,12 @@ import PipeQ from "../pipeq";
 const destinations = ref(window.destinations || []);
 const translations = window.translations || {};
 
+// Dostępne statusy biletów (np. z window.statuses.WAITING itp.)
 const currentStatus = ref("initial");
 const ticketNr = ref("00");
 const inWorkstationText = ref("");
 const inAnimationKey = ref(0);
+
 
 // Obsługa modala z powodami
 const showReasonModal = ref(false);
@@ -280,6 +335,11 @@ function closeReasonModal() {
 }
 
 // Słuchanie wydarzeń z kanału
+const showEndByUserModal = ref(false);
+
+const pipeq = new PipeQ();
+
+// Obsługa aktualizacji biletu
 pipeq.onTicketUpdate = (ticket) => {
     switch (ticket.status_id) {
         case parseInt(window.statuses.WAITING):
@@ -299,6 +359,11 @@ pipeq.onTicketUpdate = (ticket) => {
 };
 
 // Funkcje zmieniające widok w zależności od statusu
+function register(destination_id) {
+    pipeq._register(destination_id);
+}
+
+// Zmiana widoku na oczekiwanie
 function displayStatusWaiting(ticket) {
     ticketNr.value = ticket.ticket_nr;
 
@@ -313,6 +378,7 @@ function displayStatusWaiting(ticket) {
     currentStatus.value = "waiting";
 }
 
+// Zmiana widoku na "zaproszony do stanowiska"
 function displayStatusIn(ticket) {
     inWorkstationText.value = ticket.workstation.toLowerCase();
 
@@ -329,9 +395,30 @@ function displayStatusIn(ticket) {
     }
 }
 
+// Zmiana widoku na "koniec" (powrót do initial)
 function displayStatusEnd(ticket) {
     currentStatus.value = "initial";
     console.log("Dziękujemy za skorzystanie z naszych usług");
+}
+
+function hideEndByUserModal() {
+    showEndByUserModal.value = false;
+}
+
+function confirmEndByUser() {
+    pipeq
+        ._endByUser()
+        .then(() => {
+            console.log("Ticket ended by user.");
+            displayStatusEnd({});
+        })
+        .catch((err) => {
+            console.error("Error in endByUser:", err);
+        })
+        .finally(() => {
+            // Niezależnie od wyniku wywołania chowamy modal
+            hideEndByUserModal();
+        });
 }
 
 onMounted(() => {

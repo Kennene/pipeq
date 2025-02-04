@@ -70,7 +70,12 @@ class Destination extends Model
         $day = now()->dayOfWeek;
         $current_day_schedule = $this->schedules()->where('day_of_week', $day)->first();
 
-        // if it's closed today
+        // todo: do it better. There might be no record of current day in database.
+        if($current_day_schedule == null) {
+            return "unknown";
+        }
+
+        // if it's closed today or no record of the day
         if (!$current_day_schedule->is_closed) {
             // but may be will be open later?
             if(now()->format('H:i:s') < $current_day_schedule->open_time) {

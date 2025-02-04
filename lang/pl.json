@@ -36,7 +36,7 @@
     "time-restricted.footnote": "Dziękujemy za zrozumienie i życzymy udanego dnia! 😊<br/>Z wyrazami szacunku,<br/>Dziekanat WSB Merito w Poznaniu",
     "time-restricted.open": "Otwarte",
     "time-restricted.opens_today": "dzisiaj o :time",
-    "time-restricted.opens_on": "w :day o :time",
+    "time-restricted.opens_on": ":day o :time",
     "time-restricted.closed-indefinitely": "zamknięte na stałe",
     "workstations.5.name": "Stanowisko 5",
     "administrator.schedules": "Harmonogram otwarcia",
@@ -61,6 +61,5 @@
     "reason.5": "Pomoc stypendialna",
     "reason.6": "Wniosek płatnościowy",
     "reason.7": "Problem z płatnościami",
-    "register.reason.message": "Proszę wybrać powód wizyty",
-    "workstations.5.name": "Stanowisko 5"
+    "register.reason.message": "Proszę wybrać powód wizyty"
 }

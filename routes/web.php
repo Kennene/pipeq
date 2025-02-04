@@ -47,10 +47,11 @@ Route::get("/display", [DisplayController::class, 'index'])
 
 Route::get("/coordinator", [CoordinatorController::class, 'index'])
     ->middleware([
-        config('app.debug') ? 'auth' : 'cas.auth',
+        'auth',
         'role:' . Role::COORDINATOR
     ])
     ->name('coordinator');
+
 
 Route::get("/administrator", [AdministratorController::class, 'index'])
     ->middleware([
@@ -62,6 +63,7 @@ Route::get("/administrator", [AdministratorController::class, 'index'])
 
 
 //* API for client -> server communication
+// todo: change post to post at the end of the project
 
 //* user space
 Route::middleware('role:' . Role::USER)->group(function () {
@@ -84,10 +86,3 @@ Route::middleware(['auth', 'verified', 'role:' . Role::COORDINATOR])->group(func
         Route::post("/endAll/{destination_id?}", 'endAll')->name('_endAll');
     });
 });
-
-
-//Route::any('/test', function () {
-//    return view('layouts.code403');
-//}); //->middleware('cas.auth');
-
-

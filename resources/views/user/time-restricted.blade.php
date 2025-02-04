@@ -6,11 +6,7 @@
     <title>Not available</title>
 </head>
 
-<style>
-    .container {
-        max-width: 40%;
-    }
-    
+<style>    
     .card {
         border-radius: 10px;
     }

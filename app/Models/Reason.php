@@ -23,4 +23,13 @@ class Reason extends Model
     {
         $this->description = __('reason.' . $this->id);
     }
+
+    // todo: amazing, że to tak działa. Powtórzyć do wszystkich innych modeli
+    protected static function boot()
+    {
+        parent::boot();
+        static::retrieved(function ($translation) {
+            $translation->description = __($translation->description);
+        });
+    }
 }

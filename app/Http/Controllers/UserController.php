@@ -48,10 +48,6 @@ class UserController extends Controller
             // Translate all destinations and reasons within
             $destinations = $destinations->map(function($destination) {
                 $destination->translate();
-                $destination->reasons = $destination->reasons->map(function($reason) {
-                    $reason->translate();
-                    return $reason;
-                });
                 return $destination;
             });
 

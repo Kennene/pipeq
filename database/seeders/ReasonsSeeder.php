@@ -13,38 +13,53 @@ class ReasonsSeeder extends Seeder
      */
     public function run(): void
     {
-        for( $i=0; $i<3; $i++) {
-            DB::table('reasons')->insert([
-                'destination_id' => 1,
-                'description' => 'reason.' . $i+1,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-
-        for( $limit=$i+2 ; $i<$limit; $i++) {
-            DB::table('reasons')->insert([
-                'destination_id' => 2,
-                'description' => 'reason.' . $i+1,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-
-        $i = $i + 1;
+        // Registratr's Office
         DB::table('reasons')->insert([
             'destination_id' => 1,
-            'description' => 'Not active reason 1. If you see this, you messed up.',
-            'is_active' => false,
+            'description' => 'reason.registrar.submission',
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
-        $i = $i + 1;
+        DB::table('reasons')->insert([
+            'destination_id' => 1,
+            'description' => 'reason.registrar.idcard',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('reasons')->insert([
+            'destination_id' => 1,
+            'description' => 'reason.registrar.diploma',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('reasons')->insert([
+            'destination_id' => 1,
+            'description' => 'reason.registrar.certificate',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // Payments office
         DB::table('reasons')->insert([
             'destination_id' => 2,
-            'description' => 'Not active reason 2. If you see this, you messed up.',
-            'is_active' => false,
+            'description' => 'reason.payment.scholarship',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('reasons')->insert([
+            'destination_id' => 2,
+            'description' => 'reason.payment.request',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('reasons')->insert([
+            'destination_id' => 2,
+            'description' => 'reason.payment.issue',
             'created_at' => now(),
             'updated_at' => now()
         ]);

@@ -143,12 +143,12 @@
                 </div>
 
                 <!-- Przycisk otwierający modal -->
-                <button
+                <!-- <button
                     class="bg-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500 transition transform active:scale-95 text-xl mt-6"
                     @click="showEndByUserModal = true"
                 >
                     {{ translations["register.end.button"] || "Zakończ" }}
-                </button>
+                </button> -->
             </div>
         </transition>
         <!-- Modal / bottom sheet wyboru powodu (reason) -->
@@ -187,8 +187,7 @@
                             @click="updateReason(reason.id)"
                         >
                             {{
-                                translations["reason." + reason.id] ||
-                                reason.description
+                                reason.description || "Error"
                             }}
                         </button>
                     </div>

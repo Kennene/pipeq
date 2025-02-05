@@ -19,18 +19,8 @@ class CoordinatorController extends Controller
     {
         $color = new Color();
         $tickets = TicketView::all();
-        $statuses = Status::allTranslated();
+        $statuses = Status::all();
         $destinations = Destination::with('workstations')->get();
-
-        // Translate all destinations and workstations (map is faster than loop)
-        $destinations = $destinations->map(function($destination) {
-            $destination->translate();
-            $destination->workstations = $destination->workstations->map(function($workstation) {
-                $workstation->translate();
-                return $workstation;
-            });
-            return $destination;
-        });
 
         // Przygotowanie tłumaczeń statusów
         $translations = [

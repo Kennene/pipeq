@@ -14,10 +14,6 @@ class AdministratorController extends Controller
     public function index()
     {
         $destinations = Destination::all();
-        $destinations = $destinations->map(function($destination) {
-            $destination->translate();
-            return $destination;
-        });
 
         $users = User::leftJoin('role_user', 'role_user.user_id', '=', 'users.id')
             ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')

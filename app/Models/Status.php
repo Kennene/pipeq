@@ -25,21 +25,12 @@ class Status extends Model
         return $this->belongsTo(Color::class);
     }
 
-    /**
-     * Translate all statuses to App locale
-     * 
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public static function allTranslated()
+    protected static function boot()
     {
-        $statuses = self::all();
-
-        $translation = $statuses->map(function ($status) {
-            $status->name = __($status->name);
-            $status->description = __($status->description);
-            return $status;
+        parent::boot();
+        static::retrieved(function ($translation) {
+            $translation->name = __($translation->name);
+            $translation->description = __($translation->description);
         });
-
-        return $translation;
     }
 }

@@ -19,12 +19,6 @@ class Reason extends Model
         return $this->belongsTo(Destination::class);
     }
 
-    public function translate()
-    {
-        $this->description = __('reason.' . $this->id);
-    }
-
-    // todo: amazing, że to tak działa. Powtórzyć do wszystkich innych modeli
     protected static function boot()
     {
         parent::boot();

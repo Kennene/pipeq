@@ -45,12 +45,6 @@ class UserController extends Controller
             // convert array to collection
             $destinations = collect($available_destinations);
 
-            // Translate all destinations and reasons within
-            $destinations = $destinations->map(function($destination) {
-                $destination->translate();
-                return $destination;
-            });
-
             // Collect all reasons in destinations to new array: destination_id => [reasons]
             foreach($destinations as $destination) {
                 $reasons_in_destination = $destination->reasons->toArray();

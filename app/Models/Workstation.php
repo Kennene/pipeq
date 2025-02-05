@@ -21,8 +21,11 @@ class Workstation extends Model
         return $this->belongsTo(Destination::class);
     }
 
-    public function translate()
+    protected static function boot()
     {
-        $this->name = __('workstations.' . $this->id . '.name');
+        parent::boot();
+        static::retrieved(function ($translation) {
+            $translation->name = __($translation->name);
+        });
     }
 }

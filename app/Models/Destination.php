@@ -31,10 +31,13 @@ class Destination extends Model
         return $this->hasMany(Reason::class);
     }
 
-    public function translate()
+    protected static function boot()
     {
-        $this->name = __('destinations.' . $this->id . '.name');
-        $this->description = __('destinations.' . $this->id . '.description');
+        parent::boot();
+        static::retrieved(function ($translation) {
+            $translation->name = __($translation->name);
+            $translation->description = __($translation->description);
+        });
     }
 
     /**

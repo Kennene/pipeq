@@ -54,12 +54,15 @@
     "administrator.updated_when": "Zaktualizowany",
     "administrator.tickets_order": "Zapisy zdarzeń są uporządkowane od najnowszych do najstarszych",
     "reason.other": "Inne",
-    "reason.1": "Odbiór/przedłużenie legitymacji",
-    "reason.2": "Odbiór/zamówienie zaświadczenia",
-    "reason.3": "Złożenie podania",
-    "reason.4": "Odbiór dyplomu",
-    "reason.5": "Pomoc stypendialna",
-    "reason.6": "Wniosek płatnościowy",
-    "reason.7": "Problem z płatnościami",
-    "register.reason.message": "Proszę wybrać powód wizyty"
+    "register.reason.message": "Proszę wybrać powód wizyty",
+    "register.reason.choose": "Wybierz powód wizyty",
+    "reason": "Powód",
+    "reason.registrar.certificate": "Odbiór/zamówienie zaświadczenia",
+    "reason.registrar.diploma": "Odbiór dyplomu",
+    "reason.registrar.idcard": "Odbiór/przedłużenie legitymacji",
+    "reason.registrar.submission": "Złożenie podania",
+    "reason.payment.issue": "Problem z płatnościami",
+    "reason.payment.request": "Wniosek płatnościowy",
+    "reason.payment.scholarship": "Pomoc stypendialna",
+    "time": "Czas"
 }

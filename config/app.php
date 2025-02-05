@@ -81,8 +81,10 @@ return [
     'locale' => env('APP_LOCALE', 'en'),
 
     'available_locales' => [
-        'en' => '🇬🇧 English',
         'pl' => '🇵🇱 Polski',
+        'en' => '🇬🇧 English',
+        'ua' => '🇺🇦 Українська',
+        'fr' => '🇫🇷 Français',
     ],
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),

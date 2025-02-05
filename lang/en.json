@@ -54,12 +54,15 @@
     "administrator.updated_when": "Updated",
     "administrator.tickets_order": "The event records are arranged from the newest to the oldest",
     "reason.other": "Other",
-    "reason.1": "ID card collection/renewal",
-    "reason.2": "Certificate collection/request",
-    "reason.3": "Application submission",
-    "reason.4": "Diploma collection",
-    "reason.5": "Scholarship assistance",
-    "reason.6": "Payment request",
-    "reason.7": "Payment issue",
-    "register.reason.message": "Please select the reason for your visit"
+    "register.reason.message": "Please select the reason for your visit",
+    "register.reason.choose": "Please select the reason for your visit",
+    "reason": "Reason",
+    "reason.registrar.certificate": "Certificate collection/request",
+    "reason.registrar.diploma": "Diploma collection",
+    "reason.registrar.idcard": "ID card collection/renewal",
+    "reason.registrar.submission": "Application submission",
+    "reason.payment.issue": "Payment issue",
+    "reason.payment.request": "Payment request",
+    "reason.payment.scholarship": "Scholarship assistance",
+    "time": "Time"
 }

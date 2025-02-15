@@ -30,7 +30,7 @@ class TicketController extends Controller
      * @param int $destination_id
      * @return JsonResponse
      */
-    public function register(Request $request, $destination_id): JsonResponse
+    public function register(Request $request, int $destination_id, ?int $reason_id = null): JsonResponse
     {
         // check if specified destination exists
         $destination = Destination::find($destination_id);
@@ -44,6 +44,15 @@ class TicketController extends Controller
             return response()->json([
                 'message' => __("time-restricted.message")." ".$destination->getNextOpeningInfo(),
             ], RESPONSE::HTTP_FORBIDDEN);
+        }
+
+        if ($reason_id !== null) {
+            // check if specified reason exists
+            $reason = Reason::find($reason_id);
+            if ($reason === null) {
+                $error = new Error(title: 'Reason not found', http: RESPONSE::HTTP_NOT_FOUND);
+                return $error->toHTTPresponse();
+            }
         }
 
         // for debugging purposes, enable multiple tickets registration
@@ -69,6 +78,7 @@ class TicketController extends Controller
         $ticket = Ticket::create([
             'destination_id' => $destination_id,
             'token' => Str::uuid(),
+            'reason_id' => $reason_id,
         ]);
 
         // update display about new registered ticket

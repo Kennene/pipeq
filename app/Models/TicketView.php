@@ -66,26 +66,30 @@ class TicketView extends Model
      */
     public static function getHistory(): array
     {
-        $database = DB::connection();
-        $query = <<<SQL
-            SELECT 
-                th.ticket_id,
-                th.ticket_nr,
-                s.name AS status,
-                d.name AS destination,
-                w.name AS workstation,
-                th.original_created_at AS created_when,
-                th.original_updated_at AS updated_when,
-                th.modified_by AS updated_by
+        $tickets_history = DB::table('tickets_history as th')
+        ->leftJoin('statuses as s', 'th.status', '=', 's.id')
+        ->leftJoin('destinations as d', 'th.destination', '=', 'd.id')
+        ->leftJoin('workstations as w', 'th.workstation', '=', 'w.id')
+        ->select(
+            'th.ticket_id',
+            'th.ticket_nr',
+            's.name as status',
+            'd.name as destination',
+            'w.name as workstation',
+            'th.original_created_at as created_when',
+            'th.original_updated_at as updated_when',
+            'th.modified_by as updated_by'
+        )
+        ->orderBy('th.id', 'desc')
+        ->get();
 
-            FROM tickets_history th 
-            JOIN statuses s ON th.status = s.id 
-            JOIN destinations d ON th.destination = d.id
-            JOIN workstations w ON th.workstation = w.id
+        // since it is raw SQL query, it needs to be manually translated //? can we convert it to Eloquent?
+        foreach($tickets_history as $log) {
+            $log->status = __($log->status);
+            $log->destination = __($log->destination);
+            $log->workstation = __($log->workstation);
+        }
 
-            ORDER BY th.id DESC;
-        SQL;
-        $tickets_history = $database->select($query);
-        return $tickets_history;
+        return $tickets_history->toArray();
     }
 }

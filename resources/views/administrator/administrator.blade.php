@@ -8,99 +8,106 @@
 </head>
 
 <body>
-
     @include('topbar')
 
-    <div class="row g-2 mx-2 my-2">
-  
-        <div class="col-5">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold text-center h2">{{ __("administrator.schedules") }}</h5>
-                    <form method="POST" action="">
-                        @csrf
-                    
-                        <table class="form-table table table-sm">
+    <div class="container-fluid">
 
-                            @foreach($destinations as $destination)
-                                <tr><td colspan="4" class="fw-bold text-center h3">{{ $destination->name }}</td></tr>
-                                <tr>
-                                    <th scope="col">{{ __("administrator.day") }}</th>
-                                    <th scope="col">{{ __("administrator.is_closed") }}</th>
-                                    <th scope="col">{{ __("administrator.open_time") }}</th>
-                                    <th scope="col">{{ __("administrator.close_time") }}</th>
-                                </tr>
-
-                                @foreach($destination->schedules as $schedule)
-                                    <tr>
-                                        <td><input type="text" class="form-control text-muted text-right" value="{{ __("day.".$schedule->day_of_week) }}" readonly></td>
-                                        <td class="text-center"><input class="form-check-input" type="checkbox" {{ $schedule->checked() }}></td>
-                                        <td> <input type="time" class="form-control" value="{{ $schedule->open_time }}"></td>
-                                        <td> <input type="time" class="form-control" value="{{ $schedule->close_time }}"></td>
-                                    </tr>
-                                @endforeach
-                            @endforeach
-                        </table>
-
-                        <div class="mt-3 bg-info">
-                            <button type="submit" class="btn btn-primary btn float-right">Save</button>
-                            <button type="reset" class="btn btn-secondary btn float-right mr-2">Reset</button>
-                        </div>
-                    </form>
-                </div>
+        <!-- Destinations schedules editor -->
+        <div class="row">
+            <div class="col-12 mb-2">
+                <h5 class="card-title fw-bold h2">{{ __("administrator.schedules") }}</h5>
             </div>
         </div>
 
-        <div class="col-7">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold text-center h2">{{ __("administrator.users") }}</h5>
-                    <form method="POST" action="">
-                        @csrf
+        <div class="row">
+            @foreach($destinations as $destination)
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <span class="h3">{{ $destination->name }}</span>
 
-                        <table class="form-table table table-sm">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">{{ __("administrator.user") }}</th>
-                                    <th scope="col">{{ __("administrator.role_name") }}</th>
-                                    <th scope="col">{{ __("administrator.role_id") }}</th>
-                                    <th scope="col">{{ __("administrator.role_description") }}</th>
-                                </tr>
-                            </thead>
-                        
-                            @foreach($users as $user)
-                                <tr>
-                                    <td><input type="text" class="form-control text-right" value="{{ $user->user_name }}"></td>
-                                    <td>
-                                        <select class="form-control text-left">
-                                            @foreach($roles as $role)
-                                                @if($user->role_id == $role->id)
-                                                    <option value="{{ $role->id }}" selected>{{ $role->name }}</option>
-                                                @else
-                                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td><input type="number" class="form-control text-muted" value="{{ $user->role_id }}" readonly></td>
-                                    <td><textarea type="text" class="form-control text-muted" readonly>{{ $user->description }}</textarea></td>
-                                </tr>
-                            @endforeach
-                        </table>
+                        <form method="POST" action="{{ route('_updateSchedules') }}">
+                            @csrf
 
-                        <div class="mt-3 bg-info">
-                            <button type="submit" class="btn btn-primary btn float-right">Save</button>
-                            <button type="reset" class="btn btn-secondary btn float-right mr-2">Reset</button>
-                        </div>
-                    </form>
+                            <table class="form-table table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ __("administrator.day") }}</th>
+                                        <th scope="col">{{ __("administrator.is_closed") }}</th>
+                                        <th scope="col">{{ __("administrator.open_time") }}</th>
+                                        <th scope="col">{{ __("administrator.close_time") }}</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach($destination->schedules as $schedule)
+                                    <tr>
+                                        <!-- Day of week, read-only -->
+                                        <td>
+                                            <input
+                                                type="text"
+                                                class="form-control text-muted text-right"
+                                                value="{{ $schedule->name }}"
+                                                readonly>
+                                        </td>
+
+                                        <!-- is_closed: hidden field + checkbox -->
+                                        <td>
+                                            <!-- hidden field ensures '0' if checkbox is not checked -->
+                                            <input
+                                                type="hidden"
+                                                name="schedules[{{ $schedule->id }}][is_closed]"
+                                                value="0">
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input"
+                                                name="schedules[{{ $schedule->id }}][is_closed]"
+                                                value="1"
+                                                {{ $schedule->checked() }}>
+                                        </td>
+
+                                        <!-- open_time -->
+                                        <td>
+                                            <input
+                                                type="time"
+                                                class="form-control"
+                                                name="schedules[{{ $schedule->id }}][open_time]"
+                                                value="{{ $schedule->open_time }}">
+                                        </td>
+
+                                        <!-- close_time -->
+                                        <td>
+                                            <input
+                                                type="time"
+                                                class="form-control"
+                                                name="schedules[{{ $schedule->id }}][close_time]"
+                                                value="{{ $schedule->close_time }}">
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <div class="text-right">
+                                <button type="reset" class="btn btn-secondary">
+                                    {{ __("administrator.clear") }}
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __("administrator.submit") }}
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
             </div>
+            @endforeach
         </div>
 
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold text-center h2">{{ __("administrator.tickets_history") }}</h5>
+                    <h5 class="card-title fw-bold text-left h2">{{ __("administrator.tickets_history") }}</h5>
                     <table class="form-table table table-bordered table-striped table-hover table-sm caption-top">
                         <caption>{{ __("administrator.tickets_order") }}</caption>
                         <thead class="thead-light">
@@ -116,11 +123,11 @@
                             </tr>
                         </thead>
                         @foreach($tickets_history as $log)
-                            <tr>
-                                @foreach($log as $key => $value)
-                                    <td>{{ $value }}</td>
-                                @endforeach
-                            </tr>
+                        <tr>
+                            @foreach($log as $key => $value)
+                            <td>{{ $value }}</td>
+                            @endforeach
+                        </tr>
                         @endforeach
                     </table>
                 </div>
@@ -128,6 +135,7 @@
         </div>
 
     </div>
+
 </body>
 
 </html>

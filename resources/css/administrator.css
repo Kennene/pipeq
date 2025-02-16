@@ -5,3 +5,7 @@ th {
 textarea {
     overflow: hidden;
 }
+
+td {
+    text-align: center;
+}

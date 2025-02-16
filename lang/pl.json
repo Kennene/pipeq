@@ -64,5 +64,7 @@
     "reason.payment.issue": "Problem z płatnościami",
     "reason.payment.request": "Wniosek płatnościowy",
     "reason.payment.scholarship": "Pomoc stypendialna",
-    "time": "Czas"
+    "time": "Czas",
+    "administrator.submit": "Zatwierdź",
+    "administrator.clear": "Wyczyść"
 }

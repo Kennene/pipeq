@@ -100,53 +100,14 @@ class DestinationsScheduleSeeder extends Seeder
         // closed days
         DestinationsSchedule::insert([
             // Destination 1:
+            ['destination_id'=>1,'day_of_week'=>0,'is_closed'=>1],
             ['destination_id'=>1,'day_of_week'=>2,'is_closed'=>1],
             ['destination_id'=>1,'day_of_week'=>4,'is_closed'=>1],
 
             // Destination 2:
+            ['destination_id'=>2,'day_of_week'=>0,'is_closed'=>1],
             ['destination_id'=>2,'day_of_week'=>2,'is_closed'=>1],
             ['destination_id'=>2,'day_of_week'=>4,'is_closed'=>1],
         ]);
-
-
-        // $destinations = DB::table('destinations')->get();
-
-        // foreach ($destinations as $destination) {
-
-
-
-
-        //     DestinationSchedule::insert([
-        //         ['name' => 'destinations.1.name', 'description' => 'destinations.1.description'],
-        //         ['name' => 'destinations.2.name', 'description' => 'destinations.2.description'],
-        //     ]);
-
-
-        //     $schedules = [];
-
-        //     for ($day = 0; $day <= 6; $day++) {
-        //         // mon - fri
-        //         if ($day >= 1 && $day <= 5) {
-        //             $schedules[] = [
-        //                 'destination_id' => $destination->id,
-        //                 'day_of_week' => $day,
-        //                 'open_time' => '01:00:00',
-        //                 'close_time' => '23:00:00',
-        //                 'is_closed' => false
-        //             ];
-        //         } else {
-        //         // sat - sun
-        //             $schedules[] = [
-        //                 'destination_id' => $destination->id,
-        //                 'day_of_week' => $day,
-        //                 'open_time' => '01:00:00',
-        //                 'close_time' => '23:00:00',
-        //                 'is_closed' => false
-        //             ];
-        //         }
-        //     }
-
-        //     DB::table('destinations_schedules')->insert($schedules);
-        // }
     }
 }

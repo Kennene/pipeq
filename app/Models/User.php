@@ -38,6 +38,19 @@ class User extends Authenticatable
     }
 
     /**
+     * Returns the model Role with biggest id
+     * 
+     * todo: this is shitty system actually, needs overhaul
+     * Our system is designed with ability of user to have multiple roles.
+     * However, since they are cascade, only one is the most important
+     * @depracated
+     */
+    // public function biggestRole(): Role
+    // {
+    //     return $this->roles()->orderBy('id', 'desc')->first();
+    // }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

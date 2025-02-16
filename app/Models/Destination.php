@@ -34,6 +34,8 @@ class Destination extends Model
     protected static function boot()
     {
         parent::boot();
+        //* translating this way may cause problems during updating object in database
+        // for better translation handling checkout DestinationsSchedule model
         static::retrieved(function ($translation) {
             $translation->name = __($translation->name);
             $translation->description = __($translation->description);

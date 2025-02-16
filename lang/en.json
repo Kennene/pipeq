@@ -64,5 +64,7 @@
     "reason.payment.issue": "Payment issue",
     "reason.payment.request": "Payment request",
     "reason.payment.scholarship": "Scholarship assistance",
-    "time": "Time"
+    "time": "Time",
+    "administrator.submit": "Submit",
+    "administrator.clear": "Clear"
 }

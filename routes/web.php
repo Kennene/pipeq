@@ -14,7 +14,7 @@ use App\Http\Controllers\AdministratorController;
 
 require __DIR__ . '/auth.php';
 
-Route::any('/logout', function () {
+Route::post('/logout', function () {
     Auth::logout();
     return redirect()->back()->with('success', 'You have been logged out');
 })->name('logout');

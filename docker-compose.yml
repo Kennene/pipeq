@@ -1,14 +1,24 @@
-version: "3.9"
-
+version: '3.8'
 services:
-    pipeq:
-        build:
-            target: PipeQ
-            context: .
-            args:
-                REVERB_PORT: ${REVERB_PORT}
-        container_name: pipeq
-        ports:
-            - "8001:80"
-            - "${REVERB_PORT}:${REVERB_PORT}"
-        restart: unless-stopped
+  pipeq:
+    build:
+      target: production
+      context: .
+      dockerfile: Dockerfile
+
+    image: pipeq:latest
+
+    container_name: "${CONTAINER_NAME:-pipeq}"
+
+    volumes:
+      - "pipeq_database:/var/www/html/database"
+
+    ports:
+      - "80:80"
+      - "8080:8080"
+    
+    restart: "unless-stopped"
+
+volumes:
+  pipeq_database:
+    name: "${CONTAINER_NAME:-pipeq}_database"

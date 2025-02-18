@@ -1,66 +1,63 @@
-# King Debian
-FROM debian:bookworm as PipeQ
+# ---- Build Stage ----
+FROM php:8.3-fpm AS builder
 
-ARG REVERB_PORT
+# Set working directory
+WORKDIR /pipeq
 
-# Set environment variables
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-# Install system dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
-    locales \
-    #! Tools for troubleshooting container. Remove for final release.
-    iproute2 \
-    nano \
-    #!
-    ca-certificates\
-    zip \
+    git \
+    unzip \
+    libzip-dev \
+    libsqlite3-dev \
+    nodejs \
+    npm \
+    && docker-php-ext-install zip
+
+# Install latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy application, install dependencies, and build
+COPY . .
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install && npm run build 
+
+
+# ---- Final Stage ----
+FROM php:8.3-fpm AS production
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install runtime dependencies: Nginx, Supervisor, etc.
+RUN apt-get update && apt-get install -y \
+    nginx \
+    supervisor \
+    git \
     unzip \
     curl \
-    supervisor \
-    apache2 \
-    libapache2-mod-php \
-    php \
-    php-cli \
-    php-zip \
-    php-xml \
-    php-curl \
-    php-sqlite3 \
-    composer \
-    npm \
-    && apt-get clean
-    #! && rm -rf /var/lib/apt/lists/*
+    libsqlite3-dev \
+    libzip-dev \
+    && docker-php-ext-install zip pcntl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configure locale
-RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+# Copy built application from builder stage
+COPY --from=builder /pipeq /var/www/html
+RUN chown -R www-data:www-data storage bootstrap/cache database
 
-# Enable Apache mod_rewrite for URL rewriting
-RUN a2enmod rewrite
+# Optimize application
+RUN php artisan optimize:clear && php artisan optimize
 
-# Configure Apache DocumentRoot to point to Laravel's public directory
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
-    && sed -i '/<Directory ${APACHE_DOCUMENT_ROOT}>/,/<\/Directory>/s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+# Remove the default Nginx config and add our custom configuration
+RUN rm /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy application code
-WORKDIR /var/www/html
-COPY . /var/www/html
+# Expose HTTP and reverb ports
+EXPOSE 80 8080
 
-# Install project dependencies and create database
-RUN composer install \
-    && npm install \
-    && npm run build \
-    && php artisan migrate:fresh --seed
+# Fix permissions in mounted volumes
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Set permissions for Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
-
-# Expose Apache port and WebSockets port
-EXPOSE 80
-EXPOSE ${REVERB_PORT}
-
-# Start Supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Start Supervisor (which in turn starts PHP-FPM, Nginx and the reverb server)
+CMD ["/usr/bin/supervisord", "-n", "-c", "/var/www/html/supervisord.conf"]

@@ -48,6 +48,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80 8080
 
 # Initialize database if it doesn't exist
+RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Start Supervisor (which in turn starts PHP-FPM, Nginx and the reverb server)

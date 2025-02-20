@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
         <div class="flex items-center space-x-2">
             <img id="app-logo" src="/images/logo.webp" class="h-12 w-auto" alt="App Logo" />
-            <h1 id="app-name" class="text-xl font-semibold">{{ env('APP_NAME') }}</h1>
+            <h1 id="app-name" class="text-xl font-semibold">{{ config('app.name', 'PipeQ') }}</h1>
         </div>
 
         <div class="relative">

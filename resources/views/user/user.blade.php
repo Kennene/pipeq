@@ -4,7 +4,7 @@
 <head>
     @extends('layouts.head')
     @vite(['resources/js/user.js'])
-    <title>{{ env('APP_NAME', 'PipeQ') }}</title>
+    <title>{{ config('app.name') }}</title>
 </head>
 
 <body class="flex flex-col h-screen">

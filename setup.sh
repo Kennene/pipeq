@@ -14,12 +14,15 @@ setOrUpdateEnvVariable() {
     fi
 }
 
+# List of required commands installed base system
 required_commands=( "docker-compose" "docker" "php" )
 
 # Generate random values for the Reverb app key, secret, and ID
 REVERB_APP_KEY=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 20)
 REVERB_APP_SECRET=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 20)
 REVERB_APP_ID=$(shuf -i 100000-999999 -n 1)
+
+# Laravel's APP_KEY is being generated on the first run of the application in docker-entrypoint.sh
 
 # Create the .env file if it doesn't exist
 if [ ! -f ".env" ]; then
@@ -38,9 +41,6 @@ for cmd in "${required_commands[@]}"; do
         exit 1
     fi
 done
-
-# Generate new application key
-php artisan --no-interaction --force --env=production key:generate
 
 # Start the Docker container
 docker-compose --env-file .env up -d

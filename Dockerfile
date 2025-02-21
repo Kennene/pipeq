@@ -26,6 +26,10 @@ RUN npm clean-install --no-audit && npm run build
 # ---- Final Stage ----
 FROM php:8.3-fpm AS production
 
+# Variables from docker-compose.yml
+ARG HTTP_PORT=80
+ARG REVERB_PORT=8080
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -45,7 +49,7 @@ RUN rm -f /etc/nginx/sites-enabled/default
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose HTTP and reverb ports
-EXPOSE 80 8080
+EXPOSE $HTTP_PORT $REVERB_PORT
 
 # Initialize database if it doesn't exist
 RUN chmod +x docker-entrypoint.sh

@@ -1,21 +1,31 @@
-version: '3.8'
 services:
   pipeq:
     build:
       target: production
       context: .
       dockerfile: Dockerfile
+      args:
+        DOCKER_IMAGE_NAME: ${DOCKER_IMAGE_NAME}
+        CONTAINER_NAME: ${CONTAINER_NAME}
+        HTTP_PORT: ${HTTP_PORT}
+        REVERB_PORT: ${REVERB_PORT}
 
-    image: pipeq:latest
+    image: "${DOCKER_IMAGE_NAME:-PipeQ}:latest"
 
-    container_name: "${CONTAINER_NAME:-pipeq}"
+    container_name: "${CONTAINER_NAME:-PipeQ}"
 
     volumes:
       - "pipeq_database:/var/www/html/database"
 
     ports:
-      - "80:80"
-      - "8080:8080"
+      - "${HTTP_PORT}:80"
+      - "${REVERB_PORT}:8080"
+    
+    environment:
+      - DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}
+      - CONTAINER_NAME=${CONTAINER_NAME}
+      - HTTP_PORT=${HTTP_PORT}
+      - REVERB_PORT=${REVERB_PORT}
     
     restart: "unless-stopped"
 

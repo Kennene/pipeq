@@ -1,6 +1,6 @@
 {
     "destinations.1.name": "Bureau du registraire",
-    "destinations.2.name": "Paiements",
+    "destinations.2.name": "Paiements & Bourses",
     "destinations.1.description": "Questions générales liées aux études académiques",
     "destinations.2.description": "Problèmes de paiement et bourses",
     "workstations.1.name": "Bureau 1",
@@ -64,5 +64,7 @@
     "reason.payment.issue": "Problème de paiement",
     "reason.payment.request": "Demande de paiement",
     "reason.payment.scholarship": "Aide pour la bourse",
-    "time": "Temps"
+    "time": "Temps",
+    "administrator.clear": "Effacer",
+    "administrator.submit": "Valider"
 }

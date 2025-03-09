@@ -1,6 +1,6 @@
 {
     "destinations.1.name": "Деканат",
-    "destinations.2.name": "Платежі",
+    "destinations.2.name": "Платежі та стипендії",
     "destinations.1.description": "Загальні питання, пов'язані з вашим навчанням",
     "destinations.2.description": "Проблеми з платежами та стипендії",
     "workstations.1.name": "Станція 1",
@@ -64,5 +64,7 @@
     "reason.payment.issue": "Проблема з оплатою",
     "reason.payment.request": "Запит на оплату",
     "reason.payment.scholarship": "Допомога зі стипендією",
-    "time": "Час"
+    "time": "Час",
+    "administrator.clear": "Очистити",
+    "administrator.submit": "Підтвердити"
 }

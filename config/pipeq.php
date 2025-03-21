@@ -29,8 +29,8 @@ return [
     |
     */
 
-
     'is_display_sound' => env('IS_DISPLAY_SOUND', false),
-    'display_sound_path' => env('DISPLAY_SOUND_PATH', env('APP_URL') . "/notification.mp3"),
+    'is_coordinator_sound' => env('IS_COORDINATOR_SOUND', false),
+    'notification_sound_path' => env('NOTIFICATION_SOUND_PATH', env('APP_URL') . "/notification.mp3"),
 
 ];

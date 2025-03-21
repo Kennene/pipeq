@@ -42,5 +42,7 @@ class UsersTableSeeder extends Seeder
         User::where('email', 'display@107.pl')->first()->roles()->attach(ROLE::USER);
         User::where('email', 'coordinator@107.pl')->first()->roles()->attach(ROLE::USER);
         User::where('email', 'administrator@107.pl')->first()->roles()->attach(ROLE::USER);
+
+        //todo: generate random passwords for default users
     }
 }

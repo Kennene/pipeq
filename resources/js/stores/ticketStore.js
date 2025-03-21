@@ -295,6 +295,14 @@ export const useTicketStore = defineStore("ticketStore", {
             } else {
                 // Dodanie nowego biletu
                 this.allTickets.push(ticket);
+
+                // if this fetaure is enabled in env, play notification sound
+                if (window.IS_COORDINATOR_SOUND) {
+                    const notificationSound = new Audio();
+                    notificationSound.src = window.NOTIFICATION_SOUND_PATH;
+                    notificationSound.load();
+                    notificationSound.play().catch(error => console.error("Audio play failed:", error));
+                }
             }
             this.updateSectionsAndTickets();
         },

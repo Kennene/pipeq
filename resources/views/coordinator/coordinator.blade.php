@@ -11,6 +11,8 @@
     <script>
         window.STATUS_IN = {{ \App\Models\Status::IN }};
         window.STATUS_END = {{ \App\Models\Status::END }};
+        window.IS_COORDINATOR_SOUND = '{!! config("pipeq.is_coordinator_sound", false) !!}';
+        window.NOTIFICATION_SOUND_PATH = '{!! config("pipeq.notification_sound_path") !!}';
     </script>
 
     <!-- Topbar -->

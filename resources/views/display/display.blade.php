@@ -61,7 +61,7 @@
             @if(config('pipeq.is_display_sound'))
                 // play notification sound
                 const notificationSound = new Audio();
-                notificationSound.src = '{!! config("pipeq.display_sound_path") !!}';
+                notificationSound.src = '{!! config("pipeq.notification_sound_path") !!}';
                 notificationSound.load();
                 notificationSound.play().catch(error => console.error("Audio play failed:", error));
             @endif

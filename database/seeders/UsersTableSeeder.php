@@ -39,9 +39,9 @@ class UsersTableSeeder extends Seeder
         ]);
 
         // User::where('email', 'user@107.pl')->first()->roles()->attach(ROLE::USER);
-        User::where('email', 'display@107.pl')->first()->roles()->attach(ROLE::USER);
-        User::where('email', 'coordinator@107.pl')->first()->roles()->attach(ROLE::USER);
-        User::where('email', 'administrator@107.pl')->first()->roles()->attach(ROLE::USER);
+        User::where('email', 'display@107.pl')      ->first()->roles()->attach(ROLE::DISPLAY);
+        User::where('email', 'coordinator@107.pl')  ->first()->roles()->attach(ROLE::COORDINATOR);
+        User::where('email', 'administrator@107.pl')->first()->roles()->attach(ROLE::ADMINISTRATOR);
 
         //todo: generate random passwords for default users
     }

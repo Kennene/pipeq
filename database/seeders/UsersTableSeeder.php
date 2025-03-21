@@ -16,44 +16,31 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         User::insert([
+            // [
+            //     'name' => 'User',
+            //     'email' => 'user@107.pl',
+            //     'password' => bcrypt('12345678')
+            // ],
             [
-                'name' => 'User',
-                'email' => 'normal@107.pl',
-                'password' => bcrypt('12345678')
-            ],
-            [
-                'name' => 'Displayer',
+                'name' => 'Display',
                 'email' => 'display@107.pl',
                 'password' => bcrypt('12345678')
             ],
             [
-                'name' => 'Fixer',
+                'name' => 'Coordinator',
                 'email' => 'coordinator@107.pl',
                 'password' => bcrypt('12345678')
             ],
             [
-                'name' => 'Krzysztof',
-                'email' => 'krzysztof@107.pl',
-                'password' => bcrypt('12345678')
-            ],
-            [
-                'name' => 'Mateusz',
-                'email' => 'mateusz@107.pl',
-                'password' => bcrypt('12345678')
-            ],
-            [
-                'name' => 'BOS',
-                'email' => 'bos@poznan.merito.pl',
+                'name' => 'Administrator',
+                'email' => 'administrator@107.pl',
                 'password' => bcrypt('12345678')
             ],
         ]);
 
-        User::where('email', 'normal@107.pl')->first()->roles()->attach(ROLE::USER);
-        User::where('email', 'display@107.pl')->first()->roles()->attach(ROLE::DISPLAY);
-        User::where('email', 'coordinator@107.pl')->first()->roles()->attach(ROLE::COORDINATOR);
-        User::where('email', 'bos@poznan.merito.pl')->first()->roles()->attach(ROLE::COORDINATOR);
-
-        User::where('email', 'krzysztof@107.pl')->first()->roles()->attach(ROLE::ADMINISTRATOR);
-        User::where('email', 'mateusz@107.pl')->first()->roles()->attach(ROLE::ADMINISTRATOR);
+        // User::where('email', 'user@107.pl')->first()->roles()->attach(ROLE::USER);
+        User::where('email', 'display@107.pl')->first()->roles()->attach(ROLE::USER);
+        User::where('email', 'coordinator@107.pl')->first()->roles()->attach(ROLE::USER);
+        User::where('email', 'administrator@107.pl')->first()->roles()->attach(ROLE::USER);
     }
 }

@@ -15,6 +15,7 @@ class RolesTableSeeder extends Seeder
     public function run(): void
     {
         // id are seperated by 10 to allow for future roles to be added in between
+        // role user is not used by default, because pipeq assumes that users can by anonymous
         DB::table('roles')->insert([
             [
                 'id' => ROLE::USER,

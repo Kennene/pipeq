@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\Collection;
 
 class Reason extends Model
 {
@@ -26,5 +27,17 @@ class Reason extends Model
     public function getDescriptionAttribute(): string
     {
         return __($this->getRawOriginal('description'));
+    }
+
+    public static function perDestination(): Collection
+    {
+        return Reason::all()
+        ->filter->isActive()
+        ->groupBy('destination_id');
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
     }
 }

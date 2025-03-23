@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\Collection;
 
 class Destination extends Model
 {
@@ -45,6 +46,13 @@ class Destination extends Model
     public function getDescriptionAttribute(): string
     {
         return __($this->getRawOriginal('description'));
+    }
+
+    public static function openedNow(): Collection
+    {
+        return Destination::all()->filter(function ($destination) {
+            return $destination->isOpenNow();
+        });
     }
 
     /**

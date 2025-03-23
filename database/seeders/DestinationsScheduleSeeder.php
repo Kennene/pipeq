@@ -16,98 +16,22 @@ class DestinationsScheduleSeeder extends Seeder
     public function run(): void
     {
         $now = now();
+        $schedules = [];
 
-        // Schedule for destination_id = 1
-        DestinationsSchedule::insert([
-            [
-                'destination_id' => 1,
-                'day_of_week'   => 1, // Monday (PON)
-                'open_time'     => '12:00',
-                'close_time'    => '17:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 1,
-                'day_of_week'   => 3, // Wednesday (ŚRO)
-                'open_time'     => '08:00',
-                'close_time'    => '14:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 1,
-                'day_of_week'   => 5, // Friday (PIĄ)
-                'open_time'     => '12:00',
-                'close_time'    => '17:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 1,
-                'day_of_week'   => 6, // Saturday (SOB)
-                'open_time'     => '07:30',
-                'close_time'    => '14:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-        ]);
+        foreach ([1, 2] as $destination_id) {
+            foreach (range(0, 6) as $day) {
+                $schedules[] = [
+                    'destination_id' => $destination_id,
+                    'day_of_week'    => $day,
+                    'open_time'      => '00:00',
+                    'close_time'     => '23:59',
+                    'is_closed'      => 0,
+                    'created_at'     => $now,
+                    'updated_at'     => $now,
+                ];
+            }
+        }
 
-        // Schedule for destination_id = 2
-        DestinationsSchedule::insert([
-            [
-                'destination_id' => 2,
-                'day_of_week'   => 1, // Monday (PON)
-                'open_time'     => '14:00',
-                'close_time'    => '17:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 2,
-                'day_of_week'   => 3, // Wednesday (ŚRO)
-                'open_time'     => '12:00',
-                'close_time'    => '14:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 2,
-                'day_of_week'   => 5, // Friday (PIĄ)
-                'open_time'     => '14:00',
-                'close_time'    => '17:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-            [
-                'destination_id' => 2,
-                'day_of_week'   => 6, // Saturday (SOB)
-                'open_time'     => '07:30',
-                'close_time'    => '14:00',
-                'is_closed'     => 0,
-                'created_at'    => $now,
-                'updated_at'    => $now,
-            ],
-        ]);
-
-        // closed days
-        DestinationsSchedule::insert([
-            // Destination 1:
-            ['destination_id'=>1,'day_of_week'=>0,'is_closed'=>1],
-            ['destination_id'=>1,'day_of_week'=>2,'is_closed'=>1],
-            ['destination_id'=>1,'day_of_week'=>4,'is_closed'=>1],
-
-            // Destination 2:
-            ['destination_id'=>2,'day_of_week'=>0,'is_closed'=>1],
-            ['destination_id'=>2,'day_of_week'=>2,'is_closed'=>1],
-            ['destination_id'=>2,'day_of_week'=>4,'is_closed'=>1],
-        ]);
+        DestinationsSchedule::insert($schedules);
     }
 }

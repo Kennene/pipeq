@@ -22,7 +22,7 @@ class Ticket extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['destination_id', 'token','reason_id'];
+    protected $fillable = ['destination_id', 'token','reason_id','locale'];
 
     /**
      * Boot function to add ticket_nr to the ticket
@@ -43,21 +43,11 @@ class Ticket extends Model
                                     ->value('seq');
 
             $ticket->ticket_nr = $tickets_sequence % config('pipeq.max_ticket_number') + 1;
-
-            // todo: change this Auth. It won't work with the CAS
-            // adds user_id to the ticket
-            $ticket->user_id = Auth::id();
         });
 
         static::updating(function ($ticket) {
             $ticket->modified_by = Auth::id();
         });
-    }
-
-    // relationships
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function status()
@@ -205,12 +195,13 @@ class Ticket extends Model
      * Returns a summary of the current status of the ticket
      * 
      * @return string
+     * @depracated 
      */
     public function summary(): string
     {
         $message = [
             "Ticket id: {$this->id}.",
-            "User {$this->user?->name} going to destination id {$this->destination->id}.",
+            "User {$this->ticket_nr} going to destination id {$this->destination->id}.",
             "Currently set to workstation {$this->workstation?->id} with status {$this->status->id}."
         ];
 

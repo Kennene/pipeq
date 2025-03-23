@@ -21,8 +21,12 @@
     <!-- Główny kontener -->
     <div id="app" class="flex-1 overflow-hidden">
         <!-- Komponent Coordinator -->
-        <coordinator :initial-tickets='@json($tickets)' :translations='@json($translations)'
-            :destinations='@json($destinations)'>
+        <coordinator
+            :initial-tickets='@json($tickets)'
+            :translations='@json($translations)'
+            :destinations='@json($destinations)'
+            :locales='@json(config('app.available_locales'))'
+        >
         </coordinator>
     </div>
 </body>

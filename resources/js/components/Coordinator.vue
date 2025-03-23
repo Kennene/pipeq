@@ -72,6 +72,9 @@
                             <p class="text-xs text-gray-600 mb-1">
                                 {{ element.status }}
                             </p>
+                            <p class="text-xs text-gray-600 mb-1">
+                                {{ getLocaleFullName(element) }}
+                            </p>
                             <h6 class="text-xs text-gray-500 truncate">
                                 {{ element.destination }}
                             </h6>
@@ -312,6 +315,10 @@ export default {
             type: Array,
             required: true,
         },
+        locales: {
+            type: Object,
+            required: false,
+        },
     },
 
     setup(props) {
@@ -424,6 +431,12 @@ export default {
             return `${diffMins}min ${diffSecs}s`;
         };
 
+        // Pobieranie pełnej nazwy języka z locales
+        const getLocaleFullName = (ticket) => {
+            const locale_shortcut = ticket.locale;
+            const locale_fullname = props.locales[locale_shortcut];
+            return locale_fullname;
+        };
 
         // Dynamika kolorowania w zależności od czasu
         const getTicketTimeClass = (ticket) => {
@@ -460,6 +473,7 @@ export default {
             cancelDeleteAction,
             getTicketTime,
             getTicketTimeClass,
+            getLocaleFullName,
         };
     },
 };

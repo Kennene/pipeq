@@ -16,6 +16,21 @@ PipeQ can be deployed in a variety of environments, such as:
 - Public Services: Ensure efficient queuing for government offices or banks
 - Bistro: Manage customer queues at food receiving, preventing crowding and ensuring smooth service.
 
+## Tech Stack
+
+**Backend**
+- Laravel 11
+- Laravel Reverb (WebSocket)
+- SQLite3
+- Supervisor
+
+**Frontend**
+- Vue.js + Pinia
+- Tailwind CSS + Bootstrap
+- VueDraggable
+- Vite
+- Axios + Alpine.js
+
 ## Installation
 ### Docker
 #### Prerequisites
@@ -32,47 +47,35 @@ PipeQ can also be installed directly on a Linux system. The instructions below a
 You can loookup `docker-compose` file for instructions regarding installation on bare metal.
 
 #### Prerequisites
-- Make sure PHP, Composer, Node.js, and Apache are installed:
+- Make sure PHP, Composer, Node.js, and nginx are installed:
 ```
-sudo apt -y install php composer npm apache2 
+sudo apt -y install php composer npm nginx supervisor git php-curl php-mbstring
 ```
- - Other system dependencies:
- ```
- sudo apt -y install php-curl
- ```
- 
+
 #### Steps
-1. Create your .env file from .env.example
+You can copy and paste below code to create your own instance of PipeQ:
 ```
-cp .env.example .env
-```
-
-2. Install composer dependencies
-```
+git clone https://github.com/Kennene/pipeq pipeq
+cd pipeq
+cp .env.example .env && touch database/database.sqlite
 composer install
+php artisan key:generate && php artisan migrate --seed
+npm install && npm build
 ```
 
-3. Build the database
+Then you have to configure nginx and supervisor to run websocket server. Default nginx configuration is already in project files:
 ```
-php artisan migrate:fresh --seed
-```
-
-4. Install npm dependencies
-```
-npm install
+sudo cp nginx.conf /etc/nginx/sites-available
+sudo ln -s /etc/nginx/sites-available /etc/nginx/sites-enabled
 ```
 
-5. Build your npm packages
+Note that the WebSocket server must be started with php artisan reverb:start. You can manage it however you like, but using Supervisor is the recommended approach. You can reuse the relevant section from the provided supervisord.conf file:
 ```
-npm run build
-```
-
-5. Move your program files your apache server files
-```
-cp ./* /var/www/html/.
-```
-
-6. Run reverb server
-```
-php artisan reverb:start
+[program:reverb]
+command=php artisan reverb:start
+directory=/var/www/html
+autostart=true
+autorestart=true
+user=www-data
+stdout_logfile=reverb.log
 ```

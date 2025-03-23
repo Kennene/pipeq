@@ -432,8 +432,6 @@ class TicketController extends Controller
         return $this->end($request, $ticket->id);
     }
 
-    //? why?
-        // todo: redirect user to home page after clearing storage
     /**
      * Clear user's storage, which means removing ticket token from session and cookie
      * 

@@ -10,7 +10,6 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/css/topbar.css",
 
-                "resources/css/user.css",
                 "resources/css/coordinator.css",
                 "resources/css/administrator.css",
                 "resources/css/display.css",

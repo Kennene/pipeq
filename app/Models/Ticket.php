@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\Error;
-use App\Models\User;
 
 use App\Models\Status;
 use App\Models\Destination;

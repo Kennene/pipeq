@@ -23,6 +23,14 @@ class TicketView extends Model
     {
         parent::boot();
 
+        /**
+         * Translating this way wouldn't be the best approach,,
+         * as it causes a mismatch between model attributes and database columns when saving the object.
+         * Using built-in PHP getXAttribute method would be a better solution, but in this case, TicketView is a database view
+         * and cannot be saved anyway — so this translation method is acceptable here.
+         * If it works, don't fix it ;)
+         */
+        
         static::retrieved(function ($ticket) {
             $ticket->status = __($ticket->status);
             $ticket->destination = __($ticket->destination);

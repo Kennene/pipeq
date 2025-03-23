@@ -20,12 +20,12 @@ class Workstation extends Model
     {
         return $this->belongsTo(Destination::class);
     }
-
-    protected static function boot()
+    
+    /**
+     * Automatically translate name attribute when retrieving like $object->name
+     */
+    public function getNameAttribute(): string
     {
-        parent::boot();
-        static::retrieved(function ($translation) {
-            $translation->name = __($translation->name);
-        });
+        return __($this->getRawOriginal('name'));
     }
 }

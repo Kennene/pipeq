@@ -8,6 +8,7 @@ class Reason extends Model
 {
     protected $table = 'reasons';
 
+    // todo: add coordinator ability to add reasons
     protected $fillable = [
         'destination_id',
         'description',
@@ -19,11 +20,11 @@ class Reason extends Model
         return $this->belongsTo(Destination::class);
     }
 
-    protected static function boot()
+    /**
+     * Automatically translate description attribute when retrieving like $object->description
+     */
+    public function getDescriptionAttribute(): string
     {
-        parent::boot();
-        static::retrieved(function ($translation) {
-            $translation->description = __($translation->description);
-        });
+        return __($this->getRawOriginal('description'));
     }
 }

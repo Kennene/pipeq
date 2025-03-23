@@ -31,15 +31,20 @@ class Destination extends Model
         return $this->hasMany(Reason::class);
     }
 
-    protected static function boot()
+    /**
+     * Automatically translate name attribute when retrieving like $object->name
+     */
+    public function getNameAttribute(): string
     {
-        parent::boot();
-        //* translating this way may cause problems during updating object in database
-        // for better translation handling checkout DestinationsSchedule model
-        static::retrieved(function ($translation) {
-            $translation->name = __($translation->name);
-            $translation->description = __($translation->description);
-        });
+        return __($this->getRawOriginal('name'));
+    }
+
+    /**
+     * Automatically translate description attribute when retrieving like $object->description
+     */
+    public function getDescriptionAttribute(): string
+    {
+        return __($this->getRawOriginal('description'));
     }
 
     /**

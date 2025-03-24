@@ -82,7 +82,7 @@ class TicketController extends Controller
             'destination_id' => $destination_id,
             'token' => Str::uuid(),
             'reason_id' => $reason_id,
-            'locale' => session()->get('locale'),
+            'locale' => app()->getLocale(),
         ]);
 
         // update display about new registered ticket

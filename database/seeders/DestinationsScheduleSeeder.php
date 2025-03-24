@@ -23,8 +23,8 @@ class DestinationsScheduleSeeder extends Seeder
                 $schedules[] = [
                     'destination_id' => $destination_id,
                     'day_of_week'    => $day,
-                    'open_time'      => '00:00',
-                    'close_time'     => '23:59',
+                    'open_time'      => '00:00:00',
+                    'close_time'     => '23:59:59',
                     'is_closed'      => 0,
                     'created_at'     => $now,
                     'updated_at'     => $now,

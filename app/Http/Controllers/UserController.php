@@ -19,14 +19,29 @@ class UserController extends Controller
         $reasons = Reason::perDestination();
         $opened_destinations = Destination::openedNow();
 
-
-        // Check if there are any open destinations
+        // If there are no currently opened destinations, redirect user to time-restricted page
         if($opened_destinations->isEmpty()) {
-            // if there are no currently opened destinations, redirect user to time-restricted page
-            // todo: time-restricted handle soonest opening
-            return view('user.time-restricted');
+            return $this->timeRestricted();
         }
 
         return view('user.user')->with(compact('token', 'opened_destinations', 'reasons'));
+    }
+
+    private function timeRestricted(): View
+    {
+        $destinations = Destination::withOpeningHours();
+
+        $translations = [
+            'locale' => app()->getLocale(),
+            'title' => __('time-restricted.title'),
+            'message' => __('time-restricted.message'),
+            'opens' => __('time-restricted.opens'),
+            'mail' => __('time-restricted.mail'),
+            'sorry1' => __('time-restricted.sorry.1'),
+            'sorry2' => __('time-restricted.sorry.2'),
+            'company' => config('app.name', __('time-restricted.company')),
+        ];
+
+        return view('user.time-restricted')->with(compact('destinations', 'translations'));
     }
 }

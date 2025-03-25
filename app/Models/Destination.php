@@ -32,6 +32,16 @@ class Destination extends Model
         return $this->hasMany(Reason::class);
     }
 
+    protected static function booted()
+    {
+        // Make sure each destination has 7 days schedule, one for every day of the week
+        static::retrieved(function (Destination $destination) {
+            if ($destination->schedules->count() < 7) {
+                $destination->repairSchedule();
+            }
+        });
+    }
+
     /**
      * Automatically translate name attribute when retrieving like $object->name
      */
@@ -48,9 +58,18 @@ class Destination extends Model
         return __($this->getRawOriginal('description'));
     }
 
+    public static function withOpeningHours(): Collection
+    {
+        $destinations = Destination::with('schedules')->get()->each(function ($destination) {
+            $destination->opens = $destination->opens();
+        });
+
+        return $destinations;
+    }
+
     public static function openedNow(): Collection
     {
-        return Destination::all()->filter(function ($destination) {
+        return Destination::with('schedules')->get()->filter(function ($destination) {
             return $destination->isOpenNow();
         });
     }
@@ -66,9 +85,7 @@ class Destination extends Model
         $dayOfWeek = $now->dayOfWeek; // 0 = niedziela, 6 = sobota
         $currentTime = $now->format('H:i:s');
 
-        $schedule = $this->schedules()
-            ->where('day_of_week', $dayOfWeek)
-            ->first();
+        $schedule = $this->schedules->firstWhere('day_of_week', $dayOfWeek);
 
         if (!$schedule || $schedule->is_closed) {
             return false;
@@ -78,52 +95,76 @@ class Destination extends Model
     }
 
     /**
-     * Get next opening info
-     * 
-     * @return string
+     * Function returns timestamp (int) when destination will be open
+     *
+     * It will return now()->timestamp if destination is open now
+     *
+     * @return int|null
      */
-    public function getNextOpeningInfo(): string
+    public function opens(): ?int
     {
-        // current day of week
-        $day = now()->dayOfWeek;
-        $current_day_schedule = $this->schedules()->where('day_of_week', $day)->first();
-
-        // todo: do it better. There might be no record of current day in database.
-        if($current_day_schedule == null) {
-            return "unknown";
+        // if destination is open now return now timestamp
+        if ($this->isOpenNow()) {
+            return now()->timestamp;
         }
 
-        // if it's closed today or no record of the day
-        if (!$current_day_schedule->is_closed) {
-            // but may be will be open later?
-            if(now()->format('H:i:s') < $current_day_schedule->open_time) {
-                return __('time-restricted.opens_today', ['time' => date('H:i', strtotime($current_day_schedule->open_time))]);
+        $now = now();
+        $current_time = $now->format('H:i:s');
+        $current_day = $now->dayOfWeek;
+
+        $schedules = $this->schedules->keyBy('day_of_week');
+
+        $today_schedule = $schedules->get($current_day);
+
+        if (
+            $today_schedule &&
+            !$today_schedule->is_closed &&
+            $today_schedule->open_time > $current_time
+        ) {
+            $openTime = $now->copy()->setTimeFromTimeString($today_schedule->open_time);
+            return $openTime->timestamp;
+        }
+
+        for ($i = 1; $i <= 7; $i++) {
+            $next_day = ($current_day + $i) % 7;
+            $schedule = $schedules->get($next_day);
+
+            if ($schedule && !$schedule->is_closed && $schedule->open_time !== null) {
+                $openTime = $now->copy()
+                    ->addDays($i)
+                    ->setTimeFromTimeString($schedule->open_time);
+                return $openTime->timestamp;
             }
         }
 
-        for ($i = 0; $i < 7; $i++) {
-            // days are numbered from 0 to 6 where 0 is Sunday and 6 is Saturday
-            if ($day == 6) {
-                $day = 0;
-            } else {
-                $day++;
-            }
+        return null;
+    }
 
-            // get schedule for this day
-            $current_day_schedule = $this->schedules()->where('day_of_week', $day)->first();
 
-            // if this day is not closed return it's open_time
-            if (!$current_day_schedule->is_closed) {
-                $opens = $current_day_schedule->open_time;
+    /**
+     * Attempt to repair schedule for destination
+     * 
+     * It will add missing days to destinations schedule
+     * 
+     * @return void
+     */
+    public function repairSchedule(): void
+    {
+        $existing_days = $this->schedules()->pluck('day_of_week')->all();
 
-                return __('time-restricted.opens_on', [
-                    'day' => __("day.{$day}"),
-                    'time' => date('H:i', strtotime($opens))
+        for ($day = 0; $day <= 6; $day++) {
+            if (!in_array($day, $existing_days)) {
+                $this->schedules()->create([
+                    'day_of_week' => $day,
+                    'open_time' => '00:00:00',
+                    'close_time' => '23:59:59',
+                    'is_closed' => false,
                 ]);
             }
         }
 
-        // edge case if whole week is_closed
-        return __("time-restricted.closed-indefinitely");
+        // odświeżenie relacji
+        $this->unsetRelation('schedules');
+        $this->load('schedules');
     }
 }

@@ -6,33 +6,36 @@
 
 import "./echo";
 import { createApp } from "vue";
-
-/**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
- */
-
-const app = createApp({});
+import TimeRestrictedCard from "./components/TimeRestrictedCard.vue";
 
 document.addEventListener("DOMContentLoaded", () => {
     const langButton = document.getElementById("lang-button");
     const langMenu = document.getElementById("lang-menu");
 
-    langButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        langMenu.classList.toggle("hidden");
-    });
+    if (langButton && langMenu) {
+        langButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            langMenu.classList.toggle("hidden");
+        });
 
-    // Kliknięcie poza menu ukryje je
-    document.addEventListener("click", (event) => {
-        if (
-            !langMenu.contains(event.target) &&
-            !langButton.contains(event.target)
-        ) {
-            langMenu.classList.add("hidden");
-        }
-    });
+        document.addEventListener("click", (event) => {
+            if (
+                !langMenu.contains(event.target) &&
+                !langButton.contains(event.target)
+            ) {
+                langMenu.classList.add("hidden");
+            }
+        });
+    }
+
+    const appElement = document.getElementById("app");
+
+    if (appElement && !appElement.__vue_app__) {
+        const app = createApp({});
+        app.component("time-restricted-card", TimeRestrictedCard);
+        app.mount(appElement);
+        appElement.__vue_app__ = app;
+    }
 });
 
 /**

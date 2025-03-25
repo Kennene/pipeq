@@ -8,6 +8,12 @@ class DestinationsSchedule extends Model
 {
     protected $table = 'destinations_schedules';
     protected $appends = ['name'];
+    protected $fillable = [
+        'day_of_week',
+        'open_time',
+        'close_time',
+        'is_closed',
+    ];
 
     public function destination()
     {

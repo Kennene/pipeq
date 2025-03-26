@@ -64,5 +64,7 @@
     "time-restricted.mail": "Вы также можете связаться с нами по электронной почте",
     "time-restricted.sorry.1": "Приносим извинения за неудобства и благодарим за понимание.",
     "time-restricted.sorry.2": "С уважением,",
-    "time-restricted.company_name": "Example"
+    "time-restricted.company_name": "Example",
+    "administrator.translations.title": "Переводы",
+    "administrator.translations.key": "Ключ"
 }

@@ -64,5 +64,7 @@
     "time-restricted.mail": "Vous pouvez également nous contacter par courriel",
     "time-restricted.sorry.1": "Nous nous excusons pour tout désagrément et vous remercions pour votre compréhension.",
     "time-restricted.sorry.2": "Cordialement,",
-    "time-restricted.company_name": "Example"
+    "time-restricted.company_name": "Example",
+    "administrator.translations.title": "Traductions",
+    "administrator.translations.key": "Clé"
 }

@@ -108,18 +108,16 @@
         <div class="col-9 mt-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold text-left h2">Tłumaczenia</h5>
+                    <h5 class="card-title fw-bold text-left h2">{{ __('administrator.translations.title') }}</h5>
                     
                     <form method="POST" action="{{ route('_updateLanguages') }}">
                         @csrf
 
                         <div class="overflow-auto border-bottom" style="max-height: 50vh;">
                             <table class="form-table table table-bordered table-striped table-hover table-sm caption-top">
-                                <caption>Jakieś gówno, ale pamiętaj przetłumaczyć</caption>
-
-                                <thead class="thead-light">
+                                <thead class="thead-light sticky-header">
                                     <tr>
-                                        <th scope="col">Klucz - przetłumacz</th>
+                                        <th scope="col">{{ __('administrator.translations.key') }}</th>
                                         @foreach(config('app.available_locales') as $locale => $language)
                                         <th scope="col" class="text-center">{{ $language }}</th>
                                         @endforeach

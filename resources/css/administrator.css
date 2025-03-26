@@ -9,3 +9,10 @@ textarea {
 td {
     text-align: center;
 }
+
+thead.sticky-header th {
+    position: sticky;
+    top: 0;
+    background-color: var(--white);
+    z-index: 2;
+}

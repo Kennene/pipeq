@@ -64,5 +64,7 @@
     "time-restricted.mail": "Alternatywnie, zapraszamy do kontaktu mailowego",
     "time-restricted.sorry.1": "Przepraszamy za wszelkie niedogodności i dziękujemy za wyrozumiałość.",
     "time-restricted.sorry.2": "Z serdecznymi pozdrowieniami,",
-    "time-restricted.company_name": "Example"
+    "time-restricted.company_name": "Example",
+    "administrator.translations.title": "Tłumaczenia",
+    "administrator.translations.key": "Klucz"
 }

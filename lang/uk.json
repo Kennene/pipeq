@@ -64,5 +64,7 @@
     "time-restricted.mail": "Альтернативно, ви можете зв'язатися з нами електронною поштою",
     "time-restricted.sorry.1": "Вибачте за незручності та дякуємо за розуміння.",
     "time-restricted.sorry.2": "З повагою,",
-    "time-restricted.company_name": "Example"
+    "time-restricted.company_name": "Example",
+    "administrator.translations.title": "Переклади",
+    "administrator.translations.key": "Ключ"
 }

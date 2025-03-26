@@ -64,5 +64,7 @@
     "time-restricted.mail": "Alternatively, feel free to contact us via email",
     "time-restricted.sorry.1": "We apologize for any inconvenience and thank you for your understanding.",
     "time-restricted.sorry.2": "Best regards,",
-    "time-restricted.company_name": "Example"
+    "time-restricted.company_name": "Example",
+    "administrator.translations.title": "Translations",
+    "administrator.translations.key": "Key"
 }

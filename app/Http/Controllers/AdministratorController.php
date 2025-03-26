@@ -18,9 +18,29 @@ class AdministratorController extends Controller
         $destinations    = Destination::with('schedules')->get();
         $users           = User::with('roles')->get();
         $roles           = Role::all();
+
+        $translations = [];
+
+        foreach (config('app.available_locales') as $locale => $language) {
+            $path = base_path("lang/{$locale}.json");
+
+            if (!file_exists($path)) {
+                continue;
+            }
+
+            $json = json_decode(file_get_contents($path), true);
+
+            if (!is_array($json)) {
+                continue;
+            }
+
+            foreach ($json as $key => $value) {
+                $translations[$key][$locale] = $value;
+            }
+        }
         
         return view('administrator.administrator')
-               ->with(compact('destinations', 'users', 'roles', 'tickets_history'));
+               ->with(compact('destinations', 'users', 'roles', 'tickets_history', 'translations'));
     }
 
     /**
@@ -45,4 +65,43 @@ class AdministratorController extends Controller
             ->back()
             ->with('success', 'Schedules updated successfully!');
     }
+
+
+    /**
+     * Update translations files
+     */
+    public function updateLanguages(Request $request)
+    {
+        $translations = $request->input('translations', []);
+        $localeBuffers = [];
+
+        foreach ($translations as $key => $values) {
+            foreach ($values as $locale => $value) {
+                if (!isset($localeBuffers[$locale])) {
+                    $path = base_path("lang/{$locale}.json");
+
+                    $json = file_exists($path)
+                        ? json_decode(file_get_contents($path), true)
+                        : [];
+
+                    $localeBuffers[$locale] = is_array($json) ? $json : [];
+                }
+                $localeBuffers[$locale][$key] = $value;
+            }
+        }
+        
+        foreach ($localeBuffers as $locale => $data) {
+            $path = base_path("lang/{$locale}.json");
+
+            file_put_contents(
+                $path,
+                json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            );
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', 'Translations updated successfully!');
+    }
+
 }

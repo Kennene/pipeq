@@ -56,5 +56,6 @@ Route::middleware(['auth', 'verified', 'role:' . Role::ADMINISTRATOR])->group(fu
     Route::controller(AdministratorController::class)->group(function () {
         Route::get("/administrator", 'index')->name('administrator');
         Route::post("/updateSchedules", 'updateSchedule')->name('_updateSchedules');
+        Route::post("/updateLanguages", 'updateLanguages')->name('_updateLanguages');
     });
 });

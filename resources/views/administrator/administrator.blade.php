@@ -14,7 +14,7 @@
 
         <!-- Destinations schedules editor -->
         <div class="row">
-            <div class="col-12 mb-2">
+            <div class="col-12 mt-4">
                 <h5 class="card-title fw-bold h2">{{ __("administrator.schedules") }}</h5>
             </div>
         </div>
@@ -104,7 +104,66 @@
             @endforeach
         </div>
 
-        <div class="col-12">
+
+        <div class="col-9 mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-left h2">Tłumaczenia</h5>
+                    
+                    <form method="POST" action="{{ route('_updateLanguages') }}">
+                        @csrf
+
+                        <div class="overflow-auto border-bottom" style="max-height: 50vh;">
+                            <table class="form-table table table-bordered table-striped table-hover table-sm caption-top">
+                                <caption>Jakieś gówno, ale pamiętaj przetłumaczyć</caption>
+
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Klucz - przetłumacz</th>
+                                        @foreach(config('app.available_locales') as $locale => $language)
+                                        <th scope="col" class="text-center">{{ $language }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach($translations as $key => $translation)
+                                        <tr>
+                                            <td class="text-muted text-sm">{{ $key }}</td>
+                                            @foreach(config('app.available_locales') as $locale => $language)
+                                                 <td>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control text-center"
+                                                        value="{{ $translation[$locale] ?? '' }}"
+                                                        name="translations[{{ $key }}][{{ $locale }}]"
+                                                    >
+                                                 </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-right mt-2">
+                            <button type="reset" class="btn btn-secondary">
+                                {{ __("administrator.clear") }}
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                {{ __("administrator.submit") }}
+                            </button>
+                        </div>
+
+                    </form>
+                    
+                    
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-12 mt-4">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title fw-bold text-left h2">{{ __("administrator.tickets_history") }}</h5>
